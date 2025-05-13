@@ -34,8 +34,7 @@ export default function LoginForm() {
    };
 
    return (
-      <div className="max-w-sm mx-auto mt-10 p-6 bg-white shadow rounded">
-         <h2 className="text-xl font-bold mb-4">Iniciar sesión</h2>
+      <div className="w-full bg-white">
          <Formik
             initialValues={initialValues}
             validate={validate}
@@ -43,13 +42,15 @@ export default function LoginForm() {
          >
             <Form className="space-y-4">
                <div>
-                  <label htmlFor="email" className="block text-sm font-medium">
+                  <label htmlFor="email" className="block text-3xl font-medium">
                      Email
                   </label>
                   <Field
                      name="email"
+                     id="email"
                      type="email"
-                     className="w-full p-2 border rounded"
+                     placeholder="username@gmail.com"
+                     className="w-full p-3 border rounded-full"
                   />
                   <ErrorMessage
                      name="email"
@@ -61,14 +62,16 @@ export default function LoginForm() {
                <div>
                   <label
                      htmlFor="password"
-                     className="block text-sm font-medium"
+                     className="block text-3xl font-medium"
                   >
                      Contraseña
                   </label>
                   <Field
                      name="password"
+                     id="password"
                      type="password"
-                     className="w-full p-2 border rounded"
+                     placeholder="Contraseña"
+                     className="w-full p-3 border rounded-full"
                   />
                   <ErrorMessage
                      name="password"
@@ -76,10 +79,10 @@ export default function LoginForm() {
                      className="text-red-500 text-sm"
                   />
                </div>
-
+               <p>¿Has olvidado tu contraseña?</p>
                <button
                   type="submit"
-                  className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+                  className="w-full text-3xl bg-blue-600 text-white py-3 rounded-full hover:bg-blue-700"
                >
                   Iniciar sesión
                </button>
