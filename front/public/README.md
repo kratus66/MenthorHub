@@ -1,9 +1,10 @@
 Archivos para utilizar en el front-end de la aplicación.
 # Frontend
 
-LogIn: MenVir_Saludando.webm
+LogIn: 
+  ./public/MenVir_Saludando.webm (video)
 
 Registro:
-  Backgorund: MenVir_Register.png
-  Finalizar: MenVir_DeDiez.webm
+  Backgorund: ./public/MenVir_Register.png
+  Finalizar: ./public/MenVir_DeDiez.webm (video)
 
