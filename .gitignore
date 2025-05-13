@@ -1,0 +1,47 @@
+# =======================
+# BACKEND (NestJS)
+# =======================
+/back/node_modules/
+back/dist/
+back/.env
+back/.env.*
+
+# =======================
+# FRONTEND (React + Vite)
+# =======================
+/front/node_modules/
+front/dist/
+front/.env
+front/.env.*
+
+# =======================
+# SISTEMA OPERATIVO / GENERAL
+# =======================
+.DS_Store
+Thumbs.db
+
+# =======================
+# LOGS
+# =======================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =======================
+# IDEs / EDITORES
+# =======================
+.vscode/
+.idea/
+*.swp
+
+# =======================
+# COVERAGE
+# =======================
+coverage/
+.nyc_output/
+
+# =======================
+# TYPESCRIPT
+# =======================
+*.tsbuildinfo
