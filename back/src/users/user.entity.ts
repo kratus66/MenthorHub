@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { Class } from '../classes/class.entity';
 import { Submission } from '../submission/submission.entity';
-
+import { Payment } from '../payment/payment.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -29,6 +29,10 @@ export class User {
 
   @OneToMany(() => Class, (cls) => cls.teacher)
   classesTaught!: Class[];
+
+  @OneToMany(() => Payment, payment => payment.user)
+  payments!: Payment[];
+
 
   @ManyToMany(() => Class, (cls) => cls.students)
   @JoinTable()
