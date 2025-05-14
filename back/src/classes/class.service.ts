@@ -22,6 +22,7 @@ export class ClassesService {
       classesTaught: [],
       classesEnrolled: [],
       submissions: [],
+      payments: [],
       createdAt: new Date(),
     };
 
