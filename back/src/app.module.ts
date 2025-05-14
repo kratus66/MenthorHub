@@ -9,10 +9,6 @@ import { User } from './users/user.entity';
 import { Class } from './classes/class.entity';
 import { Submission } from './submission/submission.entity';
 import { Task } from './task/task.entity';
-import { PaymentsModule } from './payment/payment.module';
-import { Payment } from './payment/payment.entity';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/user.module';
 
 config(); // Cargar las variables del .env
 
@@ -20,9 +16,6 @@ config(); // Cargar las variables del .env
   imports: [
     ChatbotModule,
     ClassesModule,
-    PaymentsModule,
-    AuthModule,
-    UsersModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -30,7 +23,7 @@ config(); // Cargar las variables del .env
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, Class,Task, Submission,Payment],
+      entities: [User, Class,Task, Submission],
       synchronize: true, // Solo en desarrollo, nunca en producción
     }),
   ],
