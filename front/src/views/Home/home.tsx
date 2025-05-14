@@ -2,7 +2,7 @@
 const Home = () => {
   return (
     <div className="w-full min-h-screen bg-gray-100">
-      {/* Hero Section */}
+     
       <div
         className="w-full h-[60vh] bg-cover bg-center flex items-center justify-center text-white"
         style={{
@@ -12,7 +12,7 @@ const Home = () => {
         <h1 className="text-5xl font-bold drop-shadow-lg">Mentor Hub</h1>
       </div>
 
-      {/* Información que brindan los cursos */}
+     
       <section className="py-12 px-6 md:px-20 bg-white">
         <h2 className="text-3xl font-semibold text-center mb-10">¿Qué te brindamos?</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">

@@ -1,34 +1,30 @@
-import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom'
-
-// Componentes de página
-import Home from './Home'  
-import Login from './Login'  
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './views/Home/Home';
+import Login from './components/LoginForm/LoginForm';
+import Usuario from './views/Usuario/Usuario';
+import Clases from './views/Clases/Clases';
+import AboutUs from './views/AboutUs/AboutUs';
+import NavBar from './components/Navbar/Navbar';
+import Landing from './views/Landing/Landing';
+import Register from './views/Register/Register';
 
 const App = () => {
-  const navigate = useNavigate()
-
   return (
-    <Router> 
+    <Router>
+      {/* Usamos la propiedad pathname del window.location para determinar si mostrar el NavBar */}
+      {window.location.pathname !== '/login' && window.location.pathname !== '/register' && <NavBar />}
+      
       <Routes>
-        <Route path="/" element={
-          <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-700 via-blue-400 to-slate-300 text-white">
-            <h1 className="text-6xl font-bold mb-8 drop-shadow-lg">MentorHub</h1>
-            <button
-              onClick={() => navigate('/home')}
-              className="px-6 py-3 bg-white text-blue-700 font-semibold rounded-xl shadow-md hover:bg-blue-100 transition"
-            >
-              Ingresar
-            </button>
-          </div>
-        } />
-
+        <Route path="/" element={<Landing />} />
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/usuario" element={<Usuario />} />
+        <Route path="/clases" element={<Clases />} />
+        <Route path="/about-us" element={<AboutUs />} />
       </Routes>
     </Router>
-  )
-}
+  );
+};
 
-export default App
+export default App;
