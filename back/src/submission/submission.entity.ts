@@ -5,7 +5,7 @@ import {
     ManyToOne,
     CreateDateColumn,
   } from 'typeorm';
-  import { Task } from '../../src/task/task.entity';
+  import { Task } from '../task/task.entity';
   import { User } from '../users/user.entity';
   
   @Entity()
