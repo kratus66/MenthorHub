@@ -9,5 +9,6 @@ export class RegisterDto {
   password!: string;
 
   @IsString()
-  role: string;
+  @IsIn(['admin', 'teacher', 'student']) // Solo valores válidos
+  role!: 'admin' | 'teacher' | 'student';
 }
