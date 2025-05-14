@@ -41,7 +41,18 @@ export default function Login() {
                </p>
             </div>
          </div>
-         <div className="h-screen w-2/5 bg-blue-500"></div>
+         <div className="h-screen w-2/5 bg-[#409BFF] relative">
+            <svg
+               viewBox="0 0 100 100"
+               preserveAspectRatio="none"
+               className="absolute top-0 left-0 w-full h-full"
+            >
+               <path d="M100,0 Q90,90 0,100 L0,0 Z" fill="#007AFF" />
+            </svg>
+            <video autoPlay loop muted playsInline className="menvirLogin">
+               <source src="/MenVir_Saludando.webm" type="video/webm" />
+            </video>
+         </div>
       </div>
    );
 }
