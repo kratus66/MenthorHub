@@ -13,11 +13,13 @@ import { PaymentsModule } from './payment/payments.module';
 import { Payment } from './payment/payment.entity';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/user.module';
+import { FilterModule } from './filter/filter.module';
 
 config(); // Cargar las variables del .env
 
 @Module({
   imports: [
+    FilterModule,
     ChatbotModule,
     ClassesModule,
     PaymentsModule,
