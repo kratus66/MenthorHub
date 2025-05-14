@@ -11,6 +11,8 @@ import { Submission } from './submission/submission.entity';
 import { Task } from './task/task.entity';
 import { PaymentsModule } from './payment/payment.module';
 import { Payment } from './payment/payment.entity';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/user.module';
 
 config(); // Cargar las variables del .env
 
@@ -19,6 +21,8 @@ config(); // Cargar las variables del .env
     ChatbotModule,
     ClassesModule,
     PaymentsModule,
+    AuthModule,
+    UsersModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
