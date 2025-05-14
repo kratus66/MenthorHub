@@ -1,8 +1,13 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Login from './views/Login';
+
 function App() {
    return (
-      <div className="p-4">
-         <h1 className="text-2xl font-bold text-blue-600">¡Hola MentorHub!</h1>
-      </div>
+      <BrowserRouter>
+         <Routes>
+            <Route path="/login" element={<Login />} />
+         </Routes>
+      </BrowserRouter>
    );
 }
 
