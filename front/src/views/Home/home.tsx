@@ -16,7 +16,7 @@ const Home = () => {
       <section className="py-12 px-6 md:px-20 bg-white">
         <h2 className="text-3xl font-semibold text-center mb-10">¿Qué te brindamos?</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          {/* Info 1 */}
+          
           <div className="bg-gray-50 shadow-md rounded-2xl p-6 hover:shadow-lg transition">
             <h3 className="text-xl font-bold mb-2">Mentoría Personalizada</h3>
             <p className="text-gray-600">
@@ -24,7 +24,7 @@ const Home = () => {
             </p>
           </div>
 
-          {/* Info 2 */}
+          
           <div className="bg-gray-50 shadow-md rounded-2xl p-6 hover:shadow-lg transition">
             <h3 className="text-xl font-bold mb-2">Material Actualizado</h3>
             <p className="text-gray-600">
@@ -32,7 +32,7 @@ const Home = () => {
             </p>
           </div>
 
-          {/* Info 3 */}
+         
           <div className="bg-gray-50 shadow-md rounded-2xl p-6 hover:shadow-lg transition">
             <h3 className="text-xl font-bold mb-2">Proyectos Reales</h3>
             <p className="text-gray-600">
@@ -40,7 +40,7 @@ const Home = () => {
             </p>
           </div>
 
-          {/* Info 4 */}
+        
           <div className="bg-gray-50 shadow-md rounded-2xl p-6 hover:shadow-lg transition">
             <h3 className="text-xl font-bold mb-2">Comunidad Estudiantil</h3>
             <p className="text-gray-600">

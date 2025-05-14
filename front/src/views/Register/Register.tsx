@@ -4,7 +4,7 @@ import imagenRobot from "../../images/imagenRobot.png"
 
 const Register: React.FC = () => {
   const handleSubmit = (formData: { estudios: string; rol: string; localidad: string; provincia: string; pais: string }) => {
-    // Lógica que se ejecutará cuando el formulario sea enviado
+   
     console.log('Formulario enviado', formData)
   }
 
@@ -17,7 +17,7 @@ const Register: React.FC = () => {
           <h1 className="text-3xl font-bold text-center text-blue-700 mb-6">MentorHub</h1>
           <h2 className="text-xl font-medium text-center text-gray-700 mb-8">Registro</h2>
 
-          <RegisterForm onSubmit={handleSubmit} /> {/* Aquí pasas el método onSubmit al formulario */}
+          <RegisterForm onSubmit={handleSubmit} /> 
         </div>
       </div>
     </div>
