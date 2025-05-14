@@ -5,6 +5,7 @@ import { config } from 'dotenv';
 
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { ClassesModule } from './classes/classes.module';
+import{FilterModule} from './filter/filter.module'
 import { User } from './users/user.entity';
 import { Class } from './classes/class.entity';
 import { Submission } from './submission/submission.entity';
@@ -16,6 +17,7 @@ config(); // Cargar las variables del .env
   imports: [
     ChatbotModule,
     ClassesModule,
+    FilterModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
