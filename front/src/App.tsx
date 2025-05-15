@@ -14,7 +14,8 @@ const App = () => {
       <Router>
          {/* Usamos la propiedad pathname del window.location para determinar si mostrar el NavBar */}
          {window.location.pathname !== '/login' &&
-            window.location.pathname !== '/register' && <NavBar />}
+            window.location.pathname !== '/register' &&
+            window.location.pathname !== '/' && <NavBar />}
 
          <Routes>
             <Route path="/" element={<Landing />} />
