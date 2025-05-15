@@ -14,6 +14,7 @@ import { Payment } from './payment/payment.entity';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/user.module';
 import { FilterModule } from './filter/filter.module';
+import { TasksModule } from './task/tasks.module';
 
 config(); // Cargar las variables del .env
 
@@ -25,6 +26,7 @@ config(); // Cargar las variables del .env
     PaymentsModule,
     AuthModule,
     UsersModule,
+    TasksModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
