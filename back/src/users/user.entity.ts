@@ -9,11 +9,12 @@ import {
 } from 'typeorm';
 import { Class } from '../classes/class.entity';
 import { Submission } from '../submission/submission.entity';
+import { Payment } from '../payment/payment.entity';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
   @Column()
   fullName!: string;
@@ -24,7 +25,7 @@ export class User {
   @Column()
   password!: string;
 
-  @Column({ default: 'student' }) // 'admin', 'teacher', 'student'
+  @Column({ default: 'student' })
   role!: 'admin' | 'teacher' | 'student';
 
   @OneToMany(() => Class, (cls) => cls.teacher)
@@ -37,6 +38,11 @@ export class User {
   @OneToMany(() => Submission, (submission) => submission.student)
   submissions!: Submission[];
 
+  @OneToMany(() => Payment, (payment) => payment.user)
+  payments!: Payment[];
+
   @CreateDateColumn()
   createdAt!: Date;
 }
+
+

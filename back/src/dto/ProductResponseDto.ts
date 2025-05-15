@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Class } from '../filter/entities/filterClass';
+import { Class } from '../classes/class.entity';
 import { Submission } from '../submission/submission.entity';
 
 export class ProductResponseDto {

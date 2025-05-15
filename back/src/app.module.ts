@@ -1,33 +1,22 @@
-// filepath: /Users/gabyaybar/Desktop/PF/MentorHub-PF/back/src/app.module.ts
+// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { config } from 'dotenv';
+import { dataSourceOptions } from './config/typeorm';
 
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { ClassesModule } from './classes/classes.module';
-import{FilterModule} from './filter/filter.module'
-import { User } from './users/user.entity';
-import { Class } from './classes/class.entity';
-import { Submission } from './submission/submission.entity';
-import { Task } from './task/task.entity';
-
-config(); // Cargar las variables del .env
+import { FilterModule } from './filter/filter.module';
+import { CategoriesModule } from './categorias/categoria.module';
+import { SeederModule } from './seeder/seeder.module';
 
 @Module({
   imports: [
+    SeederModule,
+    CategoriesModule,
     ChatbotModule,
     ClassesModule,
     FilterModule,
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT || '5432'),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      entities: [User, Class,Task, Submission],
-      synchronize: true, // Solo en desarrollo, nunca en producción
-    }),
+    TypeOrmModule.forRoot(dataSourceOptions), // ✅ Aquí usamos la misma config
   ],
   controllers: [],
   providers: [],
