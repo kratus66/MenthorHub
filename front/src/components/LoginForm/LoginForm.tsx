@@ -82,7 +82,7 @@ export default function LoginForm() {
                <p>¿Has olvidado tu contraseña?</p>
                <button
                   type="submit"
-                  className="w-full text-3xl bg-blue-600 text-white py-3 rounded-full hover:bg-blue-700"
+                  className="w-full text-3xl bg-blue-700 text-white py-3 rounded-full hover:bg-blue-800"
                >
                   Iniciar sesión
                </button>
@@ -90,4 +90,4 @@ export default function LoginForm() {
          </Formik>
       </div>
    );
-}           
+}
