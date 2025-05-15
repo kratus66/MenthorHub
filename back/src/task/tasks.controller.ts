@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { TasksService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../decorator/roles.enum'; // asegúrate que este enum tiene TEACHER, STUDENT
 import { CurrentUser } from '../common/decorators/current-user.decorator';
