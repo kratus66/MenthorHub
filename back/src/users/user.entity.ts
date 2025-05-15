@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { Class } from '../classes/class.entity';
 import { Submission } from '../submission/submission.entity';
-
+import { Payment } from '../payment/payment.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -27,8 +27,18 @@ export class User {
   @Column({ default: 'student' }) // 'admin', 'teacher', 'student'
   role!: 'admin' | 'teacher' | 'student';
 
+  @Column({ nullable: true })
+  phoneNumber?: string;
+
+  @Column({ nullable: true })
+  country?: string;
+
   @OneToMany(() => Class, (cls) => cls.teacher)
   classesTaught!: Class[];
+
+  @OneToMany(() => Payment, (payment: Payment) => payment.user)
+  payments!: Payment[];
+
 
   @ManyToMany(() => Class, (cls) => cls.students)
   @JoinTable()

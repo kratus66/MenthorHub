@@ -1,7 +1,7 @@
 import { Controller, Post, Get, Param, Body, Put, Delete, ParseIntPipe } from '@nestjs/common';
 import { ClassesService } from '../classes/class.service';
-import { CreateClassDto } from '../classes/dto/create-class.dto'
-import { UpdateClassDto } from '../classes/dto/update-class.dto';
+import { CreateClassDto } from '../dto/create-class.dto'
+import { UpdateClassDto } from '../dto/update-class.dto';
 
 @Controller('classes')
 export class ClassesController {
