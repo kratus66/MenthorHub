@@ -1,4 +1,4 @@
-import LoginForm from "../../components/LoginForm/LoginForm";
+import LoginForm from '../../components/LoginForm/LoginForm';
 
 export default function Login() {
    return (
@@ -46,7 +46,7 @@ export default function Login() {
                preserveAspectRatio="none"
                className="absolute top-0 left-0 w-full h-full"
             >
-               <path d="M100,0 Q90,90 0,100 L0,0 Z" fill="#007AFF" />
+               <path d="M100,0 Q90,90 0,100 L0,0 Z" fill="#2463EB" />
             </svg>
             <video autoPlay loop muted playsInline className="menvirLogin">
                <source src="/MenVir_Saludando.webm" type="video/webm" />
