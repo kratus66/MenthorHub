@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/********************** AJUSTES ROBOTITO ********************/
 .menvirLogin {
    position: absolute;
    top: 50%;
@@ -10,4 +11,8 @@
    max-width: none !important;
    width: 700px;
    height: auto;
+}
+.menvirLanding {
+   height: auto;
+   width: 40rem;
 }
