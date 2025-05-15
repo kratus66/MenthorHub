@@ -1,5 +1,4 @@
-// src/auth/auth.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -12,17 +11,20 @@ import { compare, hash } from 'bcrypt';
 export class AuthService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
-    private jwtService: JwtService
+    private jwtService: JwtService,
   ) {}
 
-  async register(registerDto: RegisterDto): Promise<any> {
-    const { email, password, role } = registerDto;
+  async register(registerDto: RegisterDto): Promise<{ token: string }> {
+    const { fullName, email, phoneNumber, country, password, role } = registerDto;
     const hashedPassword = await hash(password, 10);
-    
+
     const newUser = this.usersRepository.create({
+      fullName,
       email,
+      phoneNumber,
+      country,
       password: hashedPassword,
-      role: registerDto.role,
+      role: role as 'admin' | 'teacher' | 'student',
     });
 
     await this.usersRepository.save(newUser);
@@ -31,12 +33,12 @@ export class AuthService {
     return { token };
   }
 
-  async login(loginDto: LoginDto): Promise<any> {
+  async login(loginDto: LoginDto): Promise<{ token: string }> {
     const { email, password } = loginDto;
     const user = await this.usersRepository.findOne({ where: { email } });
 
     if (!user || !(await compare(password, user.password))) {
-      throw new Error('Invalid credentials');
+      throw new UnauthorizedException('Credenciales incorrectas');
     }
 
     const token = this.generateToken(user);
@@ -48,3 +50,4 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 }
+

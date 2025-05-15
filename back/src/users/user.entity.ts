@@ -28,8 +28,18 @@ export class User {
   @Column({ default: 'student' })
   role!: 'admin' | 'teacher' | 'student';
 
+  @Column({ nullable: true })
+  phoneNumber?: string;
+
+  @Column({ nullable: true })
+  country?: string;
+
   @OneToMany(() => Class, (cls) => cls.teacher)
   classesTaught!: Class[];
+
+  @OneToMany(() => Payment, (payment: Payment) => payment.user)
+  payments!: Payment[];
+
 
   @ManyToMany(() => Class, (cls) => cls.students)
   @JoinTable()
