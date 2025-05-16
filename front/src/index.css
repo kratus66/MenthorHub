@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/********************** FUENTE PRINCIPAL ********************/
+body { font-family: "Actor"; }
+
 /********************** AJUSTES ROBOTITO ********************/
 .menvirLogin {
    position: absolute;
