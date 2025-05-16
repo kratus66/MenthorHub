@@ -9,5 +9,10 @@ export default defineConfig({
   },
   preview: {
     allowedHosts: ['mentorhub.info.gf']
+  },
+  resolve: {
+    alias: {
+      '.well-known': '/public/.well-known'
+    }
   }
 })
