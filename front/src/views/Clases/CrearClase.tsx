@@ -7,7 +7,7 @@ const CrearClase: React.FC = () => {
   const handleCrear = (e: React.FormEvent) => {
     e.preventDefault();
     alert(`Clase creada:\nTítulo: ${titulo}\nDescripción: ${descripcion}`);
-    // Aquí podrías llamar a la API para guardar la clase
+    // Aquí hay q llamar a la API para guardar la clase
     setTitulo('');
     setDescripcion('');
   };

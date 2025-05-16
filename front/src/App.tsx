@@ -18,7 +18,7 @@ import Layout from './components/layout/Layout';
 const AppWrapper = () => {
   
   const [user, setUser] = useState<{ role: 'profesor' | 'alumno' | 'otro'; nombre: string } | null>({
-    role: 'alumno',
+    role: 'profesor',
     nombre: 'Juan Pérez',
   });
 

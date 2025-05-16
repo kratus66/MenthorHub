@@ -6,7 +6,7 @@ const UnirmeClase: React.FC = () => {
   const handleUnirme = (e: React.FormEvent) => {
     e.preventDefault();
     alert(`Solicitando unirse a la clase con código: ${codigo}`);
-    // Aquí puedes llamar a la API para unirse a la clase
+    // Aquí hay que llamar a la API para unirse a la clase
     setCodigo('');
   };
 

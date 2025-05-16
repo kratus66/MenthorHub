@@ -1,7 +1,7 @@
 const Home = () => {
   return (
     <div className="w-full min-h-screen bg-gray-100">
-      {/* Video de fondo */}
+      
       <div className="relative w-full h-[60vh] overflow-hidden">
         <video
           className="absolute top-0 left-0 w-full h-full object-cover"
@@ -14,13 +14,13 @@ const Home = () => {
           Tu navegador no soporta el tag de video.
         </video>
 
-        {/* Overlay oscuro opcional para mejor contraste */}
+        
         <div className="absolute top-0 left-0 w-full h-full bg-black/50 flex items-center justify-center">
           <h1 className="text-5xl font-bold text-white drop-shadow-lg z-10">Mentor Hub</h1>
         </div>
       </div>
 
-      {/* Sección de contenido */}
+      
       <section className="py-12 px-6 md:px-20 bg-white">
         <h2 className="text-3xl font-semibold text-center mb-10">¿Qué te brindamos?</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
