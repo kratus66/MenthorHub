@@ -1,66 +1,97 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Class } from './class.entity';
 import { User } from '../users/user.entity';
-import { CreateClassDto } from '../dto/create-class.dto';
+import { Category } from '../entities/categorias.entities';
+import { CreateClassDto } from '../dto/CreateClassDto';
 import { UpdateClassDto } from '../dto/update-class.dto';
 
 @Injectable()
 export class ClassesService {
-  private classes: Class[] = [];
-  private nextId = 1;
+  constructor(
+    @InjectRepository(Class)
+    private classRepository: Repository<Class>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+    @InjectRepository(Category)
+    private categoryRepository: Repository<Category>,
+  ) {}
 
   async create(createDto: CreateClassDto): Promise<Class> {
-    const { title, description, teacherId } = createDto;
+    const { title, description, teacherId, categoryId } = createDto;
 
-    // Profesor simulado (fake)
-    const teacher: User = {
-      id: teacherId,
-      fullName: 'Fake Teacher',
-      email: 'fake@teacher.com',
-      password: 'fakepass',
-      role: 'teacher',
-      classesTaught: [],
-      classesEnrolled: [],
-      submissions: [],
-      payments: [],
-      createdAt: new Date(),
-    };
+    // Buscar el profesor real
+    const teacher = await this.userRepository.findOne({ where: { id: teacherId as string } });
 
-    const newClass: Class = {
-      id: this.nextId++,
+    if (!teacher) {
+      throw new NotFoundException('Profesor no encontrado');
+    }
+    
+    // Buscar la categoría real
+    const category = await this.categoryRepository.findOne({ where: { id: categoryId } });
+    if (!category) {
+      throw new NotFoundException('Categoría no encontrada');
+    }
+
+    // Crear la nueva clase usando el repositorio
+    const newClass = this.classRepository.create({
       title,
       description,
       teacher,
+      category,
       students: [],
       tasks: [],
-      createdAt: new Date(),
-    };
+    });
 
-    this.classes.push(newClass);
-    return newClass;
+    return await this.classRepository.save(newClass);
   }
 
   async update(id: number, updateDto: UpdateClassDto): Promise<Class> {
-    const classToUpdate = this.classes.find((c) => c.id === id);
+    const classToUpdate = await this.classRepository.findOne({ where: { id }, relations: ['teacher', 'category'] });
+
     if (!classToUpdate) throw new NotFoundException('Curso no encontrado');
 
-    Object.assign(classToUpdate, updateDto);
-    return classToUpdate;
+    const { title, description, teacherId, categoryId } = updateDto;
+
+    // Actualizar título y descripción si se proveen
+    if (title) classToUpdate.title = title;
+    if (description) classToUpdate.description = description;
+
+    // Si se provee nuevo teacherId, buscarlo
+    if (teacherId) {
+      const newTeacher = await this.userRepository.findOne({ where: { id: teacherId } });
+
+      if (!newTeacher) throw new NotFoundException('Nuevo profesor no encontrado');
+      classToUpdate.teacher = newTeacher;
+    }
+
+    // Si se provee nuevo categoryId, buscarlo
+    if (categoryId) {
+      const newCategory = await this.categoryRepository.findOne({ where: { id: categoryId } });
+      if (!newCategory) throw new NotFoundException('Nueva categoría no encontrada');
+      classToUpdate.category = newCategory;
+    }
+
+    return await this.classRepository.save(classToUpdate);
   }
 
   async findAll(): Promise<Class[]> {
-    return this.classes;
+    // Incluye relaciones para devolver datos completos
+    return await this.classRepository.find({ relations: ['teacher', 'category', 'students', 'tasks'] });
   }
 
   async findOne(id: number): Promise<Class> {
-    const found = this.classes.find((c) => c.id === id);
+    const found = await this.classRepository.findOne({
+      where: { id },
+      relations: ['teacher', 'category', 'students', 'tasks'],
+    });
     if (!found) throw new NotFoundException(`Curso con ID ${id} no encontrado`);
     return found;
   }
 
   async remove(id: number): Promise<void> {
-    const index = this.classes.findIndex((c) => c.id === id);
-    if (index === -1) throw new NotFoundException('Curso no encontrado');
-    this.classes.splice(index, 1);
+    const result = await this.classRepository.delete(id);
+    if (result.affected === 0) throw new NotFoundException('Curso no encontrado');
   }
 }

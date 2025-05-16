@@ -13,7 +13,8 @@ const App = () => {
   return (
     <Router>
       
-      {window.location.pathname !== '/login' && window.location.pathname !== '/register' &&  window.location.pathname !== '/' && <NavBar />}
+      {window.location.pathname !== '/login' && window.location.pathname !== '/register' &&  window.location.pathname !== '/' &&
+            window.location.pathname !== '/' && <NavBar />}
       
       <Routes>
         <Route path="/" element={<Landing />} />

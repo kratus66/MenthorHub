@@ -1,7 +1,7 @@
 // src/classes/classes.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Class } from './entities/filterClass';
+import { Class } from '../classes/class.entity';
 import { ClassesController } from './classes.controller';
 import { ClassesService } from './filter.service';
 

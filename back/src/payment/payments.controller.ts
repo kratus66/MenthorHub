@@ -12,12 +12,12 @@ export class PaymentsController {
     @Param('userId') userId: string,
     @Body() dto: CreatePaymentDto,
   ) {
-    return this.paymentsService.create(+userId, dto);
+    return this.paymentsService.create(userId, dto);
   }
 
   @Get('user/:userId')
   findByUser(@Param('userId') userId: string) {
-    return this.paymentsService.findByUser(+userId);
+    return this.paymentsService.findByUser(userId);
   }
 
   @Get()

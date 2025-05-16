@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsArray, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, IsNumber,IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateClassDto {
@@ -23,14 +23,11 @@ export class CreateClassDto {
     example: 3,
   })
   @IsNumber()
-  teacherId: number;
+  teacherId: string;
 
-  @ApiProperty({
-    description: 'Lista de IDs de los estudiantes inscritos',
-    example: [4, 5, 6],
-    type: [Number],
-  })
-  @IsArray()
-  @IsNumber({}, { each: true })
-  studentsIds: number[];
+  @ApiProperty({ example: 'uuid-de-categoria' })
+  @IsUUID()
+  categoryId: string; // 👈 Añadido como obligatorio
+
+
 }

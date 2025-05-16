@@ -1,6 +1,5 @@
-// src/professors/entities/professor.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Class } from './filterClass';
+import { Class } from '../classes/class.entity';
 
 @Entity()
 export class Professor {
@@ -13,6 +12,6 @@ export class Professor {
   @Column({ nullable: true })
   bio?: string;
 
-  @OneToMany(() => Class, (classItem) => classItem.professor)
-  classes: Class[];
+  @OneToMany(() => Class, (cls) => cls.teacher)
+    classes: Class[];
 }

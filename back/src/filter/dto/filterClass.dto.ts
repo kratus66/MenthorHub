@@ -13,14 +13,14 @@ export class FilterClassesDto {
   @IsUUID()
   category?: string;
 
-  @ApiPropertyOptional({ description: 'ID del profesor', example: 'uuid-profesor' })
+  @ApiPropertyOptional({ description: 'ID del profesor (teacher)', example: 'uuid-teacher' })
   @IsOptional()
   @IsUUID()
-  professorId?: string;
+  teacherId?: string; // 🔁 CAMBIADO de professorId a teacherId
 
-  @ApiPropertyOptional({ description: 'Campo por el cual ordenar', example: 'name' })
+  @ApiPropertyOptional({ description: 'Campo por el cual ordenar', example: 'title' })
   @IsOptional()
-  @IsIn(['name', 'createdAt'])
+  @IsIn(['title', 'createdAt']) // 🔁 CAMBIADO 'name' a 'title' (según tu entidad)
   sortBy?: string;
 
   @ApiPropertyOptional({ description: 'Orden asc o desc', example: 'asc' })
@@ -40,3 +40,4 @@ export class FilterClassesDto {
   @Min(1)
   limit?: number;
 }
+

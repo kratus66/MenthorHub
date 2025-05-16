@@ -20,7 +20,7 @@ export class UsersController {
 
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<User | null> {
-    const user = await this.usersService.findById(+id);
+    const user = await this.usersService.findById(id);
     return user;
   }
 
@@ -29,11 +29,11 @@ export class UsersController {
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User> {
-    return this.usersService.update(+id, updateUserDto);
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string): Promise<void> {
-    return this.usersService.remove(+id);
+    return this.usersService.remove(id);
   }
 }
