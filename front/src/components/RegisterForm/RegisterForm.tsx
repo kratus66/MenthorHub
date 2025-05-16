@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 
 interface RegisterFormProps {
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSubmit: (formData: any) => void;
 }
 
