@@ -1,9 +1,9 @@
-// src/submission/submissions.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Submission } from './submission.entity';
 import { CreateSubmissionDto } from './dto/CreateSubmissions.dto';
+import { UpdateSubmissionDto } from './dto/updatesubmission.dto';
 
 @Injectable()
 export class SubmissionsService {
@@ -12,20 +12,42 @@ export class SubmissionsService {
     private submissionsRepo: Repository<Submission>,
   ) {}
 
-  async create(dto: CreateSubmissionDto, userId: string) {
+  async create(dto: CreateSubmissionDto, studentId: number) {
     const submission = this.submissionsRepo.create({
       content: dto.content,
-      task: { id: dto.taskId },    // dto.taskId es number, correcto
-      student: { id: userId },     // userId ahora es string, correcto
+      student: { id: studentId },
+      task: { id: dto.taskId },
     });
     return this.submissionsRepo.save(submission);
   }
 
-  async findAll() {
+  findAll() {
     return this.submissionsRepo.find();
   }
 
-  async findByStudent(studentId: string) { // <-- CAMBIA number por string
+  findOne(id: number) {
+    return this.submissionsRepo.findOne({ where: { id } });
+  }
+
+  async update(id: number, dto: UpdateSubmissionDto) {
+    const submission = await this.submissionsRepo.findOne({ where: { id } });
+    if (!submission) throw new NotFoundException('Submission not found');
+
+    Object.assign(submission, dto);
+    return this.submissionsRepo.save(submission);
+  }
+
+  async remove(id: number) {
+    const submission = await this.submissionsRepo.findOne({ where: { id } });
+
+    if (!submission) {
+      throw new NotFoundException(`Submission with id ${id} not found`);
+    }
+  
+    return this.submissionsRepo.remove(submission);
+  }
+
+  async findByStudent(studentId: number) {
     return this.submissionsRepo.find({ where: { student: { id: studentId } } });
   }
 

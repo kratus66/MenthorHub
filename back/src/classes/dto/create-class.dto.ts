@@ -1,5 +1,5 @@
 // create-class.dto.ts
-import { IsString, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, Min } from 'class-validator';
 
 export class CreateClassDto {
   @IsString()
@@ -11,5 +11,7 @@ export class CreateClassDto {
   description!: string;
 
   @IsNumber()
+  @IsNotEmpty()
+  @Min(1) 
   teacherId!: number;
 }

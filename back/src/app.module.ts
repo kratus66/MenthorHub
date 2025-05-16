@@ -17,6 +17,9 @@ import { FilterModule } from './filter/filter.module';
 import { TasksModule } from './task/tasks.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { Notification } from './notifications/notification.entity';
+import { Category } from './entities/categorias.entities';
+import { CategoriesModule } from './categorias/categoria.module';
+import { SubmissionsModule } from './submission/submission.module';
 
 config(); // Cargar las variables del .env
 
@@ -30,6 +33,8 @@ config(); // Cargar las variables del .env
     UsersModule,
     TasksModule,
     NotificationsModule,
+    CategoriesModule,
+    SubmissionsModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -37,7 +42,7 @@ config(); // Cargar las variables del .env
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-entities: [User, Class, Task, Submission, Payment, Notification],
+entities: [User, Class, Task, Submission, Payment, Notification,Category],
       synchronize: true, // Solo en desarrollo, nunca en producción
     }),
   ],
