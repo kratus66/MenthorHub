@@ -29,7 +29,7 @@ const AppWrapper = () => {
           <Route path="/register" element={<Register />} />
         </Routes>
       ) : (
-        // Para las demás rutas envuelves en Layout (footer incluido ahí)
+        
         <Layout>
           <Routes>
             <Route path="/home" element={<Home />} />
