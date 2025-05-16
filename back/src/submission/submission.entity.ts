@@ -34,3 +34,4 @@ export class Submission {
   @Column({ default: false })
   isGraded: boolean;
 }
+ 
