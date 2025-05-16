@@ -5,18 +5,9 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: '0.0.0.0',
-    port: 4173,
-    fs: {
-      strict: false // Desactiva restricciones de acceso a archivos ocultos como .well-known
-    }
+    port: 4173
   },
   preview: {
     allowedHosts: ['mentorhub.info.gf']
-  },
-  resolve: {
-    alias: {
-      '.well-known': '/public/.well-known'
-    }
-  },
-  publicDir: 'public' // Ahora está en la posición correcta
+  }
 })
