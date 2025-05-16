@@ -36,7 +36,7 @@ export default function Login() {
                   </a>
                </div>
                <p className="w-fit self-center">
-                  ¿Aun no tienes cuenta? <a href="#">Registrate gratis.</a>
+                  ¿Aun no tienes cuenta? <a href="/register">Registrate gratis.</a>
                </p>
             </div>
          </div>
