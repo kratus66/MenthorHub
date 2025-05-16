@@ -6,9 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "start": "nest start",
+    "start:nest": "nest start",
     "start:dev": "npx nest start --watch",
-    "start:prod": "node dist/main.js",
+    "start": "node dist/main.js",
     "build": "tsc && node copy-seeds.js",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint \"src/**/*.ts\" --fix"
