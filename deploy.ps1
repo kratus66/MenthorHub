@@ -9,12 +9,12 @@ taskkill /F /IM node.exe /T 2> $null
 
 # --- 2. Actualizar repositorio ---
 Write-Output "=== Actualizando código desde GitHub ==="
-cd $REPO_DIR
+Set-Location $REPO_DIR
 git pull origin main
 
 # --- 3. Despliegue del Backend ---
 Write-Output "=== Desplegando Backend ==="
-cd $BACKEND_DIR
+Set-Location $BACKEND_DIR
 
 npm install
 npm run build
@@ -27,7 +27,7 @@ Start-Sleep -Seconds 10
 
 # --- 4. Despliegue del Frontend ---
 Write-Output "=== Desplegando Frontend ==="
-cd $FRONTEND_DIR
+Set-Location $FRONTEND_DIR
 
 npm install
 npm run build
