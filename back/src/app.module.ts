@@ -19,6 +19,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { Notification } from './notifications/notification.entity';
 import { Category } from './entities/categorias.entities';
 import { CategoriesModule } from './categorias/categoria.module';
+import { SubmissionsModule } from './submission/submission.module';
 
 config(); // Cargar las variables del .env
 
@@ -33,6 +34,7 @@ config(); // Cargar las variables del .env
     TasksModule,
     NotificationsModule,
     CategoriesModule,
+    SubmissionsModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
