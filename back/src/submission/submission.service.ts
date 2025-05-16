@@ -12,11 +12,11 @@ export class SubmissionsService {
     private submissionsRepo: Repository<Submission>,
   ) {}
 
-  async create(dto: CreateSubmissionDto, userId: number) {
+  async create(dto: CreateSubmissionDto, userId: string) {
     const submission = this.submissionsRepo.create({
       content: dto.content,
-      task: { id: dto.taskId },    // solo se necesita el ID, TypeORM lo reconoce
-      student: { id: userId },
+      task: { id: dto.taskId },    // dto.taskId es number, correcto
+      student: { id: userId },     // userId ahora es string, correcto
     });
     return this.submissionsRepo.save(submission);
   }
@@ -25,7 +25,7 @@ export class SubmissionsService {
     return this.submissionsRepo.find();
   }
 
-  async findByStudent(studentId: number) {
+  async findByStudent(studentId: string) { // <-- CAMBIA number por string
     return this.submissionsRepo.find({ where: { student: { id: studentId } } });
   }
 
