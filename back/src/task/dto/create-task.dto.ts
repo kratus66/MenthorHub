@@ -12,5 +12,5 @@ export class CreateTaskDto {
   @IsDateString()
   dueDate: string;
 
-  classId: number; // Lo usamos para relacionarla con una clase existente
+  classId: string; // Lo usamos para relacionarla con una clase existente
 }

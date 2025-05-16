@@ -14,8 +14,8 @@ import { Category } from '../entities/categorias.entities';
 
 @Entity()
 export class Class {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
   @Column()
   title!: string;

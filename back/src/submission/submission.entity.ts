@@ -9,10 +9,11 @@ import {
 import { Task } from '../task/task.entity';
 import { User } from '../users/user.entity';
 
+
 @Entity()
 export class Submission {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string ;
 
   @Column()
   content: string; // Puede ser un texto, URL o ruta al archivo

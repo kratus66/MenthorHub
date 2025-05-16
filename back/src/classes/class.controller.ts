@@ -19,6 +19,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { Class } from './class.entity';
+import { string } from 'prop-types';
 
 @ApiTags('Clases')
 @Controller('classes')
@@ -45,7 +46,7 @@ export class ClassesController {
   @ApiParam({ name: 'id', type: Number })
   @ApiResponse({ status: 200, description: 'Clase encontrada', type: Class })
   @ApiResponse({ status: 404, description: 'Clase no encontrada' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id', ParseIntPipe) id: string) {
     return this.classesService.findOne(id);
   }
 
@@ -56,7 +57,7 @@ export class ClassesController {
   @ApiResponse({ status: 200, description: 'Clase actualizada', type: Class })
   @ApiResponse({ status: 404, description: 'Clase no encontrada' })
   update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe) id: string,
     @Body() updateDto: UpdateClassDto,
   ) {
     return this.classesService.update(id, updateDto);
@@ -64,10 +65,10 @@ export class ClassesController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'Eliminar una clase' })
-  @ApiParam({ name: 'id', type: Number })
+  @ApiParam({ name: 'id', type: string })
   @ApiResponse({ status: 200, description: 'Clase eliminada' })
   @ApiResponse({ status: 404, description: 'Clase no encontrada' })
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id', ParseIntPipe) id: string) {
     return this.classesService.remove(id);
   }
 }

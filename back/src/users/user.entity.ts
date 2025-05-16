@@ -37,8 +37,6 @@ export class User {
   @OneToMany(() => Class, (cls) => cls.teacher)
   classesTaught!: Class[];
 
-  @OneToMany(() => Payment, (payment: Payment) => payment.user)
-  payments!: Payment[];
 
 
   @ManyToMany(() => Class, (cls) => cls.students)

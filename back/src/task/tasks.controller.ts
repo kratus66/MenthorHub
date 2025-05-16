@@ -41,6 +41,6 @@ export class TasksController {
   @Delete(':id')
   @Roles(Role.TEACHER) // corregido: TEACHER
   remove(@Param('id') id: string, @CurrentUser() user: User) {
-    return this.tasksService.deleteIfOwnedByTeacher(user.id, +id);
+    return this.tasksService.deleteIfOwnedByTeacher(user.id, id);
   }
 }

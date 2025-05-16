@@ -21,7 +21,7 @@ export class TasksService {
   ) {}
 
   // 👨‍🏫 Crear tarea (solo si el profesor es dueño de la clase)
-  async createByTeacher(teacherId: number, dto: CreateTaskDto): Promise<Task> {
+  async createByTeacher(teacherId: string, dto: CreateTaskDto): Promise<Task> {
     const classRef = await this.classRepository.findOne({
       where: { id: dto.classId },
       relations: ['teacher'],
@@ -42,7 +42,7 @@ export class TasksService {
   }
 
   // 👨‍🏫 Ver tareas del profesor
-  async findByTeacher(teacherId: number): Promise<Task[]> {
+  async findByTeacher(teacherId: string): Promise<Task[]> {
     return this.taskRepository
       .createQueryBuilder('task')
       .leftJoinAndSelect('task.classRef', 'class')
@@ -51,7 +51,7 @@ export class TasksService {
   }
 
   // 🧑‍🎓 Ver tareas del estudiante
-  async findByStudent(studentId: number): Promise<Task[]> {
+  async findByStudent(studentId: string): Promise<Task[]> {
     return this.taskRepository
       .createQueryBuilder('task')
       .leftJoinAndSelect('task.classRef', 'class')
@@ -62,8 +62,8 @@ export class TasksService {
 
   // 👨‍🏫 Borrar tarea (solo si el profesor es dueño)
   async deleteIfOwnedByTeacher(
-    teacherId: number,
-    taskId: number,
+    teacherId: string,
+    taskId: string,
   ): Promise<void> {
     const task = await this.taskRepository.findOne({
       where: { id: taskId },
@@ -79,7 +79,7 @@ export class TasksService {
   }
 
   // (Opcional) 🛠️ Buscar una tarea específica
-  async findOne(taskId: number): Promise<Task> {
+  async findOne(taskId: string): Promise<Task> {
     const task = await this.taskRepository.findOne({
       where: { id: taskId },
       relations: ['classRef'],

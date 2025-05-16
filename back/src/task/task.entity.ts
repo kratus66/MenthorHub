@@ -11,8 +11,8 @@ import { Submission } from '../submission/submission.entity';
 
 @Entity()
 export class Task {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
   @Column()
   title!: string;

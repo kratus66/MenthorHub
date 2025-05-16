@@ -4,11 +4,13 @@ import { CategoriesModule } from '../categorias/categoria.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Category } from '../entities/categorias.entities';
 import { Professor } from '../entities/profesor.entities';
+import { Class } from '../classes/class.entity';
+import { User } from '../users/user.entity';
 
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Category, Professor]),
+    TypeOrmModule.forFeature([Category, Professor, Class, User]),
     CategoriesModule,
     
   ],

@@ -10,6 +10,7 @@
     "start:dev": "npx nest start --watch",
     "start:prod": "node dist/main.js",
     "build": "tsc && node copy-seeds.js",
+    "seed:reset": "ts-node -r tsconfig-paths/register src/seeder/seed-reset.ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint \"src/**/*.ts\" --fix"
   },

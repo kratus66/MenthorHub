@@ -6,5 +6,5 @@ export class CreateSubmissionDto {
   content: string;
 
   @IsInt()
-  taskId: number;
+  taskId: string;
 }

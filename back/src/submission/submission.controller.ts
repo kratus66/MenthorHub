@@ -32,7 +32,7 @@ export class submissionsControllers {
 
     @Get('task/:taskId')
     @UseGuards(JwtAuthGuard)
-    findByTask(@Param('taskId') taskId: number) {
+    findByTask(@Param('taskId') taskId: string) {
       return this.submissionsService.findByTask(taskId);
     }
 }
