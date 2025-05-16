@@ -167,30 +167,25 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
         </div>
 
         <div className="w-full mt-4">
-          <p className="text-xs mb-1 font-semibold">seleccionar Avatar</p>
-          <div className="flex justify-between gap-2">
-            {avatars.map(a => (
-              <button
-                key={a.id}
-                type="button"
-                onClick={() => handleAvatarSelect(a.id)}
-                className={`rounded-full w-10 h-10 flex items-center justify-center cursor-pointer text-2xl transition ${
-                  formData.avatarId === a.id ? 'ring-2 ring-blue-600' : 'ring-1 ring-gray-300'
-                }`}
-              >
-                {a.emoji}
-              </button>
-            ))}
-          </div>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={formData.avatarId} // Puedes ajustar esto según funcionalidad que necesites
-            readOnly
-            className="w-full mt-2"
-          />
-        </div>
+  <p className="text-xs mb-1 font-semibold">Seleccionar Avatar</p>
+
+ 
+
+  <div className="flex justify-between gap-2">
+    {avatars.map((a) => (
+      <button
+        key={a.id}
+        type="button"
+        onClick={() => handleAvatarSelect(a.id)}
+        className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-200 
+          ${formData.avatarId === a.id ? 'ring-4 ring-blue-500' : 'ring-2 ring-gray-300 hover:ring-blue-300'}`}
+      >
+        {a.emoji}
+      </button>
+    ))}
+  </div>
+</div>
+
 
         <button
           type="submit"

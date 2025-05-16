@@ -16,7 +16,7 @@ import Terminos from './views/terminos-condiciones/Terminos';
 import Layout from './components/layout/Layout';
 
 const AppWrapper = () => {
-  //esto es de prueba , cambia role a 'profesor' o 'alumno'
+  
   const [user, setUser] = useState<{ role: 'profesor' | 'alumno' | 'otro'; nombre: string } | null>({
     role: 'alumno',
     nombre: 'Juan Pérez',

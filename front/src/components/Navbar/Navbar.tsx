@@ -2,16 +2,16 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import imagenUsuario from '../../images/imagenUsuario.png';
 
-// Usuario hardcodeado para que no dependa de backend todavía
+
 const mockUser = {
-  role: 'profesor', // prueba también con 'alumno' o 'otro'
+  role: 'profesor', 
   nombre: 'Juan Pérez',
 };
 
 const NavBar: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Para después integrar backend, cambia mockUser por props o contexto
+ 
   const user = mockUser;
 
   return (
@@ -85,7 +85,7 @@ const NavBar: React.FC = () => {
             Usuario
           </Link>
 
-          {/* Aquí el condicional según rol */}
+        
           {user?.role === 'profesor' && (
             <Link
               to="/clases/crear"
