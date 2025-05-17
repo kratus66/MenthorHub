@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Class } from './class.entity';
 import { User } from '../users/user.entity';
-import { CreateClassDto } from '../dto/create-class.dto';
+import { CreateClassDto } from '../../src/classes/dto/create-class.dto';
 import { UpdateClassDto } from '../dto/update-class.dto';
 
 @Injectable()
@@ -35,32 +35,11 @@ export class ClassesService {
   }
 
   async update(id: string, updateDto: UpdateClassDto): Promise<Class> {
-    const classToUpdate = await this.classRepository.findOne({ where: { id }, relations: ['teacher', 'category'] });
+    const classToUpdate = await this.classRepository.findOne({ where: { id } });
+    if (!classToUpdate) throw new NotFoundException('Clase no encontrada');
 
-    if (!classToUpdate) throw new NotFoundException('Curso no encontrado');
-
-    const { title, description, teacherId, categoryId } = updateDto;
-
-    // Actualizar título y descripción si se proveen
-    if (title) classToUpdate.title = title;
-    if (description) classToUpdate.description = description;
-
-    // Si se provee nuevo teacherId, buscarlo
-    if (teacherId) {
-      const newTeacher = await this.userRepository.findOne({ where: { id: teacherId } });
-
-      if (!newTeacher) throw new NotFoundException('Nuevo profesor no encontrado');
-      classToUpdate.teacher = newTeacher;
-    }
-
-    // Si se provee nuevo categoryId, buscarlo
-    if (categoryId) {
-      const newCategory = await this.categoryRepository.findOne({ where: { id: categoryId } });
-      if (!newCategory) throw new NotFoundException('Nueva categoría no encontrada');
-      classToUpdate.category = newCategory;
-    }
-
-    return await this.classRepository.save(classToUpdate);
+    Object.assign(classToUpdate, updateDto);
+    return this.classRepository.save(classToUpdate);
   }
 
   async findAll(): Promise<Class[]> {
