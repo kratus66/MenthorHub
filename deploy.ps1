@@ -10,7 +10,8 @@ taskkill /F /IM node.exe /T 2> $null
 # --- 2. Actualizar repositorio ---
 Write-Output "=== Actualizando código desde GitHub ==="
 Set-Location $REPO_DIR
-git pull origin main
+# git pull origin main
+git pull origin dev
 
 # --- 3. Despliegue del Backend ---
 Write-Output "=== Desplegando Backend ==="
