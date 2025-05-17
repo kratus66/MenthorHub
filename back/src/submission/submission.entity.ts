@@ -8,11 +8,10 @@ import {
 import { User } from '../users/user.entity';
 import { Task } from '../task/task.entity';
 
-
 @Entity()
 export class Submission {
-  @PrimaryGeneratedColumn('uuid')
-  id: string ;
+ @PrimaryGeneratedColumn('uuid')
+id!: string;
 
   @Column()
   content: string; // Puede ser texto o una URL (archivo)
@@ -35,4 +34,3 @@ export class Submission {
   @Column({ default: false })
   isGraded: boolean;
 }
- 
