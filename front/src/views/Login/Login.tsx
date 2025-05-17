@@ -36,11 +36,11 @@ export default function Login() {
                   </a>
                </div>
                <p className="w-fit self-center">
-                  ¿Aun no tienes cuenta? <a href="#">Registrate gratis.</a>
+                  ¿Aun no tienes cuenta? <a href="/register">Registrate gratis.</a>
                </p>
             </div>
          </div>
-         <div className="h-screen w-2/5 bg-[#409BFF] relative">
+         <div className="h-screen w-2/5 bg-[#007AFF] relative">
             <svg
                viewBox="0 0 100 100"
                preserveAspectRatio="none"

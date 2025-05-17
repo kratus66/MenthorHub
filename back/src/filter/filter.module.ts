@@ -1,13 +1,13 @@
 // src/classes/classes.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Class } from './entities/filterClass';
-import { ClassesController } from './classes.controller';
-import { ClassesService } from './filter.service';
+import { Class } from '../classes/class.entity';
+import { FilterController } from './filter.controller';
+import { FilterService } from './filter.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Class])],
-  controllers: [ClassesController],
-  providers: [ClassesService],
+  controllers: [FilterController],
+  providers: [FilterService],
 })
 export class FilterModule {}

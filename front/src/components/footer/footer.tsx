@@ -1,57 +1,64 @@
-import React from "react";
+// Footer.tsx
+/* import { Link } from "react-router-dom";
+import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa"; */
 
-const Home = () => {
+const Footer = () => {
   return (
-    <div className="w-full min-h-screen bg-gray-100">
-      {/* Hero Section */}
-      <div
-        className="w-full h-[60vh] bg-cover bg-center flex items-center justify-center text-white"
-        style={{
-          backgroundImage: "url('https://source.unsplash.com/1600x900/?mentor,education')",
-        }}
-      >
-        <h1 className="text-5xl font-bold drop-shadow-lg">Mentor Hub</h1>
-      </div>
-
-      {/* Información que brindan los cursos */}
-      <section className="py-12 px-6 md:px-20 bg-white">
-        <h2 className="text-3xl font-semibold text-center mb-10">¿Qué te brindamos?</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-          {/* Info 1 */}
-          <div className="bg-gray-50 shadow-md rounded-2xl p-6 hover:shadow-lg transition">
-            <h3 className="text-xl font-bold mb-2">Mentoría Personalizada</h3>
-            <p className="text-gray-600">
-              Cada estudiante recibe acompañamiento directo de mentores especializados que guían su proceso de aprendizaje.
-            </p>
-          </div>
-
-          {/* Info 2 */}
-          <div className="bg-gray-50 shadow-md rounded-2xl p-6 hover:shadow-lg transition">
-            <h3 className="text-xl font-bold mb-2">Material Actualizado</h3>
-            <p className="text-gray-600">
-              Accede a contenido relevante, actualizado y adaptado a las necesidades del mercado tecnológico actual.
-            </p>
-          </div>
-
-          {/* Info 3 */}
-          <div className="bg-gray-50 shadow-md rounded-2xl p-6 hover:shadow-lg transition">
-            <h3 className="text-xl font-bold mb-2">Proyectos Reales</h3>
-            <p className="text-gray-600">
-              Aplica lo aprendido desarrollando proyectos reales que puedes incluir en tu portafolio profesional.
-            </p>
-          </div>
-
-          {/* Info 4 */}
-          <div className="bg-gray-50 shadow-md rounded-2xl p-6 hover:shadow-lg transition">
-            <h3 className="text-xl font-bold mb-2">Comunidad Estudiantil</h3>
-            <p className="text-gray-600">
-              Forma parte de una comunidad activa de estudiantes y mentores donde podrás intercambiar ideas, resolver dudas y crecer en equipo.
-            </p>
-          </div>
+    <></>
+    /* al parecer pro el momento no se usa el footer, pero lo dejo por si acaso    
+    <footer className="bg-black text-white py-8 px-4">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="text-center md:text-left">
+          <h3 className="text-lg font-semibold mb-2">Contacto</h3>
+          <p className="text-sm">
+            Correo: <span className="underline">MentorHub@gmail.com</span>
+          </p>
         </div>
-      </section>
-    </div>
+
+        <div className="text-center text-sm">
+          <p>&copy; {new Date().getFullYear()} MentorHub. Todos los derechos reservados.</p>
+          <Link to="/terminos" className="underline hover:text-gray-300 transition">
+            Términos y Condiciones
+          </Link>
+        </div>
+
+        <div className="flex space-x-4">
+          <a
+            href="https://facebook.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-blue-500"
+          >
+            <FaFacebook size={20} />
+          </a>
+          <a
+            href="https://twitter.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-blue-400"
+          >
+            <FaTwitter size={20} />
+          </a>
+          <a
+            href="https://instagram.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-pink-400"
+          >
+            <FaInstagram size={20} />
+          </a>
+          <a
+            href="https://linkedin.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-blue-300"
+          >
+            <FaLinkedin size={20} />
+          </a>
+        </div>
+      </div>
+    </footer> */
   );
 };
 
-export default Home;
+export default Footer;

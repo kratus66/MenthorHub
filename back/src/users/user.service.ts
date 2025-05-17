@@ -19,18 +19,18 @@ export class UsersService {
     return this.usersRepository.find();
   }
 
-  async findById(id: number): Promise<User | null> {
+  async findById(id: string): Promise<User | null> {
     return this.usersRepository.findOne({ where: { id } });
   }
 
-  async update(id: number, data: Partial<User>): Promise<User> {
+  async update(id: string, data: Partial<User>): Promise<User> {
     await this.usersRepository.update(id, data);
     const updated = await this.findById(id);
     if (!updated) throw new Error('Usuario no encontrado');
     return updated;
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     await this.usersRepository.delete(id);
   }
 }

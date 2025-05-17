@@ -1,11 +1,25 @@
-import { IsOptional, IsEnum, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsNumber, IsString } from 'class-validator';
+import { PaymentStatus, PaymentType } from '../payment.entity';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdatePaymentDto {
+  @ApiPropertyOptional({ example: 19.99 })
   @IsOptional()
-  @IsEnum(['student_subscription', 'teacher_monthly_fee'])
-  type?: 'student_subscription' | 'teacher_monthly_fee';
+  @IsNumber()
+  amount?: number;
 
+  @ApiPropertyOptional({ example: 'USD' })
   @IsOptional()
   @IsString()
-  status?: 'pending' | 'completed' | 'failed';
+  currency?: string;
+
+  @ApiPropertyOptional({ enum: PaymentType, example: PaymentType.STUDENT_SUBSCRIPTION })
+  @IsOptional()
+  @IsEnum(PaymentType)
+  type?: PaymentType;
+
+  @ApiPropertyOptional({ enum: PaymentStatus, example: PaymentStatus.COMPLETED })
+  @IsOptional()
+  @IsEnum(PaymentStatus)
+  status?: PaymentStatus;
 }

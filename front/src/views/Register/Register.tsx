@@ -3,23 +3,43 @@ import RegisterForm from '../../components/RegisterForm/RegisterForm'
 import imagenRobot from "../../images/imagenRobot.png"
 
 const Register: React.FC = () => {
-  const handleSubmit = (formData: { estudios: string; rol: string; localidad: string; provincia: string; pais: string }) => {
-    // Lógica que se ejecutará cuando el formulario sea enviado
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleSubmit = (formData: any) => {
     console.log('Formulario enviado', formData)
   }
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-r from-blue-500 to-blue-300 relative">
-      <div className="absolute inset-0 bg-opacity-20" style={{ backgroundImage: `url(${imagenRobot})`, backgroundPosition: 'right center', backgroundSize: 'contain', backgroundRepeat: 'no-repeat' }}></div>
-      
-      <div className="flex-1 p-8 flex items-center justify-center relative z-10">
-        <div className="w-full max-w-lg bg-white p-8 rounded-lg shadow-lg" style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
-          <h1 className="text-3xl font-bold text-center text-blue-700 mb-6">MentorHub</h1>
-          <h2 className="text-xl font-medium text-center text-gray-700 mb-8">Registro</h2>
+    <div className="flex h-screen w-full relative">
+     
+     
+  <div className="w-1/2 relative bg-white bg-opacity-70 backdrop-blur-lg overflow-hidden">
+  <img
+    src={imagenRobot}
+    alt="Robot Fondo"
+    className="absolute inset-0 h-full w-full object-cover opacity-20 pointer-events-none select-none transform scale-[1.8] translate-x-[20%]"
+    style={{ userSelect: 'none', objectPosition: 'center right' }}
+  />
+</div>
 
-          <RegisterForm onSubmit={handleSubmit} /> {/* Aquí pasas el método onSubmit al formulario */}
-        </div>
+
+      
+      <div className="w-1/2 bg-[#007AFF] relative overflow-hidden">
+        <svg
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          className="absolute top-0 left-0 w-full h-full"
+        >
+          <path d="M100,0 Q90,90 0,100 L0,0 Z" fill="#2463EB" />
+        </svg>
       </div>
+
+ <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
+                bg-white bg-opacity-90 backdrop-blur-lg rounded-3xl p-12 w-11/12 max-w-4xl shadow-lg z-20">
+  <h1 className="text-4xl font-bold text-black mb-3">MentorHub</h1>
+  <h2 className="text-xl font-medium text-gray-700 mb-8">Registro</h2>
+  <RegisterForm onSubmit={handleSubmit} />
+</div>
+
     </div>
   )
 }
