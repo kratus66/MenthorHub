@@ -23,7 +23,7 @@ const Dashboard = () => {
       <>
          <div className="w-screen h-[calc(100vh-68px)] flex ">
             <div className="h-[calc(100% - 68px)] w-3/4 m-4 flex flex-col gap-6">
-               <div className="min-h-[20rem] w-full flex flex-col gap-2">
+               <div className="min-h-[16rem] w-full flex flex-col gap-2">
                   <h2 className="text-4xl">Categorias</h2>
                   <div className="h-[13rem] flex flex-nowrap overflow-x-scroll overflow-y-visible">
                      {categorias.map((categoria, index) => (
