@@ -4,8 +4,17 @@
 @tailwind utilities;
 
 /********************** FUENTE PRINCIPAL ********************/
-body, html, * {
-  font-family: "Fira Sans";
+body,
+html {
+   max-width: 100vw;
+   max-height: 100vh;
+   overflow: hidden;
+}
+
+body,
+html,
+* {
+   font-family: 'Fira Sans';
 }
 
 /********************** AJUSTES ROBOTITO ********************/
