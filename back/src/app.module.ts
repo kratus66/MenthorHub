@@ -1,7 +1,6 @@
-// filepath: /Users/gabyaybar/Desktop/PF/MentorHub-PF/back/src/app.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { config } from 'dotenv';
+import { ConfigModule } from '@nestjs/config'; // ⬅️ Faltaba esto
 
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { ClassesModule } from './classes/classes.module';
@@ -19,12 +18,12 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { Notification } from './notifications/notification.entity';
 import { Category } from './entities/categorias.entities';
 import { CategoriesModule } from './categorias/categoria.module';
-import { SubmissionsModule } from './submission/submission.module';
-
-config(); // Cargar las variables del .env
+import { SubmissionModule } from './submission/submission.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }), // ✅ Agregado
+
     FilterModule,
     ChatbotModule,
     ClassesModule,
@@ -34,7 +33,8 @@ config(); // Cargar las variables del .env
     TasksModule,
     NotificationsModule,
     CategoriesModule,
-    SubmissionsModule,
+    SubmissionModule,
+
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -42,11 +42,9 @@ config(); // Cargar las variables del .env
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-entities: [User, Class, Task, Submission, Payment, Notification,Category],
-      synchronize: true, // Solo en desarrollo, nunca en producción
+      entities: [User, Class, Task, Submission, Payment, Notification, Category],
+      synchronize: true,
     }),
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}
