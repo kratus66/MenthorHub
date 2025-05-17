@@ -1,12 +1,11 @@
-@import "@fontsource/fira-sans/latin-ext.css";
-@import "@fontsource/fira-sans/latin-ext-italic.css";
+@import './styles/fira-sans.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /********************** FUENTE PRINCIPAL ********************/
-html {
-  font-family: "Fira Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+body, html, * {
+  font-family: "Fira Sans";
 }
 
 /********************** AJUSTES ROBOTITO ********************/
