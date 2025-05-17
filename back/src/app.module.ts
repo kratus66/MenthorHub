@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config'; // ⬅️ Faltaba esto
 
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { ChatModule } from './chat/chat.module';
@@ -20,43 +20,40 @@ import { Notification } from './notifications/notification.entity';
 import { Category } from './entities/categorias.entities';
 import { CategoriesModule } from './categorias/categoria.module';
 import { SubmissionModule } from './submission/submission.module';
-import { ChatMessage } from './chat/chat.entity';
-import { use } from 'passport';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+   imports: [
+      ConfigModule.forRoot({ isGlobal: true }), // ✅ Agregado
 
-    FilterModule,
-    ChatbotModule,
-    ChatModule,
-    ClassesModule,
-    PaymentsModule,
-    AuthModule,
-    TasksModule,
-    NotificationsModule,
-    CategoriesModule,
-    SubmissionModule,
-    UsersModule,
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT || '5432'),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      entities: [
-        User,
-        Class,
-        Task,
-        Submission,
-        Payment,
-        Notification,
-        Category,
-        ChatMessage, // ✅ agregado
-      ],
-      synchronize: true,
-    }),
-  ],
+      FilterModule,
+      ChatbotModule,
+      ChatModule,
+      ClassesModule,
+      PaymentsModule,
+      AuthModule,
+      TasksModule,
+      NotificationsModule,
+      CategoriesModule,
+      SubmissionModule,
+
+      TypeOrmModule.forRoot({
+         type: 'postgres',
+         host: process.env.DB_HOST,
+         port: parseInt(process.env.DB_PORT || '5432'),
+         username: process.env.DB_USERNAME,
+         password: process.env.DB_PASSWORD,
+         database: process.env.DB_NAME,
+         entities: [
+            User,
+            Class,
+            Task,
+            Submission,
+            Payment,
+            Notification,
+            Category,
+         ],
+         synchronize: true,
+      }),
+   ],
 })
 export class AppModule {}
