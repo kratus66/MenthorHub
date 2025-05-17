@@ -13,5 +13,5 @@ export class CreateClassDto {
   @IsNumber()
   @IsNotEmpty()
   @Min(1) 
-  teacherId!: number;
+  teacherId: string; // <-- aquí debe ser string
 }
