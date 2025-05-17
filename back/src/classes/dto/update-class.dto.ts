@@ -1,19 +1,12 @@
-import { IsOptional, IsString, IsNumber, IsBoolean } from 'class-validator';
+// update-class.dto.ts
+import { IsString, IsOptional } from 'class-validator';
 
-export class UpdateSubmissionDto {
-  @IsOptional()
+export class UpdateClassDto {
   @IsString()
-  content?: string;
-
   @IsOptional()
-  @IsNumber()
-  grade?: number;
+  title?: string;
 
-  @IsOptional()
   @IsString()
-  feedback?: string;
-
   @IsOptional()
-  @IsBoolean()
-  isGraded?: boolean;
+  description?: string;
 }
