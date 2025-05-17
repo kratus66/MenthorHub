@@ -30,11 +30,11 @@ export class PaymentsController {
     @Param('id') id: string,
     @Body() dto: UpdatePaymentDto,
   ) {
-    return this.paymentsService.update(+id, dto);
+return this.paymentsService.update(id, dto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.paymentsService.remove(+id);
+return this.paymentsService.remove(id);
   }
 }
