@@ -1,1 +1,1 @@
-declare module "@fontsource/actor";
+declare module "@fontsource/lato";
