@@ -8,7 +8,8 @@ import { Task } from '../task/task.entity';
 import { Submission } from '../submission/submission.entity';
 import { Payment } from '../payment/payment.entity';
 import { Category } from '../entities/categorias.entities';
-import { Professor } from '../entities/profesor.entities';
+import { Professor } from '../entities/professor.entities';
+
 
 dotenv.config();
 

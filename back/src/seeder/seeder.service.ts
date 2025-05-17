@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from '../entities/categorias.entities';
 import { Class } from '../classes/class.entity';
-import { Professor } from '../entities/profesor.entities';
+import { Professor } from '../entities/professor.entities';
 import * as fs from 'fs';
 import * as path from 'path';
 import { CreateClassDto } from '../dto/CreateClassDto';
@@ -50,13 +50,11 @@ export class SeederService implements OnApplicationBootstrap {
     const existing = await this.professorRepo.count();
 
     if (existing === 0) {
-      const profesores = data.map((p) => {
-        return this.professorRepo.create({
-          id: p.id,
-          name: p.name,
-          bio: p.bio,
-        });
-      });
+      const profesores = data.map((p) => this.professorRepo.create({
+        id: p.id,
+        name: p.name,
+        bio: p.bio,
+      }));
       await this.professorRepo.save(profesores);
       console.log('✅ Profesores precargados');
     } else {
@@ -76,8 +74,13 @@ export class SeederService implements OnApplicationBootstrap {
     const clasesAInsertar: Class[] = [];
 
     for (const cls of data) {
-      const profesor = await this.professorRepo.findOne({ where: { id: cls.teacherId } });
-      const categoria = await this.categoryRepo.findOne({ where: { id: cls.categoryId } });
+      const profesor = await this.professorRepo.findOne({
+        where: { id: cls.teacherId },
+      });
+
+      const categoria = await this.categoryRepo.findOne({
+        where: { id: cls.categoryId },
+      });
 
       if (!profesor || !categoria) {
         console.warn(`⚠️ Clase omitida: "${cls.title}"`);
@@ -86,11 +89,14 @@ export class SeederService implements OnApplicationBootstrap {
         continue;
       }
 
+      // ✅ Ajuste: aseguro que se usa create correctamente con las relaciones.
       const nuevaClase = this.classRepo.create({
         title: cls.title,
         description: cls.description,
-        teacher: profesor,
+        teacher: profesor, // Profesor ya está precargado como entidad
         category: categoria,
+        students: [],        // ⬅️ opcionalmente incluir campos vacíos si la entidad los espera
+        tasks: [],
       });
 
       clasesAInsertar.push(nuevaClase);
@@ -104,5 +110,3 @@ export class SeederService implements OnApplicationBootstrap {
     }
   }
 }
-
-

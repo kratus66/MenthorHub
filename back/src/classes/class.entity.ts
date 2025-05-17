@@ -11,12 +11,12 @@ import {
 import { User } from '../users/user.entity';
 import { Task } from '../task/task.entity';
 import { Category } from '../entities/categorias.entities';
+import { Professor } from '../entities/professor.entities'; // ✅ Importación directa
 
 @Entity()
 export class Class {
-@PrimaryGeneratedColumn('uuid')
-id!: string;
-
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
   @Column()
   title!: string;
@@ -24,8 +24,10 @@ id!: string;
   @Column('text')
   description!: string;
 
-  @ManyToOne(() => User, (user) => user.classesTaught)
-  teacher!: User;
+  // ✅ Usa función de tipo para evitar errores de metadatos circulares
+  @ManyToOne(() => Professor, (professor) => professor.classes)
+  teacher!: Professor;
+
 
   @ManyToMany(() => User, (user) => user.classesEnrolled)
   @JoinTable()
@@ -34,8 +36,11 @@ id!: string;
   @OneToMany(() => Task, (task) => task.classRef)
   tasks!: Task[];
 
-  @ManyToOne(() => Category, (category) => category.classes)
-  category!: Category; // <--- esta línea soluciona el error
+  @ManyToOne(() => Category, (category) => category.classes, {
+    eager: false,
+    nullable: false,
+  })
+  category!: Category;
 
   @CreateDateColumn()
   createdAt!: Date;

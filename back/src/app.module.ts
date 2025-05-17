@@ -19,6 +19,8 @@ import { Notification } from './notifications/notification.entity';
 import { Category } from './entities/categorias.entities';
 import { CategoriesModule } from './categorias/categoria.module';
 import { SubmissionModule } from './submission/submission.module';
+import { Professor } from './entities/professor.entities';
+import { SeederModule } from './seeder/seeder.module';
 
 @Module({
   imports: [
@@ -34,6 +36,7 @@ import { SubmissionModule } from './submission/submission.module';
     NotificationsModule,
     CategoriesModule,
     SubmissionModule,
+    SeederModule,
 
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -42,7 +45,7 @@ import { SubmissionModule } from './submission/submission.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, Class, Task, Submission, Payment, Notification, Category],
+      entities: [User, Class, Task, Submission, Payment, Notification, Category, Professor],
       synchronize: true,
     }),
   ],

@@ -3,7 +3,7 @@ import { SeederService } from './seeder.service';
 import { CategoriesModule } from '../categorias/categoria.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Category } from '../entities/categorias.entities';
-import { Professor } from '../entities/profesor.entities';
+import { Professor } from '../entities/professor.entities';
 import { Class } from '../classes/class.entity';
 import { User } from '../users/user.entity';
 
