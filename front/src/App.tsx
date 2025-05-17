@@ -21,16 +21,12 @@ import Layout from "./components/layout/Layout";
 
 const AppWrapper = () => {
   //esto es de prueba , cambia role a 'profesor' o 'alumno'
-  const [user, setUser] = useState<{
+  // const [user, setUser] = useState<{
+  // Solo para evitar "'setUser' is declared but its value is never read." en el deploy
+  const [user] = useState<{
     role: "profesor" | "alumno" | "otro";
     nombre: string;
   } | null>({
-    role: "alumno",
-    nombre: "Juan Pérez",
-  });
-
-  // Solo para evitar "'setUser' is declared but its value is never read." en el deploy
-  setUser({
     role: "alumno",
     nombre: "Juan Pérez",
   });
