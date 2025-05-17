@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsDateString, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty, IsDateString, IsUUID } from 'class-validator';
 
 export class CreateTaskDto {
   @IsString()
@@ -12,5 +12,6 @@ export class CreateTaskDto {
   @IsDateString()
   dueDate: string;
 
-  classId: string; // Lo usamos para relacionarla con una clase existente
+  @IsUUID()
+  classId: string;
 }
