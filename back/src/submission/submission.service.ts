@@ -18,7 +18,14 @@ export class SubmissionsService {
     private taskRepo: Repository<Task>,
   ) {}
 
-  async create(dto: CreateSubmissionDto, userId: string) {
+  async create(dto: CreateSubmissionDto, studentId: string) {
+    const student = await this.userRepo.findOne({ where: { id: studentId } });
+const task = await this.taskRepo.findOne({ where: { id: dto.taskId } });
+
+    if (!student || !task) {
+      throw new NotFoundException('Estudiante o tarea no encontrados');
+    }
+
     const submission = this.submissionsRepo.create({
       content: dto.content,
       student,
@@ -32,11 +39,11 @@ export class SubmissionsService {
     return this.submissionsRepo.find({ relations: ['student', 'task'] });
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return this.submissionsRepo.findOne({ where: { id }, relations: ['student', 'task'] });
   }
 
-  async update(id: number, dto: UpdateSubmissionDto) {
+  async update(id: string, dto: UpdateSubmissionDto) {
     const submission = await this.submissionsRepo.findOne({ where: { id } });
     if (!submission) throw new NotFoundException('Submission not found');
 
@@ -44,17 +51,23 @@ export class SubmissionsService {
     return this.submissionsRepo.save(submission);
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     const submission = await this.submissionsRepo.findOne({ where: { id } });
     if (!submission) throw new NotFoundException(`Submission with id ${id} not found`);
     return this.submissionsRepo.remove(submission);
   }
 
   async findByStudent(studentId: string) {
-    return this.submissionsRepo.find({ where: { student: { id: studentId } } });
+    return this.submissionsRepo.find({
+      where: { student: { id: studentId } },
+      relations: ['task'],
+    });
   }
 
   async findByTask(taskId: string) {
-    return this.submissionsRepo.find({ where: { task: { id: taskId } } });
+    return this.submissionsRepo.find({
+where: { task: { id: taskId.toString() } },
+      relations: ['student'],
+    });
   }
 }
