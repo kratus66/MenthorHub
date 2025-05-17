@@ -10,12 +10,13 @@ import {
 } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Task } from '../task/task.entity';
-import { Category } from '../entities/categorias.entities'; 
+import { Category } from '../entities/categorias.entities';
 
 @Entity()
 export class Class {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+@PrimaryGeneratedColumn('uuid')
+id!: string;
+
 
   @Column()
   title!: string;
