@@ -15,8 +15,9 @@ import { Notification } from '../notifications/notification.entity';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  id!: number;
+@PrimaryGeneratedColumn('uuid')
+id: string;
+
 
   @Column()
   fullName!: string;
@@ -39,6 +40,8 @@ export class User {
   @OneToMany(() => Class, (cls) => cls.teacher)
   classesTaught!: Class[];
 
+  @OneToMany(() => Payment, (payment: Payment) => payment.user)
+  payments!: Payment[];
 
   @ManyToMany(() => Class, (cls) => cls.students)
   @JoinTable()
