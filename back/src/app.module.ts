@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config'; // ⬅️ Faltaba esto
+import { ConfigModule } from '@nestjs/config';
 
 import { ChatbotModule } from './chatbot/chatbot.module';
+import { ChatModule } from './chat/chat.module';
 import { ClassesModule } from './classes/classes.module';
 import { User } from './users/user.entity';
 import { Class } from './classes/class.entity';
@@ -19,22 +20,24 @@ import { Notification } from './notifications/notification.entity';
 import { Category } from './entities/categorias.entities';
 import { CategoriesModule } from './categorias/categoria.module';
 import { SubmissionModule } from './submission/submission.module';
+import { ChatMessage } from './chat/chat.entity';
+import { use } from 'passport';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }), // ✅ Agregado
+    ConfigModule.forRoot({ isGlobal: true }),
 
     FilterModule,
     ChatbotModule,
+    ChatModule,
     ClassesModule,
     PaymentsModule,
     AuthModule,
-    UsersModule,
     TasksModule,
     NotificationsModule,
     CategoriesModule,
     SubmissionModule,
-
+    UsersModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -42,7 +45,16 @@ import { SubmissionModule } from './submission/submission.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, Class, Task, Submission, Payment, Notification, Category],
+      entities: [
+        User,
+        Class,
+        Task,
+        Submission,
+        Payment,
+        Notification,
+        Category,
+        ChatMessage, // ✅ agregado
+      ],
       synchronize: true,
     }),
   ],
