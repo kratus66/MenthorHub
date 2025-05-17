@@ -23,7 +23,7 @@ const Register: React.FC = () => {
 
 
       
-      <div className="w-1/2 bg-[#409BFF] relative overflow-hidden">
+      <div className="w-1/2 bg-[#007AFF] relative overflow-hidden">
         <svg
           viewBox="0 0 100 100"
           preserveAspectRatio="none"

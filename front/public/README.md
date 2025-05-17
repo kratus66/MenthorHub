@@ -1,6 +1,9 @@
 Archivos para utilizar en el front-end de la aplicación.
 # Frontend
 
+Landing:
+  ./public/MenVir_Explicando.webm (video)
+
 LogIn: 
   ./public/MenVir_Saludando.webm (video)
 
