@@ -40,7 +40,8 @@ export class PaymentsService {
     return this.paymentRepo.find();
   }
 
-  async update(id: number, dto: UpdatePaymentDto): Promise<Payment> {
+  async update(id: string, dto: UpdatePaymentDto)
+: Promise<Payment> {
       const updateData: Partial<Payment> = {};
 
       if (dto.amount !== undefined) updateData.amount = dto.amount;
@@ -58,7 +59,7 @@ export class PaymentsService {
     return await this.paymentRepo.save(payment);
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     const result = await this.paymentRepo.delete(id);
     if (result.affected === 0)
       throw new NotFoundException('Pago no encontrado');
