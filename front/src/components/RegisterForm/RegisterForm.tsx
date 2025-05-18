@@ -272,8 +272,6 @@ dataToSend.append('localidad', formData.localidad);
               </button>
             ))}
           </div>
-<<<<<<< HEAD
-=======
           <input
             type="range"
             min="0"
@@ -282,7 +280,6 @@ dataToSend.append('localidad', formData.localidad);
             readOnly
             className="w-full mt-2"
           />
->>>>>>> dev
         </div>
 
       <button
