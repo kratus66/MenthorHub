@@ -36,8 +36,9 @@ const AppWrapper = () => {
 
   return (
     <>
-      {/* {!noNavFooter && <NavBar user={user} />} // para evitar "Property 'user' does not exist on type 'IntrinsicAttributes'." */}
-      {!noNavFooter && <NavBar />}
+    {/* {!noNavFooter && <NavBar user={user} />}  */}
+    {/* // para evitar "Property 'user' does not exist on type 'IntrinsicAttributes'." */}
+    {!noNavFooter && <NavBar />}
 
       {noNavFooter ? (
         <Routes>
