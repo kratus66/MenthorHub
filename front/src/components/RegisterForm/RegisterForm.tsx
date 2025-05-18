@@ -186,7 +186,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
             type="range"
             min="0"
             max="100"
-            value={formData.avatarId} // Puedes ajustar esto según funcionalidad que necesites
+            value={formData.avatarId} 
             readOnly
             className="w-full mt-2"
           />
