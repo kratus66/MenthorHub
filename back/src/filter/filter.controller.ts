@@ -11,7 +11,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 
-@ApiTags('Clases')
+@ApiTags('Filtros')
 @Controller('filters')
 export class FilterController {
   constructor(private readonly classesService: FilterService) {}

@@ -4,33 +4,59 @@ import {
   MinLength,
   IsIn,
   IsNotEmpty,
-  IsPhoneNumber,
-  Matches,
+  IsPhoneNumber
 } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class RegisterDto {
-  @IsNotEmpty({ message: 'El nombre completo es obligatorio' })
-  @IsString({ message: 'El nombre debe ser texto' })
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({
+    example: 'Pepito Perez',
+    description: 'Nombre completo del usuario',
+  })
   fullName!: string;
 
-  @IsEmail({}, { message: 'Correo no válido' })
+  @IsEmail()
+  @ApiProperty({
+    example: 'pepitoperez@example.com',
+    description: 'Correo electrónico válido',
+  })
   email!: string;
 
-  @IsPhoneNumber('DO', { message: 'Número telefónico no válido' })
+  @IsPhoneNumber(undefined)
+  @ApiProperty({
+    example: '+573214445577',
+    description: 'Número de celular en formato internacional',
+  })
   phoneNumber!: string;
 
-  @IsString({ message: 'El país debe ser texto' })
-  @IsNotEmpty({ message: 'El país es obligatorio' })
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    example: 'Colombia',
+    description: 'País de residencia del usuario',
+  })
   country!: string;
 
   @IsString()
-  @MinLength(8, { message: 'La contraseña debe tener mínimo 8 caracteres' })
-  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/, {
-    message:
-      'Debe incluir mayúscula, minúscula, número y símbolo',
+  @MinLength(6, {
+    message: 'La contraseña debe tener al menos 6 caracteres',
+  })
+  @ApiProperty({
+    example: 'MiClave123',
+    description: 'Contraseña de al menos 6 caracteres',
   })
   password!: string;
 
-  @IsIn(['admin', 'teacher', 'student'], { message: 'Rol inválido' })
-  role!: 'admin' | 'teacher' | 'student';
+  @IsString()
+  @IsIn(['user', 'admin'], {
+    message: 'El rol debe ser "user" o "admin"',
+  })
+  @ApiProperty({
+    example: 'user',
+    description: 'Rol asignado al usuario (user o admin)',
+    enum: ['user', 'admin'],
+  })
+  role!: string;
 }

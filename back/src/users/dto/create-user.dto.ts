@@ -5,24 +5,45 @@ import {
   IsIn,
   IsNotEmpty,
   IsPhoneNumber,
-  Matches,
+  Matches
 } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
-  @IsNotEmpty({ message: 'El nombre completo es obligatorio' })
-  @IsString({ message: 'El nombre debe ser texto' })
+  @ApiProperty({
+    example: 'Ana Martínez',
+    description: 'Nombre completo del usuario',
+  })
+  @IsNotEmpty()
+  @IsString()
   fullName!: string;
 
-  @IsEmail({}, { message: 'Correo no válido' })
+  @ApiProperty({
+    example: 'ana@example.com',
+    description: 'Correo electrónico del usuario',
+  })
+  @IsEmail()
   email!: string;
 
-  @IsPhoneNumber('DO', { message: 'Número telefónico no válido' })
+  @ApiProperty({
+    example: '+573004567890',
+    description: 'Número de teléfono en formato internacional',
+  })
+  @IsPhoneNumber(undefined)
   phoneNumber!: string;
 
-  @IsString({ message: 'El país debe ser texto' })
-  @IsNotEmpty({ message: 'El país es obligatorio' })
+  @ApiProperty({
+    example: 'Colombia',
+    description: 'País de residencia del usuario',
+  })
+  @IsString()
+  @IsNotEmpty()
   country!: string;
 
+  @ApiProperty({
+    example: 'ClaveSegura123',
+    description: 'Contraseña del usuario (mínimo 6 caracteres)',
+  })
   @IsString()
   @MinLength(8, { message: 'La contraseña debe tener mínimo 8 caracteres' })
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/, {
@@ -31,6 +52,11 @@ export class CreateUserDto {
   })
   password!: string;
 
-  @IsIn(['admin', 'teacher', 'student'], { message: 'Rol inválido' })
+  @ApiProperty({
+    example: 'student',
+    description: 'Rol asignado al usuario',
+    enum: ['admin', 'teacher', 'student'],
+  })
+  @IsIn(['admin', 'teacher', 'student'])
   role!: 'admin' | 'teacher' | 'student';
 }
