@@ -82,7 +82,7 @@ export default function LoginForm() {
                <p>¿Has olvidado tu contraseña?</p>
                <button
                   type="submit"
-                  className="w-full text-3xl bg-blue-700 text-white py-3 rounded-full hover:bg-blue-800"
+                  className="w-full text-3xl bg-[#007AFF] text-white py-3 rounded-full hover:bg-blue-800"
                >
                   Iniciar sesión
                </button>

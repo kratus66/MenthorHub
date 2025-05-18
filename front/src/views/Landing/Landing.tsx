@@ -1,71 +1,184 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useRef, useState, useEffect } from "react";
+
+const texts = [
+  <div className="h-full flex flex-col justify-between gap-4">
+    <p className="text-center">
+      ¿Buscas <strong>crecer profesionalmente</strong> pero no sabes por dónde
+      empezar?
+    </p>
+    <p>
+      En <strong>MentorHub</strong> conectamos a profesionales como tú con
+      <strong> mentores expertos</strong> que te guiarán paso a paso hacia el
+      éxito.
+    </p>
+    <span className="mx-auto">
+      <p>
+        ✅ <strong>Mentores verificados</strong> en diversas industrias.
+      </p>
+      <p>
+        ✅ <strong>Sesiones personalizadas</strong> adaptadas a tus metas.
+      </p>
+      <p>
+        ✅ <strong>Red de apoyo</strong> para impulsar tu desarrollo.
+      </p>
+    </span>
+    <p className="text-center">
+      <strong>Únete hoy</strong> y da el primer paso hacia el futuro que
+      mereces.
+    </p>
+  </div>,
+  <div className="h-full flex flex-col justify-between gap-4">
+    <p className="text-center">
+      <strong>¿Por qué elegir MentorHub?</strong>
+    </p>
+    <span className="mx-auto">
+      <p>
+        🌟 <strong>Aprendizaje práctico:</strong> Deja atrás la teoría y
+        enfócate en lo que realmente funciona.
+      </p>
+      <p>
+        📈 <strong>Resultados comprobados:</strong> Miles de profesionales ya
+        aceleraron su carrera con nosotros.
+      </p>
+      <p>
+        💡 <strong>Flexibilidad total:</strong> Agenda sesiones cuando mejor te
+        convenga.
+      </p>
+    </span>
+    <p className="text-[4.73vh] text-center">
+      ¡No esperes más! <strong>Encuentra a tu mentor ideal</strong> y lleva tu
+      carrera al siguiente nivel.
+    </p>
+  </div>,
+];
+const transitionTime = 25;
+const radius = 45;
 
 const Landing: React.FC = () => {
-   return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-700 via-blue-400 to-slate-300 text-white px-4">
-         <div className="flex justify-between mx-12">
-            <div className="w-3/5 flex flex-col self-center">
-               <div className="self-center">
-                  <h1 className="text-6xl font-bold mb-8 drop-shadow-lg">
-                     MentorHub
-                  </h1>
-               </div>
-               <div className="bg-[#ffffff44] flex flex-col justify-center content-center gap-5 rounded-3xl p-8 h-[35rem]">
-                  <h2 className="text-6xl text-black pe-[4rem]">
-                     Conectamos Mentores con Mentes Curiosas
-                  </h2>
-                  <p className="text-black text-2xl pe-[4rem]">
-                     MentorHub es una plataforma pensada para facilitar la
-                     conexión entre personas que quieren aprender y expertos
-                     dispuestos a enseñar.
-                  </p>
-                  <ul className="self-center text-black text-2xl pe-[4rem]">
-                     <li>🎯 Aprendé de la experiencia real</li>
-                     <li>🤝 Conectá con mentores en tu área de interés</li>
-                     <li>🧭 Guiá a otros y potenciá tu perfil profesional</li>
-                  </ul>
-                  <div className="flex justify-evenly gap-12">
-                     <div className="flex flex-col justify-between content-center gap-1 w-1/3">
-                        <h2 className="text-black m-1">
-                           ¿Ya tenés cuenta? Iniciá sesión
-                        </h2>
-                        <Link
-                           to="/login"
-                           className="bg-blue-700 w-max rounded-full p-3 px-5 self-center hover:brightness-125"
-                        >
-                           Iniciar Sesión
-                        </Link>
-                     </div>
-                     <div className="flex flex-col justify-between gap-1 w-1/3">
-                        <h2 className="text-black m-1">...o crea tu cuenta.</h2>
-                        <ul className="text-blue-500">
-                           <li className="hover:underline">
-                              <Link to="">👉 Soy Mentor</Link>
-                           </li>
-                           <li className="hover:underline">
-                              <Link to="">🙋‍♂️ Quiero Aprender</Link>
-                           </li>
-                        </ul>
-                     </div>
-                  </div>
-               </div>
+  const [current, setCurrent] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const circumference = 50 * 2 * Math.PI;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProgress((prev) => (prev >= transitionTime ? 0 : prev + 1));
+    }, 1000);
+
+    const textInterval = setInterval(() => {
+      setCurrent((prev) => (prev === texts.length - 1 ? 0 : prev + 1));
+      setProgress(0); // Reiniciar barra de progreso
+    }, transitionTime * 1000);
+
+    return () => {
+      clearInterval(interval);
+      clearInterval(textInterval);
+    };
+  }, []);
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const handleVideoEnd = () => {
+    setTimeout(() => {
+      if (videoRef.current) {
+        videoRef.current.loop = true;
+        videoRef.current.src = "/MenVir_Explicando.webm";
+        videoRef.current.play();
+      }
+    }, 100);
+  };
+
+  return (
+    <div className="w-screen h-screen flex items-center justify-end overflow-hidden">
+      <div className="w-full h-full flex flex-col justify-start">
+        <h1 className="text-[10.06vh] text-center leading-none pt-[9vh]">
+          MentorHub
+        </h1>
+        <h2 className="text-[4.73vh] text-center z-10">
+          Conectamos Mentores con Mentes Curiosas
+        </h2>
+        <div className="h-full flex flex-col justify-between gap-4 panel-text leading-tight">
+          <div className="relative h-full">
+            <div className="absolute top-0 left-0 w-5 h-5 text-center">
+              <span className="absolute inset-0 flex justify-center items-center text-xs leading-none text-[#007AFF] opacity-50">
+                {(progress - transitionTime) * -1}
+              </span>
+              <svg className="absolute top-0 left-0" viewBox="0 0 100 100">
+                <circle
+                  cx="50"
+                  cy="50"
+                  r={radius}
+                  stroke="#007AFF"
+                  strokeWidth="10"
+                  strokeOpacity="0.25"
+                  fill="none"
+                />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r={radius}
+                  stroke="#007AFF"
+                  strokeWidth="10"
+                  fill="none"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={
+                    circumference - (progress / transitionTime) * circumference
+                  }
+                  className="transition-all duration-1000"
+                  strokeLinecap="round"
+                />
+              </svg>
             </div>
-            <div className="w-2/5 flex">
-               <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="menvirLanding self-center mt-12"
-               >
-                  <source src="/MenVir_Alegria.webm" type="video/webm" />
-               </video>
-            </div>
-         </div>
+
+            {texts.map((text, index) => (
+              <div
+                key={index}
+                className={`absolute w-full h-full transition-opacity duration-500 ${
+                  current === index ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                {text}
+              </div>
+            ))}
+          </div>
+          <a
+            className="w-fit bg-[#007AFF] text-white mx-auto py-3 px-6 rounded-full hover:bg-blue-800"
+            href="/register"
+          >
+            Regístrate gratis en MentorHub
+          </a>
+          <p className="text-center">
+            ¿Ya tienes una cuenta?{" "}
+            <a className="text-[#007AFF]" href="/login">
+              Ingresa aquí
+            </a>
+          </p>
+        </div>
       </div>
-   );
+      <div className="h-full aspect-[630/982] bg-[#007AFF] relative bg-opacity-75">
+        <svg
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          className="absolute top-0 left-0 w-full h-full -z-1"
+        >
+          <path d="M100,0 Q90,90 0,100 L0,0 Z" fill="#007AFF" />
+        </svg>
+      </div>
+      <div className="absolute inset-0 flex flex-col items-center justify-center panel"></div>
+      <div className="h-full aspect-[630/982] absolute">
+        <div className="absolute inset-y-0 right-0 flex items-center justify-center w-full h-full">
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            playsInline
+            onEnded={handleVideoEnd}
+            src="/MenVir_Saludando.webm"
+            className="w-[90%] h-[90%] object-contain"
+          />
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Landing;
-
