@@ -1,13 +1,14 @@
-import { IsEmail, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsString, MinLength, Length } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class LoginDto {
   @IsEmail({}, { message: 'Correo no válido' })
   email!: string;
 
-  @Length(8,20)
+  @Length(8, 20) // ✅ Ahora está correctamente importado
   @ApiProperty({
-    example:"Contraseña123*",
-    description:"La contraseña debe de ser minimo de 8 caracteres, minimo una minuscula, uno mayuscula un numero y caracter especial."
+    example: "Contraseña123*",
+    description: "La contraseña debe tener mínimo 8 caracteres, incluir una minúscula, una mayúscula, un número y un carácter especial."
   })
   @IsString()
   @MinLength(8, { message: 'La contraseña debe tener mínimo 8 caracteres' })
