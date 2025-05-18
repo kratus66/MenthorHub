@@ -1,4 +1,12 @@
-import { IsEmail, IsString, MinLength, IsIn, IsOptional, IsPhoneNumber } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  MinLength,
+  IsIn,
+  IsOptional,
+  IsPhoneNumber,
+  Matches,
+} from 'class-validator';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -6,11 +14,11 @@ export class UpdateUserDto {
   fullName?: string;
 
   @IsOptional()
-  @IsEmail()
+  @IsEmail({}, { message: 'Correo no válido' })
   email?: string;
 
   @IsOptional()
-  @IsPhoneNumber(undefined)
+  @IsPhoneNumber('DO', { message: 'Número telefónico no válido' })
   phoneNumber?: string;
 
   @IsOptional()
@@ -19,10 +27,14 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
-  @MinLength(6)
+  @MinLength(8, { message: 'La contraseña debe tener mínimo 8 caracteres' })
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/, {
+    message:
+      'Debe incluir mayúscula, minúscula, número y símbolo',
+  })
   password?: string;
 
   @IsOptional()
-  @IsIn(['admin', 'teacher', 'student'])
+  @IsIn(['admin', 'teacher', 'student'], { message: 'Rol inválido' })
   role?: 'admin' | 'teacher' | 'student';
 }
