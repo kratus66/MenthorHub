@@ -1,4 +1,6 @@
-export type Categoria = {
-   nombre: string;
-   imagen: string;
-};
+export interface Categoria {
+  id: string;
+  nombre: string;
+  imagen: string;
+  seleccionada: boolean;
+}
