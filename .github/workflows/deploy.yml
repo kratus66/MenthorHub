@@ -2,7 +2,7 @@ name: Deploy to AWS via SSM
 on:
   push:
     branches: [dev]
-    # branches: [ main ]  # Cambia a tu rama principal
+  workflow_dispatch:
 
 jobs:
   deploy:
