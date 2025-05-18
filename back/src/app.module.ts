@@ -53,7 +53,7 @@ import { SeederModule } from './seeder/seeder.module';
             Payment,
             Notification,
             Category,
-            Professor
+            Professor, // ✅ Agregado
          ],
          synchronize: true,
       }),
