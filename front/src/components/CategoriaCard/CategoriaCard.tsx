@@ -6,7 +6,7 @@ type Props = {
 };
 
 const CategoriaCard: React.FC<Props> = ({
-   id,
+   // id, // para evitar 'id' is declared but its value is never read. en deploy
    nombre,
    imagen,
    seleccionada,
