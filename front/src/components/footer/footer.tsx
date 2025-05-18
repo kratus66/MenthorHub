@@ -1,9 +1,11 @@
 // Footer.tsx
-import { Link } from "react-router-dom";
-import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
+/* import { Link } from "react-router-dom";
+import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa"; */
 
 const Footer = () => {
   return (
+    <></>
+    /* al parecer pro el momento no se usa el footer, pero lo dejo por si acaso    
     <footer className="bg-black text-white py-8 px-4">
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
         <div className="text-center md:text-left">
@@ -55,7 +57,7 @@ const Footer = () => {
           </a>
         </div>
       </div>
-    </footer>
+    </footer> */
   );
 };
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './notification.entity';
@@ -11,7 +11,7 @@ export class NotificationsController {
   ) {}
 
   @Get(':userId')
-  async findByUser(@Param('userId', ParseIntPipe) userId: number) {
+  async findByUser(@Param('userId', ParseUUIDPipe) userId: string) {
     return this.notificationRepo.find({
       where: { user: { id: userId } },
       order: { createdAt: 'DESC' },

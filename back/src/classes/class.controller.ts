@@ -6,10 +6,10 @@ import {
   Body,
   Put,
   Delete,
-  ParseIntPipe,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ClassesService } from './class.service';
-import { CreateClassDto } from '../dto/CreateClassDto';
+import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from '../dto/update-class.dto';
 import {
   ApiTags,
@@ -42,33 +42,29 @@ export class ClassesController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Obtener una clase por ID' })
-  @ApiParam({ name: 'id', type: Number })
+  @ApiParam({ name: 'id', type: String })
   @ApiResponse({ status: 200, description: 'Clase encontrada', type: Class })
   @ApiResponse({ status: 404, description: 'Clase no encontrada' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.classesService.findOne(id);
   }
 
   @Put(':id')
   @ApiOperation({ summary: 'Actualizar una clase' })
-  @ApiParam({ name: 'id', type: Number })
+  @ApiParam({ name: 'id', type: String })
   @ApiBody({ type: UpdateClassDto })
   @ApiResponse({ status: 200, description: 'Clase actualizada', type: Class })
   @ApiResponse({ status: 404, description: 'Clase no encontrada' })
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateDto: UpdateClassDto,
-  ) {
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateDto: UpdateClassDto) {
     return this.classesService.update(id, updateDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Eliminar una clase' })
-  @ApiParam({ name: 'id', type: Number })
+  @ApiParam({ name: 'id', type: String })
   @ApiResponse({ status: 200, description: 'Clase eliminada' })
   @ApiResponse({ status: 404, description: 'Clase no encontrada' })
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.classesService.remove(id);
   }
 }
-

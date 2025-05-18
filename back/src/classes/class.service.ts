@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Class } from './class.entity';
 import { User } from '../users/user.entity';
-import { CreateClassDto } from '../dto/create-class.dto';
+import { CreateClassDto } from '../../src/classes/dto/create-class.dto';
 import { UpdateClassDto } from '../dto/update-class.dto';
 
 @Injectable()
@@ -34,7 +34,7 @@ export class ClassesService {
     return this.classRepository.save(newClass);
   }
 
-  async update(id: number, updateDto: UpdateClassDto): Promise<Class> {
+  async update(id: string, updateDto: UpdateClassDto): Promise<Class> {
     const classToUpdate = await this.classRepository.findOne({ where: { id } });
     if (!classToUpdate) throw new NotFoundException('Clase no encontrada');
 
@@ -46,7 +46,7 @@ export class ClassesService {
     return this.classRepository.find({ relations: ['teacher', 'students', 'tasks'] });
   }
 
-  async findOne(id: number): Promise<Class> {
+  async findOne(id: string): Promise<Class> {
     const found = await this.classRepository.findOne({
       where: { id },
       relations: ['teacher', 'students', 'tasks'],
@@ -55,7 +55,7 @@ export class ClassesService {
     return found;
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     const result = await this.classRepository.delete(id);
     if (result.affected === 0) throw new NotFoundException('Clase no encontrada');
   }

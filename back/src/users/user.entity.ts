@@ -15,8 +15,9 @@ import { Notification } from '../notifications/notification.entity';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  id!: number;
+@PrimaryGeneratedColumn('uuid')
+id: string;
+
 
   @Column()
   fullName!: string;

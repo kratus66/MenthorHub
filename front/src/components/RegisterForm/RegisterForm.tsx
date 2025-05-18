@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 
 interface RegisterFormProps {
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onSubmit: (formData: any) => void;
+  onSubmit: (formData: FormData) => void;
 }
 
 const avatars = [
@@ -15,15 +13,21 @@ const avatars = [
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
   const [activeTab, setActiveTab] = useState<'personal' | 'academics'>('personal');
-  const [formData, setFormData] = useState({
-    nombre: '',
-    celular: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    avatarId: 0,
-    profileImage: null as File | null,
-  });
+ const [formData, setFormData] = useState({
+  nombre: '',
+  celular: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+  avatarId: 0,
+  profileImage: null as File | null,
+  estudios: '',
+  rol: '',
+  pais: '',
+  provincia: '',
+  localidad: '',
+});
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = e.target;
@@ -37,6 +41,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
   const handleAvatarSelect = (id: number) => {
     setFormData(prev => ({ ...prev, avatarId: id }));
   };
+const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const { name, value } = e.target;
+  setFormData(prev => ({ ...prev, [name]: value }));
+};
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,13 +52,28 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
       alert('Las contraseñas no coinciden');
       return;
     }
-    onSubmit(formData);
+
+    const dataToSend = new FormData();
+    dataToSend.append('nombre', formData.nombre);
+    dataToSend.append('celular', formData.celular);
+    dataToSend.append('email', formData.email);
+    dataToSend.append('password', formData.password);
+    dataToSend.append('avatarId', formData.avatarId.toString());
+    dataToSend.append('estudios', formData.estudios);
+dataToSend.append('rol', formData.rol);
+dataToSend.append('pais', formData.pais);
+dataToSend.append('provincia', formData.provincia);
+dataToSend.append('localidad', formData.localidad);
+
+    if (formData.profileImage) {
+      dataToSend.append('profileImage', formData.profileImage);
+    }
+
+    onSubmit(dataToSend);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-8 
-    p-5 text-gray-700">
-     
+    <form onSubmit={handleSubmit} className="flex gap-8 p-5 text-gray-700">
       <div className="flex-1 bg-white bg-opacity-50 p-6 rounded-lg shadow-md max-w-md">
         <div className="flex gap-8 mb-6 border-b border-gray-300 text-sm font-semibold">
           <button
@@ -136,11 +159,79 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
         )}
 
         {activeTab === 'academics' && (
-          <div>
-            
-            <p className="text-gray-500">Contenido de detalles académicos aquí</p>
-          </div>
-        )}
+  <div className="flex flex-col gap-4">
+    <label>
+      Estudios
+      <select
+        name="estudios"
+        value={formData.estudios}
+        onChange={handleSelectChange}
+        required
+        className="w-full rounded px-3 py-2 mt-1 border border-gray-300"
+      >
+        <option value="">Seleccionar</option>
+        <option value="primario">Primario</option>
+        <option value="secundario">Secundario</option>
+        <option value="universitario">Universitario</option>
+      </select>
+    </label>
+
+    <label>
+      Rol
+      <select
+        name="rol"
+        value={formData.rol}
+        onChange={handleSelectChange}
+        required
+        className="w-full rounded px-3 py-2 mt-1 border border-gray-300"
+      >
+        <option value="">Seleccionar</option>
+        <option value="alumno">Alumno</option>
+        <option value="profesor">Profesor</option>
+      </select>
+    </label>
+
+    <label>
+      País
+      <input
+        type="text"
+        name="pais"
+        value={formData.pais}
+        onChange={handleChange}
+        required
+        className="w-full rounded px-3 py-2 mt-1 border border-gray-300"
+        placeholder="Ej: Argentina"
+      />
+    </label>
+
+    <label>
+      Provincia
+      <input
+        type="text"
+        name="provincia"
+        value={formData.provincia}
+        onChange={handleChange}
+        required
+        className="w-full rounded px-3 py-2 mt-1 border border-gray-300"
+        placeholder="Ej: Buenos Aires"
+      />
+    </label>
+
+    <label>
+      Localidad
+      <input
+        type="text"
+        name="localidad"
+        value={formData.localidad}
+        onChange={handleChange}
+        required
+        className="w-full rounded px-3 py-2 mt-1 border border-gray-300"
+        placeholder="Ej: Quilmes"
+      />
+    </label>
+  </div>
+)}
+
       </div>
 
       <div className="w-[300px] bg-white bg-opacity-50 rounded-lg p-6 flex flex-col items-center justify-between shadow-md">
@@ -167,32 +258,36 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
         </div>
 
         <div className="w-full mt-4">
-  <p className="text-xs mb-1 font-semibold">Seleccionar Avatar</p>
+          <p className="text-xs mb-1 font-semibold">Seleccionar Avatar</p>
+          <div className="flex justify-between gap-2">
+            {avatars.map((a) => (
+              <button
+                key={a.id}
+                type="button"
+                onClick={() => handleAvatarSelect(a.id)}
+                className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-200 
+                  ${formData.avatarId === a.id ? 'ring-4 ring-blue-500' : 'ring-2 ring-gray-300 hover:ring-blue-300'}`}
+              >
+                {a.emoji}
+              </button>
+            ))}
+          </div>
+        </div>
 
- 
-
-  <div className="flex justify-between gap-2">
-    {avatars.map((a) => (
       <button
-        key={a.id}
-        type="button"
-        onClick={() => handleAvatarSelect(a.id)}
-        className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-200 
-          ${formData.avatarId === a.id ? 'ring-4 ring-blue-500' : 'ring-2 ring-gray-300 hover:ring-blue-300'}`}
-      >
-        {a.emoji}
-      </button>
-    ))}
-  </div>
-</div>
+  type="button"
+  className="mt-6 bg-blue-600 w-full py-2 rounded-full text-white font-semibold hover:bg-blue-700 transition"
+  onClick={() => {
+    if (activeTab === 'personal') {
+      setActiveTab('academics');
+    } else {
+      handleSubmit(new Event('submit') as unknown as React.FormEvent);
+    }
+  }}
+>
+  {activeTab === 'personal' ? 'Continuar' : 'Registrate'}
+</button>
 
-
-        <button
-          type="submit"
-          className="mt-6 bg-blue-600 w-full py-2 rounded-full text-white font-semibold hover:bg-blue-700 transition"
-        >
-          Continuar
-        </button>
       </div>
     </form>
   );

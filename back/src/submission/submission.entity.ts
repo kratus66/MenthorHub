@@ -10,8 +10,8 @@ import { Task } from '../task/task.entity';
 
 @Entity()
 export class Submission {
-  @PrimaryGeneratedColumn()
-  id: number;
+ @PrimaryGeneratedColumn('uuid')
+id!: string;
 
   @Column()
   content: string; // Puede ser texto o una URL (archivo)

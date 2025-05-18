@@ -1,3 +1,4 @@
+// copy-seeds.js
 const fs = require('fs');
 const path = require('path');
 
@@ -8,7 +9,11 @@ if (!fs.existsSync(destDir)) {
   fs.mkdirSync(destDir, { recursive: true });
 }
 
-const filesToCopy = ['categorias.json', 'profesores.json'];
+const filesToCopy = [
+  'categories-with-uuid.json',
+  'professors-with-uuid.json',
+  'classes-generated.json'
+];
 
 filesToCopy.forEach((file) => {
   const srcPath = path.join(sourceDir, file);
@@ -21,3 +26,4 @@ filesToCopy.forEach((file) => {
     console.warn(`⚠️ No se encontró: ${file}`);
   }
 });
+

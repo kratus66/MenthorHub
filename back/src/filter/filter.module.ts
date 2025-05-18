@@ -2,12 +2,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Class } from '../classes/class.entity';
-import { ClassesController } from './classes.controller';
-import { ClassesService } from './filter.service';
+import { FilterController } from './filter.controller';
+import { FilterService } from './filter.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Class])],
-  controllers: [ClassesController],
-  providers: [ClassesService],
+  controllers: [FilterController],
+  providers: [FilterService],
 })
 export class FilterModule {}

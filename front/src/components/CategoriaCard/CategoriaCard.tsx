@@ -1,10 +1,28 @@
-import type { Categoria } from '../../types/Categoria';
+type Props = {
+   id: string;
+   nombre: string;
+   imagen: string;
+   seleccionada?: boolean;
+};
 
-const CategoriaCard: React.FC<Categoria> = ({ nombre, imagen }) => {
+const CategoriaCard: React.FC<Props> = ({
+   // id, // para evitar 'id' is declared but its value is never read. en deploy
+   nombre,
+   imagen,
+   seleccionada,
+}) => {
    return (
-      <div className="h-[15rem] aspect-square border-2 m-2 rounded-3xl">
+      <div
+         className={`h-[12rem] aspect-square border-2 m-1 rounded-3xl relative overflow-clip ${
+            seleccionada
+               ? 'border-4 border-blue-700'
+               : 'border-4 border-transparent'
+         }`}
+      >
          <img src={imagen} alt={nombre} className="h-full object-cover" />
-         <h3 className="z-10">{nombre}</h3>
+         <h3 className="absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 text-white text-3xl bg-[#00000055] rounded-lg p-1 text-[1.5rem] text-center">
+            {nombre}
+         </h3>
       </div>
    );
 };

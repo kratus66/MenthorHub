@@ -21,8 +21,9 @@ export enum PaymentStatus {
 
 @Entity()
 export class Payment {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn('uuid')
+id!: string;
+
 
   @ManyToOne(() => User, (user) => user.payments, { eager: true })
   user!: User;

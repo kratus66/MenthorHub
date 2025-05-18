@@ -29,7 +29,7 @@ const NavBar: React.FC = () => {
             MentorHub
           </h1>
         </div>
-        <div className="h-full flex focus-within:border-[2px] focus-within:border-[#409BFF] rounded-full ms-[10rem] me-auto">
+        <div className="h-full flex focus-within:border-[2px] focus-within:border-[#007AFF] rounded-full ms-[10rem] me-auto">
           <button className="h-full w-[2rem] bg-white rounded-full rounded-tr-none rounded-br-none">
             <img
               src="./search-icon.svg"

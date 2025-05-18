@@ -8,7 +8,6 @@ import { Repository } from 'typeorm';
 import { Task } from './task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { Class } from '../classes/class.entity';
-import { User } from '../users/user.entity';
 
 @Injectable()
 export class TasksService {
@@ -23,7 +22,7 @@ export class TasksService {
   // 👨‍🏫 Crear tarea (solo si el profesor es dueño de la clase)
   async createByTeacher(teacherId: string, dto: CreateTaskDto): Promise<Task> {
     const classRef = await this.classRepository.findOne({
-      where: { id: dto.classId },
+  where: { id: dto.classId }, // ✅ sin .toString()
       relations: ['teacher'],
     });
 
@@ -63,7 +62,7 @@ export class TasksService {
   // 👨‍🏫 Borrar tarea (solo si el profesor es dueño)
   async deleteIfOwnedByTeacher(
     teacherId: string,
-    taskId: number,
+    taskId: string,
   ): Promise<void> {
     const task = await this.taskRepository.findOne({
       where: { id: taskId },
@@ -79,7 +78,7 @@ export class TasksService {
   }
 
   // (Opcional) 🛠️ Buscar una tarea específica
-  async findOne(taskId: number): Promise<Task> {
+  async findOne(taskId: string): Promise<Task> {
     const task = await this.taskRepository.findOne({
       where: { id: taskId },
       relations: ['classRef'],
@@ -88,4 +87,3 @@ export class TasksService {
     return task;
   }
 }
- 
