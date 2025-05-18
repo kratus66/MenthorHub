@@ -5,7 +5,7 @@ $FRONTEND_DIR = "$REPO_DIR\front"
 
 # --- 1. Detener todos los procesos Node existentes ---
 Write-Output "=== Deteniendo procesos anteriores ==="
-npx kill-port 3000 4173
+kill-port 3001 4173
 
 # --- 2. Actualizar repositorio ---
 Write-Output "=== Actualizando código desde GitHub ==="
@@ -22,7 +22,7 @@ npm run build
 
 # Iniciar backend en una nueva ventana de PowerShell
 Start-Process powershell -ArgumentList "-Command", "cd '$BACKEND_DIR'; npm start" -WindowStyle Minimized
-Write-Output "Backend iniciado en http://localhost:3000"
+Write-Output "Backend iniciado en http://localhost:3001"
 
 Start-Sleep -Seconds 10
 
