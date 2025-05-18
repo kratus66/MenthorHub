@@ -1,24 +1,36 @@
-import { IsEmail, IsString, MinLength, IsIn, IsNotEmpty, IsPhoneNumber } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  MinLength,
+  IsIn,
+  IsNotEmpty,
+  IsPhoneNumber,
+  Matches,
+} from 'class-validator';
 
 export class RegisterDto {
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'El nombre completo es obligatorio' })
+  @IsString({ message: 'El nombre debe ser texto' })
   fullName!: string;
 
-  @IsEmail()
+  @IsEmail({}, { message: 'Correo no válido' })
   email!: string;
 
-  @IsPhoneNumber(undefined)
+  @IsPhoneNumber('DO', { message: 'Número telefónico no válido' })
   phoneNumber!: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'El país debe ser texto' })
+  @IsNotEmpty({ message: 'El país es obligatorio' })
   country!: string;
 
   @IsString()
-  @MinLength(6)
+  @MinLength(8, { message: 'La contraseña debe tener mínimo 8 caracteres' })
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/, {
+    message:
+      'Debe incluir mayúscula, minúscula, número y símbolo',
+  })
   password!: string;
 
-  @IsString()
-  role!: string;
+  @IsIn(['admin', 'teacher', 'student'], { message: 'Rol inválido' })
+  role!: 'admin' | 'teacher' | 'student';
 }
