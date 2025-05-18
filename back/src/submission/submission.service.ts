@@ -1,3 +1,4 @@
+// src/submission/submission.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -12,22 +13,24 @@ export class SubmissionsService {
   constructor(
     @InjectRepository(Submission)
     private submissionsRepo: Repository<Submission>,
+
     @InjectRepository(User)
     private userRepo: Repository<User>,
+
     @InjectRepository(Task)
     private taskRepo: Repository<Task>,
   ) {}
 
   async create(dto: CreateSubmissionDto, studentId: string) {
     const student = await this.userRepo.findOne({ where: { id: studentId } });
-const task = await this.taskRepo.findOne({ where: { id: dto.taskId } });
+    const task = await this.taskRepo.findOne({ where: { id: dto.taskId.toString() } });
 
     if (!student || !task) {
       throw new NotFoundException('Estudiante o tarea no encontrados');
     }
 
     const submission = this.submissionsRepo.create({
-      content: dto.content,
+      content: dto.content, // viene como file.path desde Cloudinary
       student,
       task,
     });
@@ -66,7 +69,7 @@ const task = await this.taskRepo.findOne({ where: { id: dto.taskId } });
 
   async findByTask(taskId: string) {
     return this.submissionsRepo.find({
-where: { task: { id: taskId.toString() } },
+      where: { task: { id: taskId.toString() } },
       relations: ['student'],
     });
   }

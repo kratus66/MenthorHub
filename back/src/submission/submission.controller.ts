@@ -1,3 +1,4 @@
+// src/submission/submissions.controller.ts
 import {
   Controller,
   Get,
@@ -8,6 +9,8 @@ import {
   Body,
   UseGuards,
   Req,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { SubmissionsService } from './submission.service';
 import { CreateSubmissionDto } from './dto/CreateSubmissions.dto';
@@ -15,6 +18,10 @@ import { UpdateSubmissionDto } from './dto/updatesubmission.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RoleGuard } from '../common/guards/role.guard';
 import { Roles } from '../common/decorators/roles.decorator';
+import { Express } from 'express';
+
+
+
 import {
   ApiTags,
   ApiBearerAuth,
@@ -22,7 +29,10 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiConsumes,
 } from '@nestjs/swagger';
+import { CloudinaryFileInterceptor } from '../common/interceptors/cloudinary.interceptor';
+
 
 @ApiTags('Submissions')
 @ApiBearerAuth('JWT-auth')
@@ -33,11 +43,29 @@ export class SubmissionsController {
   @Post()
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles('student')
-  @ApiOperation({ summary: 'Crear una entrega de tarea (solo estudiantes)' })
-  @ApiBody({ type: CreateSubmissionDto })
+  @UseInterceptors(CloudinaryFileInterceptor)
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Crear una entrega con archivo (solo estudiantes)' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        taskId: { type: 'integer', example: 1 },
+        file: { type: 'string', format: 'binary' },
+      },
+    },
+  })
   @ApiResponse({ status: 201, description: 'Entrega creada exitosamente' })
-  create(@Body() dto: CreateSubmissionDto, @Req() req: any) {
-    return this.submissionsService.create(dto, req.user.userId);
+  create(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('taskId') taskId: number,
+    @Req() req: any,
+  ) {
+    const fileUrl = file?.path;
+    return this.submissionsService.create(
+      { content: fileUrl, taskId: taskId },
+      req.user.userId,
+    );
   }
 
   @Get()
@@ -89,4 +117,3 @@ export class SubmissionsController {
     return this.submissionsService.remove(id);
   }
 }
-

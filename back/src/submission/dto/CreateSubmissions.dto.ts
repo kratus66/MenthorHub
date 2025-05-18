@@ -14,5 +14,5 @@ export class CreateSubmissionDto {
     description: 'UUID de la tarea a la que corresponde la entrega',
   })
   @IsUUID('4', { message: 'taskId debe ser un UUID válido' })
-  taskId: string;
+  taskId: number;
 }
