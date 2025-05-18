@@ -272,6 +272,17 @@ dataToSend.append('localidad', formData.localidad);
               </button>
             ))}
           </div>
+<<<<<<< HEAD
+=======
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={formData.avatarId} 
+            readOnly
+            className="w-full mt-2"
+          />
+>>>>>>> dev
         </div>
 
       <button
