@@ -11,7 +11,7 @@ import {
 import { User } from '../users/user.entity';
 import { Task } from '../task/task.entity';
 import { Category } from '../entities/categorias.entities';
-import { Professor } from '../entities/professor.entities'; // ✅ Importación directa
+
 
 @Entity()
 export class Class {

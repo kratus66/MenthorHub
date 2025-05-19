@@ -14,53 +14,55 @@ export class FilterService {
   ) {}
 
   async findAll(filters: FilterClassesDto, pagination: PaginationDto) {
-    const {
-      search,
-      category,
-      teacherId,
-      sortBy,
-      sortOrder = 'asc',
-    } = filters;
+  const {
+    search,
+    category,
+    teacherId,
+    sortBy,
+    sortOrder = 'asc',
+  } = filters;
 
-    const page = pagination.page || 1;
-    const limit = pagination.limit || 10;
+  const page = pagination.page || 1;
+  const limit = pagination.limit || 10;
 
-    const query = this.classRepository.createQueryBuilder('class')
-      .leftJoinAndSelect('class.category', 'category')
-      .leftJoinAndSelect('class.teacher', 'teacher');
+  const query = this.classRepository.createQueryBuilder('class')
+    .leftJoinAndSelect('class.category', 'category')
+    .leftJoinAndSelect('class.teacher', 'teacher')
+    .where('teacher.role = :role', { role: 'teacher' }); // ✅ filtro por rol
 
-    if (search) {
-      query.andWhere('LOWER(class.title) LIKE LOWER(:search)', {
-        search: `%${search}%`,
-      });
-    }
-
-    if (category) {
-      query.andWhere('category.id = :category', { category });
-    }
-
-    if (teacherId) {
-      query.andWhere('teacher.id = :teacherId', { teacherId });
-    }
-
-    if (sortBy && ['title', 'createdAt'].includes(sortBy)) {
-      query.orderBy(`class.${sortBy}`, sortOrder.toUpperCase() as 'ASC' | 'DESC');
-    } else {
-      query.orderBy('class.createdAt', 'DESC');
-    }
-
-    const [results, total] = await query
-      .skip((page - 1) * limit)
-      .take(limit)
-      .getManyAndCount();
-
-    return {
-      data: results,
-      total,
-      page,
-      lastPage: Math.ceil(total / limit),
-    };
+  if (search) {
+    query.andWhere('LOWER(class.title) LIKE LOWER(:search)', {
+      search: `%${search}%`,
+    });
   }
+
+  if (category) {
+    query.andWhere('category.id = :category', { category });
+  }
+
+  if (teacherId) {
+    query.andWhere('teacher.id = :teacherId', { teacherId });
+  }
+
+  if (sortBy && ['title', 'createdAt'].includes(sortBy)) {
+    query.orderBy(`class.${sortBy}`, sortOrder.toUpperCase() as 'ASC' | 'DESC');
+  } else {
+    query.orderBy('class.createdAt', 'DESC');
+  }
+
+  const [results, total] = await query
+    .skip((page - 1) * limit)
+    .take(limit)
+    .getManyAndCount();
+
+  return {
+    data: results,
+    total,
+    page,
+    lastPage: Math.ceil(total / limit),
+  };
+}
+
 }
 
 

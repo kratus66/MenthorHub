@@ -20,7 +20,7 @@ import { Notification } from './notifications/notification.entity';
 import { Category } from './entities/categorias.entities';
 import { CategoriesModule } from './categorias/categoria.module';
 import { SubmissionModule } from './submission/submission.module';
-import { Professor } from './entities/professor.entities';
+
 import { SeederModule } from './seeder/seeder.module';
 
 @Module({
@@ -37,6 +37,7 @@ import { SeederModule } from './seeder/seeder.module';
       NotificationsModule,
       CategoriesModule,
       SubmissionModule,
+      SeederModule,
 
       TypeOrmModule.forRoot({
          type: 'postgres',
@@ -53,7 +54,7 @@ import { SeederModule } from './seeder/seeder.module';
             Payment,
             Notification,
             Category,
-            Professor, // ✅ Agregado
+            
          ],
          synchronize: true,
          dropSchema: true,

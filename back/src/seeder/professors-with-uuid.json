@@ -1,17 +1,23 @@
 [
   {
     "id": "3a8c7b83-e1ee-46b1-91e9-d0ffce941d48",
-    "name": "Carlos Gómez",
-    "bio": "Profesor de Matemáticas Aplicadas"
+    "fullName": "Carlos Gómez",
+    "email": "carlosgomez@mail.com",
+    "password": "hashed123",
+    "role": "teacher"
   },
   {
     "id": "91459ab3-69f7-46b3-b4b9-d924202b28cd",
-    "name": "María Rodríguez",
-    "bio": "Especialista en Física Moderna"
+    "fullName": "María Rodríguez",
+    "email": "mariarodriguez@mail.com",
+    "password": "hashed123",
+    "role": "teacher"
   },
   {
     "id": "4535b0ad-ec91-4c23-a908-72489bf1b475",
-    "name": "Juan Pérez",
-    "bio": "Doctor en Literatura Hispanoamericana"
+    "fullName": "Juan Pérez",
+    "email": "juanperez@mail.com",
+    "password": "hashed123",
+    "role": "teacher"
   }
 ]

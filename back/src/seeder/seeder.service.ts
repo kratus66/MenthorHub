@@ -3,12 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from '../entities/categorias.entities';
 import { Class } from '../classes/class.entity';
-import { Professor } from '../entities/professor.entities';
+import { User } from '../users/user.entity';
 import * as fs from 'fs';
 import * as path from 'path';
 import { CreateClassDto } from '../dto/CreateClassDto';
 import { CreateCategoryDto } from '../dto/create-category.dto';
-import { CreateProfessorDto } from '../dto/create-professor.dto';
 
 @Injectable()
 export class SeederService implements OnApplicationBootstrap {
@@ -19,18 +18,23 @@ export class SeederService implements OnApplicationBootstrap {
     @InjectRepository(Class)
     private readonly classRepo: Repository<Class>,
 
-    @InjectRepository(Professor)
-    private readonly professorRepo: Repository<Professor>,
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
   ) {}
 
   async onApplicationBootstrap() {
+    console.log('🚀 Ejecutando SeederService...');
     await this.seedCategories();
-    await this.seedProfessors();
+    await this.seedTeachers();
     await this.seedClasses();
   }
 
   private loadJsonFile(filename: string): any {
     const filePath = path.join(__dirname, filename);
+    if (!fs.existsSync(filePath)) {
+      console.error(`❌ Archivo no encontrado: ${filePath}`);
+      return [];
+    }
     return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
   }
 
@@ -45,20 +49,24 @@ export class SeederService implements OnApplicationBootstrap {
     }
   }
 
-  private async seedProfessors() {
-    const data: (CreateProfessorDto & { id: string })[] = this.loadJsonFile('professors-with-uuid.json');
-    const existing = await this.professorRepo.count();
+  private async seedTeachers() {
+    const data: { id: string; fullName: string }[] = this.loadJsonFile('professors-with-uuid.json');
+    const existing = await this.userRepo.count({ where: { role: 'teacher' } });
 
     if (existing === 0) {
-      const profesores = data.map((p) => this.professorRepo.create({
-        id: p.id,
-        name: p.name,
-        bio: p.bio,
-      }));
-      await this.professorRepo.save(profesores);
-      console.log('✅ Profesores precargados');
+      const teachers = data.map((t) =>
+        this.userRepo.create({
+          id: t.id,
+          fullName: t.fullName,
+          password: 'hashed-password-placeholder',
+          email: `${t.fullName?.toLowerCase().replace(/ /g, '')}@mail.com`,
+          role: 'teacher',
+        }),
+      );
+      await this.userRepo.save(teachers);
+      console.log('✅ Usuarios con rol "teacher" precargados');
     } else {
-      console.log('ℹ️ Profesores ya existen');
+      console.log('ℹ️ Usuarios "teacher" ya existen');
     }
   }
 
@@ -74,8 +82,8 @@ export class SeederService implements OnApplicationBootstrap {
     const clasesAInsertar: Class[] = [];
 
     for (const cls of data) {
-      const profesor = await this.professorRepo.findOne({
-        where: { id: cls.teacherId },
+      const profesor = await this.userRepo.findOne({
+        where: { id: cls.teacherId, role: 'teacher' },
       });
 
       const categoria = await this.categoryRepo.findOne({
@@ -89,13 +97,12 @@ export class SeederService implements OnApplicationBootstrap {
         continue;
       }
 
-      // ✅ Ajuste: aseguro que se usa create correctamente con las relaciones.
       const nuevaClase = this.classRepo.create({
         title: cls.title,
         description: cls.description,
-        teacher: profesor, // Profesor ya está precargado como entidad
+        teacher: profesor,
         category: categoria,
-        students: [],        // ⬅️ opcionalmente incluir campos vacíos si la entidad los espera
+        students: [],
         tasks: [],
       });
 
