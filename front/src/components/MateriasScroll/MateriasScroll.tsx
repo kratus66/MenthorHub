@@ -6,15 +6,17 @@ type SelectedCategoryType = {
    categoria: string;
 };
 
-const MateriasScroll = ({ categoria = 'Musica' }: SelectedCategoryType) => {
+const MateriasScroll = ({ categoria = 'Música' }: SelectedCategoryType) => {
    const categoriaReal =
-      categoria && categoria.trim() !== '' ? categoria : 'Musica';
+      categoria && categoria.trim() !== '' ? categoria : 'Música';
    const materias = materiasPorCategoria[categoriaReal] || [];
    const [materiaSeleccionada, setMateriaSeleccionada] = useState('');
 
    const handleMateriaClick = (id: string) => {
       setMateriaSeleccionada(id);
    };
+
+   console.log('Categoria que recibe MateriasScroll:' + categoria);
 
    return (
       <>
@@ -30,7 +32,7 @@ const MateriasScroll = ({ categoria = 'Musica' }: SelectedCategoryType) => {
                         id={materia.id}
                         nombre={materia.nombre}
                         imagen={materia.imagen}
-                        seleccionada={materiaSeleccionada === materia.id}
+                        seleccionada={materiaSeleccionada === materia.nombre}
                      />
                   </button>
                ))}
