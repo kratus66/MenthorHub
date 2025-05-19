@@ -8,7 +8,7 @@ import { Task } from '../task/task.entity';
 import { Submission } from '../submission/submission.entity';
 import { Payment } from '../payment/payment.entity';
 import { Category } from '../entities/categorias.entities';
-
+import { Notification } from '../notifications/notification.entity';
 
 
 dotenv.config();
@@ -20,9 +20,9 @@ export const dataSourceOptions: DataSourceOptions = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  synchronize: true,
+  synchronize: false,
   logging: true,
-  entities: [User, Class, Task, Submission, Payment, Category],
+  entities: [User, Class, Task, Submission, Payment, Category,Notification],
   migrations: [__dirname + '/../migrations/*{.ts,.js}'],
 };
 
