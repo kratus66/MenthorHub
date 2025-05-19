@@ -3,7 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Class } from './class.entity';
 import { User } from '../users/user.entity';
-import { CreateClassDto } from '../../src/classes/dto/create-class.dto';
+import { Category } from '../entities/categorias.entities'; // ✅ Importado para usar category
+import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from '../dto/update-class.dto';
 
 @Injectable()
@@ -14,21 +15,33 @@ export class ClassesService {
 
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>, // ✅ Repositorio de categoría
   ) {}
 
   async create(createDto: CreateClassDto): Promise<Class> {
-    const { title, description, teacherId } = createDto;
+    const { title, description, teacherId, categoryId } = createDto;
 
+    // ✅ Buscar user con rol teacher
     const teacher = await this.userRepository.findOne({
       where: { id: teacherId, role: 'teacher' },
     });
 
-    if (!teacher) throw new NotFoundException('Profesor no encontrado');
+    if (!teacher) throw new NotFoundException('Profesor no encontrado o no tiene rol teacher');
+
+    // ✅ Buscar categoría
+    const category = await this.categoryRepository.findOne({
+      where: { id: categoryId },
+    });
+
+    if (!category) throw new NotFoundException('Categoría no encontrada');
 
     const newClass = this.classRepository.create({
       title,
       description,
       teacher,
+      category,
     });
 
     return this.classRepository.save(newClass);
@@ -43,13 +56,13 @@ export class ClassesService {
   }
 
   async findAll(): Promise<Class[]> {
-    return this.classRepository.find({ relations: ['teacher', 'students', 'tasks'] });
+    return this.classRepository.find({ relations: ['teacher', 'students', 'tasks', 'category'] }); // ✅ incluimos category
   }
 
   async findOne(id: string): Promise<Class> {
     const found = await this.classRepository.findOne({
       where: { id },
-      relations: ['teacher', 'students', 'tasks'],
+      relations: ['teacher', 'students', 'tasks', 'category'], // ✅ incluimos category
     });
     if (!found) throw new NotFoundException(`Clase con ID ${id} no encontrada`);
     return found;
@@ -60,3 +73,4 @@ export class ClassesService {
     if (result.affected === 0) throw new NotFoundException('Clase no encontrada');
   }
 }
+

@@ -25,8 +25,9 @@ export class Class {
   description!: string;
 
   // ✅ Usa función de tipo para evitar errores de metadatos circulares
-  @ManyToOne(() => Professor, (professor) => professor.classes)
-  teacher!: Professor;
+  @ManyToOne(() => User, (user) => user.classesTaught, { nullable: false })
+  teacher!: User;
+
 
 
   @ManyToMany(() => User, (user) => user.classesEnrolled)

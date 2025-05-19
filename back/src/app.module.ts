@@ -56,6 +56,7 @@ import { SeederModule } from './seeder/seeder.module';
             Professor, // ✅ Agregado
          ],
          synchronize: true,
+         dropSchema: true,
       }),
    ],
 })
