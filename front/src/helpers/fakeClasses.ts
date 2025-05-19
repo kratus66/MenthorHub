@@ -14,6 +14,7 @@ const sampleClasses: Class[] = [
       ] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-01', nombre: 'Tecnología' } as Categoria,
+      materia: 'Salud Mental',
       createdAt: new Date('2024-09-01T09:00:00'),
    },
    {
@@ -28,6 +29,7 @@ const sampleClasses: Class[] = [
       ] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-02', nombre: 'Historia' } as Categoria,
+      materia: 'Inglés',
       createdAt: new Date('2024-09-02T10:00:00'),
    },
    {
@@ -38,6 +40,7 @@ const sampleClasses: Class[] = [
       students: [{ id: 'user-105', name: 'Matías' }] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-03', nombre: 'Matemática' } as Categoria,
+      materia: 'Teoría Literaria',
       createdAt: new Date('2024-09-03T11:00:00'),
    },
    {
@@ -49,6 +52,7 @@ const sampleClasses: Class[] = [
       students: [] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-01', nombre: 'Matemática' } as Categoria,
+      materia: 'Narrativa',
       createdAt: new Date('2024-09-04T12:00:00'),
    },
    {
@@ -63,6 +67,7 @@ const sampleClasses: Class[] = [
       ] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-02', nombre: 'Lenguajes' } as Categoria,
+      materia: 'Psicología',
       createdAt: new Date('2024-09-05T13:00:00'),
    },
    {
@@ -73,6 +78,7 @@ const sampleClasses: Class[] = [
       students: [{ id: 'user-109', name: 'Camila' }] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-04', nombre: 'Ciencia' } as Categoria,
+      materia: 'Física',
       createdAt: new Date('2024-09-06T14:00:00'),
    },
    {
@@ -84,6 +90,7 @@ const sampleClasses: Class[] = [
       students: [] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-05', nombre: 'Tecnología' } as Categoria,
+      materia: 'Anatomía Humana',
       createdAt: new Date('2024-09-07T15:00:00'),
    },
    {
@@ -97,6 +104,7 @@ const sampleClasses: Class[] = [
       ] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-06', nombre: 'Salud' } as Categoria,
+      materia: 'Anatomía Humana',
       createdAt: new Date('2024-09-08T16:00:00'),
    },
    {
@@ -111,6 +119,7 @@ const sampleClasses: Class[] = [
       ] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-01', nombre: 'Tecnología' } as Categoria,
+      materia: 'Primeros Auxilios',
       createdAt: new Date('2024-09-09T17:00:00'),
    },
    {
@@ -121,6 +130,7 @@ const sampleClasses: Class[] = [
       students: [{ id: 'user-114', name: 'Sabrina' }] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-07', nombre: 'Salud' } as Categoria,
+      materia: 'Anatomía Humana',
       createdAt: new Date('2024-09-10T18:00:00'),
    },
    {
@@ -131,6 +141,7 @@ const sampleClasses: Class[] = [
       students: [] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-08', nombre: 'Música' } as Categoria,
+      materia: 'Historia de la música',
       createdAt: new Date('2024-09-11T08:00:00'),
    },
    {
@@ -145,6 +156,7 @@ const sampleClasses: Class[] = [
       ] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-09', nombre: 'Tecnología' } as Categoria,
+      materia: 'Anatomía Humana',
       createdAt: new Date('2024-09-12T08:00:00'),
    },
    {
@@ -155,6 +167,7 @@ const sampleClasses: Class[] = [
       students: [] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-10', nombre: 'Geografía' } as Categoria,
+      materia: 'Pintura',
       createdAt: new Date('2024-09-13T08:00:00'),
    },
    {
@@ -166,6 +179,7 @@ const sampleClasses: Class[] = [
       students: [{ id: 'user-117', name: 'Romina' }] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-11', nombre: 'Finanzas' } as Categoria,
+      materia: 'Robótica',
       createdAt: new Date('2024-09-14T08:00:00'),
    },
    {
@@ -176,6 +190,7 @@ const sampleClasses: Class[] = [
       students: [] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-12', nombre: 'Lenguajes' } as Categoria,
+      materia: 'Psicología',
       createdAt: new Date('2024-09-15T08:00:00'),
    },
    {
@@ -189,6 +204,7 @@ const sampleClasses: Class[] = [
       ] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-13', nombre: 'Salud' } as Categoria,
+      materia: 'Anatomía Humana',
       createdAt: new Date('2024-09-16T08:00:00'),
    },
    {
@@ -199,6 +215,7 @@ const sampleClasses: Class[] = [
       students: [] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-14', nombre: 'Deporte' } as Categoria,
+      materia: 'Básquetbol',
       createdAt: new Date('2024-09-17T08:00:00'),
    },
    {
@@ -209,6 +226,7 @@ const sampleClasses: Class[] = [
       students: [{ id: 'user-120', name: 'Iván' }] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-15', nombre: 'Ciencia' } as Categoria,
+      materia: 'Química',
       createdAt: new Date('2024-09-18T08:00:00'),
    },
    {
@@ -220,6 +238,7 @@ const sampleClasses: Class[] = [
       students: [] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-16', nombre: 'Deporte' } as Categoria,
+      materia: 'Fútbol',
       createdAt: new Date('2024-09-19T08:00:00'),
    },
    {
@@ -230,6 +249,7 @@ const sampleClasses: Class[] = [
       students: [] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-17', nombre: 'Lenguajes' } as Categoria,
+      materia: 'Sociología',
       createdAt: new Date('2024-09-20T08:00:00'),
    },
    {
@@ -240,6 +260,7 @@ const sampleClasses: Class[] = [
       students: [] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-18', nombre: 'Música' } as Categoria,
+      materia: 'Teoría Musical',
       createdAt: new Date('2024-09-21T08:00:00'),
    },
    {
@@ -250,6 +271,7 @@ const sampleClasses: Class[] = [
       students: [{ id: 'user-121', name: 'Agustina' }] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-19', nombre: 'Matemática' } as Categoria,
+      materia: 'Teoría Literaria',
       createdAt: new Date('2024-09-22T08:00:00'),
    },
    {
@@ -261,6 +283,7 @@ const sampleClasses: Class[] = [
       students: [] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-20', nombre: 'Salud' } as Categoria,
+      materia: 'Nutricion',
       createdAt: new Date('2024-09-23T08:00:00'),
    },
    {
@@ -272,6 +295,7 @@ const sampleClasses: Class[] = [
       students: [] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-21', nombre: 'Historia' } as Categoria,
+      materia: 'Inglés',
       createdAt: new Date('2024-09-24T08:00:00'),
    },
    {
@@ -282,6 +306,7 @@ const sampleClasses: Class[] = [
       students: [] as User[],
       tasks: [] as Task[],
       category: { id: 'cat-22', nombre: 'Tecnología' } as Categoria,
+      materia: 'Anatomía Humana',
       createdAt: new Date('2024-09-25T08:00:00'),
    },
 ];

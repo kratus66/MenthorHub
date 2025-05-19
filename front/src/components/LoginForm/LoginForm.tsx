@@ -29,9 +29,7 @@ const validate = (values: LoginValues) => {
 };
 
 export default function LoginForm() {
-   const handleSubmit = (values: LoginValues) => {
-      console.log('Datos enviados:', values);
-   };
+   const handleSubmit = () => {};
 
    return (
       <div className="w-full bg-white">
@@ -49,7 +47,7 @@ export default function LoginForm() {
                      name="email"
                      id="email"
                      type="email"
-                     placeholder="username@gmail.com"
+                     placeholder="nombre123@gmail.com"
                      className="w-full p-3 border rounded-full"
                   />
                   <ErrorMessage
@@ -80,12 +78,14 @@ export default function LoginForm() {
                   />
                </div>
                <p>¿Has olvidado tu contraseña?</p>
-               <button
-                  type="submit"
-                  className="w-full text-3xl bg-[#007AFF] text-white py-3 rounded-full hover:bg-blue-800"
-               >
-                  Iniciar sesión
-               </button>
+               <div>
+                  <a
+                     href="/panel"
+                     className="w-full text-xl bg-[#007AFF] text-white p-4 rounded-full hover:bg-blue-800"
+                  >
+                     Iniciar sesión
+                  </a>
+               </div>
             </Form>
          </Formik>
       </div>

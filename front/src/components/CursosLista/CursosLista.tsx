@@ -3,22 +3,32 @@ import sampleClasses from '../../helpers/fakeClasses';
 
 type CategoriaType = {
    categoria: string;
+   materiaSeleccionada: string;
    onCategoriaSeleccionada: (categoriaId: string) => void;
    onCategoriaActiva: (categoriaId: string) => void;
+   onMateriaSeleccionada: (materiaId: string) => void;
 };
 
 const ITEMS_POR_PAGINA = 10;
 
 const CursosLista = ({
    categoria,
+   materiaSeleccionada,
    onCategoriaSeleccionada,
    onCategoriaActiva,
+   onMateriaSeleccionada,
 }: CategoriaType) => {
    const [paginaActual, setPaginaActual] = useState(1);
 
-   const cursosFiltrados = categoria
-      ? sampleClasses.filter((curso) => curso.category.nombre === categoria)
-      : sampleClasses;
+   const cursosFiltrados = sampleClasses.filter((curso) => {
+      const coincideCategoria = categoria
+         ? curso.category.nombre === categoria
+         : true;
+      const coincideMateria = materiaSeleccionada
+         ? curso.materia === materiaSeleccionada
+         : true;
+      return coincideCategoria && coincideMateria;
+   });
 
    const totalPaginas = Math.ceil(cursosFiltrados.length / ITEMS_POR_PAGINA);
 
@@ -39,6 +49,7 @@ const CursosLista = ({
       setPaginaActual(1);
       onCategoriaSeleccionada('');
       onCategoriaActiva('');
+      onMateriaSeleccionada('');
    };
 
    return (
@@ -90,8 +101,9 @@ const CursosLista = ({
                            Profesor: {curso.teacher.name}
                         </p>
                      </div>
-                     <div>
+                     <div className="flex flex-col">
                         <h3>Categoría: {curso.category.nombre}</h3>
+                        <h3>Materia: {curso.materia}</h3>
                      </div>
                   </div>
                </a>
