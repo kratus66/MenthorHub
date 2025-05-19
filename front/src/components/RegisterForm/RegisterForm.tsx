@@ -46,16 +46,54 @@ const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
   setFormData(prev => ({ ...prev, [name]: value }));
 };
 
+const isValidPhone = (phone: string): boolean => {
+  const cleaned = phone.replace(/[\s-]/g, '');
+  const phoneRegex = /^\+?\d{8,15}$/;
+  return phoneRegex.test(cleaned);
+};
+
+const isValidGmail = (email: string): boolean => {
+  const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+  return gmailRegex.test(email);
+};
+
+const validatePersonalFields = (): boolean => {
+  const { nombre, celular, email, password, confirmPassword } = formData;
+  if (
+    nombre.trim() === '' ||
+    celular.trim() === '' ||
+    email.trim() === '' ||
+    password.trim() === '' ||
+    confirmPassword.trim() === ''
+  ) {
+    alert('Por favor, completá todos los campos obligatorios de la Información Personal.');
+    return false;
+  }
+  return true;
+};
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+
+ if (!isValidPhone(formData.celular)) {
+    alert('Por favor, ingresá un número de celular válido con código internacional.');
+    return;
+  }
+  if (!isValidGmail(formData.email)) {
+    alert('Por favor, ingresá un correo de Gmail válido (ej: ejemplo@gmail.com)');
+    return;
+  }
     if (formData.password !== formData.confirmPassword) {
       alert('Las contraseñas no coinciden');
       return;
     }
+   
+
 
     const dataToSend = new FormData();
     dataToSend.append('nombre', formData.nombre);
-    dataToSend.append('celular', formData.celular);
+   dataToSend.append('celular', formData.celular.replace(/\s|-/g, ''));
     dataToSend.append('email', formData.email);
     dataToSend.append('password', formData.password);
     dataToSend.append('avatarId', formData.avatarId.toString());
@@ -188,6 +226,7 @@ dataToSend.append('localidad', formData.localidad);
         <option value="">Seleccionar</option>
         <option value="alumno">Alumno</option>
         <option value="profesor">Profesor</option>
+        <option value="profesor">Admin</option>
       </select>
     </label>
 
@@ -281,13 +320,15 @@ dataToSend.append('localidad', formData.localidad);
             className="w-full mt-2"
           />
         </div>
-
-      <button
+<button
   type="button"
   className="mt-6 bg-blue-600 w-full py-2 rounded-full text-white font-semibold hover:bg-blue-700 transition"
   onClick={() => {
     if (activeTab === 'personal') {
-      setActiveTab('academics');
+      
+      if (validatePersonalFields()) {
+        setActiveTab('academics');
+      }
     } else {
       handleSubmit(new Event('submit') as unknown as React.FormEvent);
     }
