@@ -55,6 +55,12 @@ const categorias_array: Categoria[] = [
       imagen: '/categoria-salud.webp',
       seleccionada: false,
    },
+   {
+      id: 'Tecnologia',
+      nombre: 'Tecnología',
+      imagen: '/categoria-tecnologia.jpeg',
+      seleccionada: false,
+   },
 ];
 
 export default categorias_array;

@@ -1,4 +1,5 @@
-import type { Category, Class, Professor, Task, User } from '../types/entities';
+import type { Class, Professor, Task, User } from '../types/entities';
+import type { Categoria } from '../types/Categoria';
 
 const sampleClasses: Class[] = [
    {
@@ -12,7 +13,7 @@ const sampleClasses: Class[] = [
          { id: 'user-102', name: 'Carlos' },
       ] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-01', name: 'Tecnología' } as Category,
+      category: { id: 'cat-01', nombre: 'Tecnología' } as Categoria,
       createdAt: new Date('2024-09-01T09:00:00'),
    },
    {
@@ -26,7 +27,7 @@ const sampleClasses: Class[] = [
          { id: 'user-104', name: 'Jorge' },
       ] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-02', name: 'Humanidades' } as Category,
+      category: { id: 'cat-02', nombre: 'Historia' } as Categoria,
       createdAt: new Date('2024-09-02T10:00:00'),
    },
    {
@@ -36,7 +37,7 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-003', name: 'Carlos Sánchez' } as Professor,
       students: [{ id: 'user-105', name: 'Matías' }] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-03', name: 'Economía' } as Category,
+      category: { id: 'cat-03', nombre: 'Matemática' } as Categoria,
       createdAt: new Date('2024-09-03T11:00:00'),
    },
    {
@@ -47,7 +48,7 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-004', name: 'Sofía Martínez' } as Professor,
       students: [] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-01', name: 'Tecnología' } as Category,
+      category: { id: 'cat-01', nombre: 'Matemática' } as Categoria,
       createdAt: new Date('2024-09-04T12:00:00'),
    },
    {
@@ -61,7 +62,7 @@ const sampleClasses: Class[] = [
          { id: 'user-108', name: 'Florencia' },
       ] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-02', name: 'Humanidades' } as Category,
+      category: { id: 'cat-02', nombre: 'Lenguajes' } as Categoria,
       createdAt: new Date('2024-09-05T13:00:00'),
    },
    {
@@ -71,7 +72,7 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-006', name: 'Ignacio Suárez' } as Professor,
       students: [{ id: 'user-109', name: 'Camila' }] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-04', name: 'Ciencias Naturales' } as Category,
+      category: { id: 'cat-04', nombre: 'Ciencia' } as Categoria,
       createdAt: new Date('2024-09-06T14:00:00'),
    },
    {
@@ -82,7 +83,7 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-007', name: 'Laura Torres' } as Professor,
       students: [] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-05', name: 'Arte' } as Category,
+      category: { id: 'cat-05', nombre: 'Tecnología' } as Categoria,
       createdAt: new Date('2024-09-07T15:00:00'),
    },
    {
@@ -95,7 +96,7 @@ const sampleClasses: Class[] = [
          { id: 'user-111', name: 'Laura' },
       ] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-06', name: 'Gastronomía' } as Category,
+      category: { id: 'cat-06', nombre: 'Salud' } as Categoria,
       createdAt: new Date('2024-09-08T16:00:00'),
    },
    {
@@ -109,7 +110,7 @@ const sampleClasses: Class[] = [
          { id: 'user-113', name: 'Julieta' },
       ] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-01', name: 'Tecnología' } as Category,
+      category: { id: 'cat-01', nombre: 'Tecnología' } as Categoria,
       createdAt: new Date('2024-09-09T17:00:00'),
    },
    {
@@ -119,7 +120,7 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-010', name: 'Ricardo Herrera' } as Professor,
       students: [{ id: 'user-114', name: 'Sabrina' }] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-07', name: 'Psicología' } as Category,
+      category: { id: 'cat-07', nombre: 'Salud' } as Categoria,
       createdAt: new Date('2024-09-10T18:00:00'),
    },
 ];

@@ -15,7 +15,7 @@ const Dashboard = () => {
                   onCategoriaSeleccionada={setCategoriaSeleccionada}
                />
                <MateriasScroll categoria={categoriaSeleccionada} />
-               <CursosLista />
+               <CursosLista categoria={categoriaSeleccionada} />
             </div>
             <div className="h-[calc(100% - 68px)] w-1/4 m-4 bg-blue-500 rounded-xl">
                <h2>usuarios</h2>

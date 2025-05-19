@@ -14,6 +14,8 @@ const CategoriaScroll = ({ onCategoriaSeleccionada }: Props) => {
       onCategoriaSeleccionada(id);
    };
 
+   console.log('Categoria seleccionada:' + categoriaActiva);
+
    return (
       <>
          <div className="min-h-[15rem] w-full flex flex-col gap-2">
@@ -22,13 +24,13 @@ const CategoriaScroll = ({ onCategoriaSeleccionada }: Props) => {
                {categorias_array.map((categoria, index) => (
                   <button
                      key={index}
-                     onClick={() => handleCategoriaClick(categoria.id)}
+                     onClick={() => handleCategoriaClick(categoria.nombre)}
                   >
                      <CategoriaCard
                         id={categoria.id}
                         nombre={categoria.nombre}
                         imagen={categoria.imagen}
-                        seleccionada={categoriaActiva === categoria.id}
+                        seleccionada={categoriaActiva === categoria.nombre}
                      />
                   </button>
                ))}
