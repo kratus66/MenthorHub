@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import sampleClasses from '../../helpers/fakeClasses';
+import { Link } from 'react-router-dom';
 
 type CategoriaType = {
    categoria: string;
@@ -91,7 +92,7 @@ const CursosLista = ({
             )}
 
             {cursosPaginados.map((curso, index) => (
-               <a href="#" key={index}>
+               <Link to={`/cursos/${curso.id}`} key={curso.id}>
                   <div className="p-4 border rounded shadow-sm bg-white hover:bg-gray-50 hover:cursor-pointer transition-colors flex justify-between">
                      <div>
                         <h3 className="text-xl font-semibold text-blue-400">
@@ -106,7 +107,7 @@ const CursosLista = ({
                         <h3>Materia: {curso.materia}</h3>
                      </div>
                   </div>
-               </a>
+               </Link>
             ))}
             <div className="flex justify-center items-center relative">
                <div className="flex gap-2 items-center">
