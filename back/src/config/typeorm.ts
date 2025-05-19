@@ -1,5 +1,5 @@
 // src/config/typeorm.ts
-import { DataSourceOptions, DataSource } from 'typeorm';
+import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
 
 import { User } from '../users/user.entity';
@@ -10,10 +10,9 @@ import { Payment } from '../payment/payment.entity';
 import { Category } from '../entities/categorias.entities';
 import { Notification } from '../notifications/notification.entity';
 
-
 dotenv.config();
 
-export const dataSourceOptions: DataSourceOptions = {
+const AppDataSource = new DataSource({
   type: 'postgres',
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT || '5432', 10),
@@ -22,9 +21,8 @@ export const dataSourceOptions: DataSourceOptions = {
   database: process.env.DB_NAME,
   synchronize: false,
   logging: true,
-  entities: [User, Class, Task, Submission, Payment, Category,Notification],
+  entities: [User, Class, Task, Submission, Payment, Category, Notification],
   migrations: [__dirname + '/../migrations/*{.ts,.js}'],
-};
+});
 
-const AppDataSource = new DataSource(dataSourceOptions);
 export default AppDataSource;
