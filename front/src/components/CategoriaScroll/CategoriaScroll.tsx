@@ -1,20 +1,21 @@
-import { useState } from 'react';
 import categorias_array from '../../helpers/categorias';
 import CategoriaCard from '../CategoriaCard/CategoriaCard';
 
 type Props = {
    onCategoriaSeleccionada: (categoriaId: string) => void;
+   onCategoriaActiva: (categoriaId: string) => void;
+   categoriaActiva?: string;
 };
 
-const CategoriaScroll = ({ onCategoriaSeleccionada }: Props) => {
-   const [categoriaActiva, setCategoriaActiva] = useState<string | null>(null);
-
+const CategoriaScroll = ({
+   onCategoriaSeleccionada,
+   onCategoriaActiva,
+   categoriaActiva,
+}: Props) => {
    const handleCategoriaClick = (id: string) => {
-      setCategoriaActiva(id);
+      onCategoriaActiva(id);
       onCategoriaSeleccionada(id);
    };
-
-   console.log('Categoria seleccionada:' + categoriaActiva);
 
    return (
       <>
