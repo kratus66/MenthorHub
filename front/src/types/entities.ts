@@ -27,5 +27,6 @@ export interface Class {
    students: User[];
    tasks: Task[];
    category: Categoria;
+   materia: string;
    createdAt: Date;
 }
