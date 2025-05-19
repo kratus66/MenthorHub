@@ -5,7 +5,7 @@ export default function Login() {
       <div className="h-screen w-screen flex items-center justify-center">
          <div className="w-3/5 flex flex-col gap-4 justify-between ps-[8rem] pe-[14rem]">
             <h1 className="text-8xl">MentorHub</h1>
-            <h2 className="text-5xl">Login</h2>
+            <h2 className="text-5xl">Ingresa tus datos</h2>
             <LoginForm />
             <div className="flex flex-col gap-4 mt-8">
                <p className="w-fit self-center">o continúa con</p>
@@ -36,7 +36,10 @@ export default function Login() {
                   </a>
                </div>
                <p className="w-fit self-center">
-                  ¿Aun no tienes cuenta? <a href="/register">Registrate gratis.</a>
+                  ¿Aun no tienes cuenta?{' '}
+                  <a href="/register" className="text-blue-500 hover:underline">
+                     Registrate gratis.
+                  </a>
                </p>
             </div>
          </div>

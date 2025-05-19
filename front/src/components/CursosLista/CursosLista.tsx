@@ -1,24 +1,35 @@
 import { useState } from 'react';
 import sampleClasses from '../../helpers/fakeClasses';
+import { Link } from 'react-router-dom';
 
 type CategoriaType = {
    categoria: string;
+   materiaSeleccionada: string;
    onCategoriaSeleccionada: (categoriaId: string) => void;
    onCategoriaActiva: (categoriaId: string) => void;
+   onMateriaSeleccionada: (materiaId: string) => void;
 };
 
 const ITEMS_POR_PAGINA = 10;
 
 const CursosLista = ({
    categoria,
+   materiaSeleccionada,
    onCategoriaSeleccionada,
    onCategoriaActiva,
+   onMateriaSeleccionada,
 }: CategoriaType) => {
    const [paginaActual, setPaginaActual] = useState(1);
 
-   const cursosFiltrados = categoria
-      ? sampleClasses.filter((curso) => curso.category.nombre === categoria)
-      : sampleClasses;
+   const cursosFiltrados = sampleClasses.filter((curso) => {
+      const coincideCategoria = categoria
+         ? curso.category.nombre === categoria
+         : true;
+      const coincideMateria = materiaSeleccionada
+         ? curso.materia === materiaSeleccionada
+         : true;
+      return coincideCategoria && coincideMateria;
+   });
 
    const totalPaginas = Math.ceil(cursosFiltrados.length / ITEMS_POR_PAGINA);
 
@@ -39,6 +50,7 @@ const CursosLista = ({
       setPaginaActual(1);
       onCategoriaSeleccionada('');
       onCategoriaActiva('');
+      onMateriaSeleccionada('');
    };
 
    return (
@@ -79,8 +91,8 @@ const CursosLista = ({
                </p>
             )}
 
-            {cursosPaginados.map((curso, index) => (
-               <a href="#" key={index}>
+            {cursosPaginados.map((curso) => (
+               <Link to={`/cursos/${curso.id}`} key={curso.id}>
                   <div className="p-4 border rounded shadow-sm bg-white hover:bg-gray-50 hover:cursor-pointer transition-colors flex justify-between">
                      <div>
                         <h3 className="text-xl font-semibold text-blue-400">
@@ -90,11 +102,12 @@ const CursosLista = ({
                            Profesor: {curso.teacher.name}
                         </p>
                      </div>
-                     <div>
+                     <div className="flex flex-col">
                         <h3>Categoría: {curso.category.nombre}</h3>
+                        <h3>Materia: {curso.materia}</h3>
                      </div>
                   </div>
-               </a>
+               </Link>
             ))}
             <div className="flex justify-center items-center relative">
                <div className="flex gap-2 items-center">

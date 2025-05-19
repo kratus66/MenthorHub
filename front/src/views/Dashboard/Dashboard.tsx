@@ -7,6 +7,9 @@ const Dashboard = () => {
    const [categoriaSeleccionada, setCategoriaSeleccionada] =
       useState<string>('');
    const [categoriaActiva, setCategoriaActiva] = useState<string | null>(null);
+   const [materiaSeleccionada, setMateriaSeleccionada] = useState('');
+
+   console.log('Materia Seleccionada:' + materiaSeleccionada);
 
    return (
       <>
@@ -14,18 +17,25 @@ const Dashboard = () => {
             <div className="h-[calc(100% - 68px)] w-3/4 m-4 flex flex-col gap-6 overflow-y-scroll ps-5">
                <CategoriaScroll
                   onCategoriaSeleccionada={setCategoriaSeleccionada}
+                  onMateriaSeleccionada={setMateriaSeleccionada}
                   onCategoriaActiva={setCategoriaActiva}
                   categoriaActiva={categoriaActiva || undefined}
                />
-               <MateriasScroll categoria={categoriaSeleccionada} />
+               <MateriasScroll
+                  categoria={categoriaSeleccionada}
+                  onMateriaSeleccionada={setMateriaSeleccionada}
+                  materiaSeleccionada={materiaSeleccionada}
+               />
                <CursosLista
                   categoria={categoriaSeleccionada}
+                  materiaSeleccionada={materiaSeleccionada}
                   onCategoriaSeleccionada={setCategoriaSeleccionada}
+                  onMateriaSeleccionada={setMateriaSeleccionada}
                   onCategoriaActiva={setCategoriaActiva}
                />
             </div>
-            <div className="h-[calc(100% - 68px)] w-1/4 m-4 bg-blue-500 rounded-xl">
-               <h2>usuarios</h2>
+            <div className="h-[calc(100% - 68px)] w-1/4 m-4 bg-[#f3f4f6] rounded-xl">
+               <h2></h2>
             </div>
          </div>
       </>

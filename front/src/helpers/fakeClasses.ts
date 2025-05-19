@@ -13,7 +13,12 @@ const sampleClasses: Class[] = [
          { id: 'user-102', name: 'Carlos' },
       ] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-01', nombre: 'Tecnología' } as Categoria,
+      category: {
+         id: 'cat-01',
+         nombre: 'Tecnología',
+         imagen: '/categoria-tecnologia.jpeg',
+      } as Categoria,
+      materia: 'Salud Mental',
       createdAt: new Date('2024-09-01T09:00:00'),
    },
    {
@@ -27,7 +32,12 @@ const sampleClasses: Class[] = [
          { id: 'user-104', name: 'Jorge' },
       ] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-02', nombre: 'Historia' } as Categoria,
+      category: {
+         id: 'cat-02',
+         nombre: 'Historia',
+         imagen: '/categoria-historia.jpg',
+      } as Categoria,
+      materia: 'Inglés',
       createdAt: new Date('2024-09-02T10:00:00'),
    },
    {
@@ -37,7 +47,12 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-003', name: 'Carlos Sánchez' } as Professor,
       students: [{ id: 'user-105', name: 'Matías' }] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-03', nombre: 'Matemática' } as Categoria,
+      category: {
+         id: 'cat-03',
+         nombre: 'Matemática',
+         imagen: '/categoria-matematica.png',
+      } as Categoria,
+      materia: 'Teoría Literaria',
       createdAt: new Date('2024-09-03T11:00:00'),
    },
    {
@@ -48,7 +63,12 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-004', name: 'Sofía Martínez' } as Professor,
       students: [] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-01', nombre: 'Matemática' } as Categoria,
+      category: {
+         id: 'cat-01',
+         nombre: 'Matemática',
+         imagen: '/categoria-matematica.png',
+      } as Categoria,
+      materia: 'Narrativa',
       createdAt: new Date('2024-09-04T12:00:00'),
    },
    {
@@ -62,7 +82,12 @@ const sampleClasses: Class[] = [
          { id: 'user-108', name: 'Florencia' },
       ] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-02', nombre: 'Lenguajes' } as Categoria,
+      category: {
+         id: 'cat-02',
+         nombre: 'Lenguajes',
+         imagen: '/categoria-lenguajes.webp',
+      } as Categoria,
+      materia: 'Psicología',
       createdAt: new Date('2024-09-05T13:00:00'),
    },
    {
@@ -72,7 +97,12 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-006', name: 'Ignacio Suárez' } as Professor,
       students: [{ id: 'user-109', name: 'Camila' }] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-04', nombre: 'Ciencia' } as Categoria,
+      category: {
+         id: 'cat-04',
+         nombre: 'Ciencia',
+         imagen: '/categoria-ciencia.jpg',
+      } as Categoria,
+      materia: 'Física',
       createdAt: new Date('2024-09-06T14:00:00'),
    },
    {
@@ -83,7 +113,12 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-007', name: 'Laura Torres' } as Professor,
       students: [] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-05', nombre: 'Tecnología' } as Categoria,
+      category: {
+         id: 'cat-05',
+         nombre: 'Tecnología',
+         imagen: '/categoria-tecnologia.jpeg',
+      } as Categoria,
+      materia: 'Anatomía Humana',
       createdAt: new Date('2024-09-07T15:00:00'),
    },
    {
@@ -96,7 +131,12 @@ const sampleClasses: Class[] = [
          { id: 'user-111', name: 'Laura' },
       ] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-06', nombre: 'Salud' } as Categoria,
+      category: {
+         id: 'cat-06',
+         nombre: 'Salud',
+         imagen: '/categoria-salud.webp',
+      } as Categoria,
+      materia: 'Anatomía Humana',
       createdAt: new Date('2024-09-08T16:00:00'),
    },
    {
@@ -110,7 +150,12 @@ const sampleClasses: Class[] = [
          { id: 'user-113', name: 'Julieta' },
       ] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-01', nombre: 'Tecnología' } as Categoria,
+      category: {
+         id: 'cat-01',
+         nombre: 'Tecnología',
+         imagen: '/categoria-tecnologia.jpeg',
+      } as Categoria,
+      materia: 'Primeros Auxilios',
       createdAt: new Date('2024-09-09T17:00:00'),
    },
    {
@@ -120,7 +165,12 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-010', name: 'Ricardo Herrera' } as Professor,
       students: [{ id: 'user-114', name: 'Sabrina' }] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-07', nombre: 'Salud' } as Categoria,
+      category: {
+         id: 'cat-07',
+         nombre: 'Salud',
+         imagen: '/categoria-salud.webp',
+      } as Categoria,
+      materia: 'Anatomía Humana',
       createdAt: new Date('2024-09-10T18:00:00'),
    },
    {
@@ -130,7 +180,12 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-011', name: 'Esteban Correa' } as Professor,
       students: [] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-08', nombre: 'Música' } as Categoria,
+      category: {
+         id: 'cat-08',
+         nombre: 'Música',
+         imagen: '/categoria-musica.png',
+      } as Categoria,
+      materia: 'Historia de la música',
       createdAt: new Date('2024-09-11T08:00:00'),
    },
    {
@@ -144,7 +199,12 @@ const sampleClasses: Class[] = [
          { id: 'user-116', name: 'Elena' },
       ] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-09', nombre: 'Tecnología' } as Categoria,
+      category: {
+         id: 'cat-09',
+         nombre: 'Tecnología',
+         imagen: '/categoria-tecnologia.jpeg',
+      } as Categoria,
+      materia: 'Anatomía Humana',
       createdAt: new Date('2024-09-12T08:00:00'),
    },
    {
@@ -154,7 +214,12 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-013', name: 'Luciana Bentancor' } as Professor,
       students: [] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-10', nombre: 'Geografía' } as Categoria,
+      category: {
+         id: 'cat-10',
+         nombre: 'Geografía',
+         imagen: '/categoria-geografia.jpg',
+      } as Categoria,
+      materia: 'Pintura',
       createdAt: new Date('2024-09-13T08:00:00'),
    },
    {
@@ -165,7 +230,12 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-014', name: 'Mario Paredes' } as Professor,
       students: [{ id: 'user-117', name: 'Romina' }] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-11', nombre: 'Finanzas' } as Categoria,
+      category: {
+         id: 'cat-11',
+         nombre: 'Finanzas',
+         imagen: '/categoria-finanzas.jpg',
+      } as Categoria,
+      materia: 'Robótica',
       createdAt: new Date('2024-09-14T08:00:00'),
    },
    {
@@ -175,7 +245,12 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-015', name: 'Victoria Ayala' } as Professor,
       students: [] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-12', nombre: 'Lenguajes' } as Categoria,
+      category: {
+         id: 'cat-12',
+         nombre: 'Lenguajes',
+         imagen: '/categoria-lenguajes.webp',
+      } as Categoria,
+      materia: 'Psicología',
       createdAt: new Date('2024-09-15T08:00:00'),
    },
    {
@@ -188,7 +263,12 @@ const sampleClasses: Class[] = [
          { id: 'user-119', name: 'Nicolás' },
       ] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-13', nombre: 'Salud' } as Categoria,
+      category: {
+         id: 'cat-13',
+         nombre: 'Salud',
+         imagen: '/categoria-salud.webp',
+      } as Categoria,
+      materia: 'Anatomía Humana',
       createdAt: new Date('2024-09-16T08:00:00'),
    },
    {
@@ -198,7 +278,12 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-017', name: 'Santiago Ferrer' } as Professor,
       students: [] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-14', nombre: 'Deporte' } as Categoria,
+      category: {
+         id: 'cat-14',
+         nombre: 'Deporte',
+         imagen: '/categoria-deportes.png',
+      } as Categoria,
+      materia: 'Básquetbol',
       createdAt: new Date('2024-09-17T08:00:00'),
    },
    {
@@ -208,7 +293,12 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-018', name: 'Mónica Etcheverry' } as Professor,
       students: [{ id: 'user-120', name: 'Iván' }] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-15', nombre: 'Ciencia' } as Categoria,
+      category: {
+         id: 'cat-15',
+         nombre: 'Ciencia',
+         imagen: '/categoria-ciencia.jpg',
+      } as Categoria,
+      materia: 'Química',
       createdAt: new Date('2024-09-18T08:00:00'),
    },
    {
@@ -219,7 +309,12 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-019', name: 'Silvia Ortiz' } as Professor,
       students: [] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-16', nombre: 'Deporte' } as Categoria,
+      category: {
+         id: 'cat-16',
+         nombre: 'Deporte',
+         imagen: '/categoria-deportes.png',
+      } as Categoria,
+      materia: 'Fútbol',
       createdAt: new Date('2024-09-19T08:00:00'),
    },
    {
@@ -229,7 +324,12 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-020', name: 'Marcelo Piñeyro' } as Professor,
       students: [] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-17', nombre: 'Lenguajes' } as Categoria,
+      category: {
+         id: 'cat-17',
+         nombre: 'Lenguajes',
+         imagen: '/categoria-lenguajes.webp',
+      } as Categoria,
+      materia: 'Sociología',
       createdAt: new Date('2024-09-20T08:00:00'),
    },
    {
@@ -239,7 +339,12 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-021', name: 'Natalia Viera' } as Professor,
       students: [] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-18', nombre: 'Música' } as Categoria,
+      category: {
+         id: 'cat-18',
+         nombre: 'Música',
+         imagen: '/categoria-musica.png',
+      } as Categoria,
+      materia: 'Teoría Musical',
       createdAt: new Date('2024-09-21T08:00:00'),
    },
    {
@@ -249,7 +354,12 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-022', name: 'Julián Morales' } as Professor,
       students: [{ id: 'user-121', name: 'Agustina' }] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-19', nombre: 'Matemática' } as Categoria,
+      category: {
+         id: 'cat-19',
+         nombre: 'Matemática',
+         imagen: '/categoria-matematica.png',
+      } as Categoria,
+      materia: 'Teoría Literaria',
       createdAt: new Date('2024-09-22T08:00:00'),
    },
    {
@@ -260,7 +370,12 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-023', name: 'Carla Medina' } as Professor,
       students: [] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-20', nombre: 'Salud' } as Categoria,
+      category: {
+         id: 'cat-20',
+         nombre: 'Salud',
+         imagen: '/categoria-salud.webp',
+      } as Categoria,
+      materia: 'Nutricion',
       createdAt: new Date('2024-09-23T08:00:00'),
    },
    {
@@ -271,7 +386,12 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-024', name: 'Andrés Pérez' } as Professor,
       students: [] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-21', nombre: 'Historia' } as Categoria,
+      category: {
+         id: 'cat-21',
+         nombre: 'Historia',
+         imagen: '/categoria-historia.jpg',
+      } as Categoria,
+      materia: 'Inglés',
       createdAt: new Date('2024-09-24T08:00:00'),
    },
    {
@@ -281,7 +401,12 @@ const sampleClasses: Class[] = [
       teacher: { id: 'prof-025', name: 'Emilia Castro' } as Professor,
       students: [] as User[],
       tasks: [] as Task[],
-      category: { id: 'cat-22', nombre: 'Tecnología' } as Categoria,
+      category: {
+         id: 'cat-22',
+         nombre: 'Tecnología',
+         imagen: '/categoria-tecnologia.jpeg',
+      } as Categoria,
+      materia: 'Anatomía Humana',
       createdAt: new Date('2024-09-25T08:00:00'),
    },
 ];

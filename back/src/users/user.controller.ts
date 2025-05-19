@@ -7,6 +7,7 @@ import {
   Param,
   Body,
   ParseUUIDPipe,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { UsersService } from './user.service';
 import { User } from './user.entity';
@@ -29,15 +30,23 @@ export class UsersController {
   @ApiOperation({ summary: 'Crear un nuevo usuario' })
   @ApiBody({ type: CreateUserDto })
   @ApiResponse({ status: 201, description: 'Usuario creado correctamente', type: User })
-  create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.usersService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
+    try {
+      return await this.usersService.create(createUserDto);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al crear el usuario');
+    }
   }
 
   @Get()
   @ApiOperation({ summary: 'Obtener todos los usuarios' })
   @ApiResponse({ status: 200, description: 'Lista de usuarios', type: [User] })
-  findAll(): Promise<User[]> {
-    return this.usersService.findAll();
+  async findAll(): Promise<User[]> {
+    try {
+      return await this.usersService.findAll();
+    } catch (error) {
+      throw new InternalServerErrorException('Error al obtener los usuarios');
+    }
   }
 
   @Get(':id')
@@ -46,7 +55,11 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Usuario encontrado', type: User })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<User | null> {
-    return this.usersService.findById(id);
+    try {
+      return await this.usersService.findById(id);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al buscar el usuario');
+    }
   }
 
   @Put(':id')
@@ -54,18 +67,26 @@ export class UsersController {
   @ApiParam({ name: 'id', description: 'UUID del usuario', type: String })
   @ApiBody({ type: UpdateUserDto })
   @ApiResponse({ status: 200, description: 'Usuario actualizado', type: User })
-  update(
+  async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<User> {
-    return this.usersService.update(id, updateUserDto);
+    try {
+      return await this.usersService.update(id, updateUserDto);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al actualizar el usuario');
+    }
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Eliminar un usuario' })
   @ApiParam({ name: 'id', description: 'UUID del usuario', type: String })
   @ApiResponse({ status: 200, description: 'Usuario eliminado' })
-  remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
-    return this.usersService.remove(id);
+  async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    try {
+      return await this.usersService.remove(id);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al eliminar el usuario');
+    }
   }
 }

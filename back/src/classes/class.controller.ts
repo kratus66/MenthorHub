@@ -7,6 +7,7 @@ import {
   Put,
   Delete,
   ParseUUIDPipe,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { ClassesService } from './class.service';
 import { CreateClassDto } from './dto/create-class.dto';
@@ -29,15 +30,23 @@ export class ClassesController {
   @ApiOperation({ summary: 'Crear una nueva clase' })
   @ApiBody({ type: CreateClassDto })
   @ApiResponse({ status: 201, description: 'Clase creada exitosamente', type: Class })
-  create(@Body() createDto: CreateClassDto) {
-    return this.classesService.create(createDto);
+  async create(@Body() createDto: CreateClassDto) {
+    try {
+      return await this.classesService.create(createDto);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al crear la clase');
+    }
   }
 
   @Get()
   @ApiOperation({ summary: 'Obtener todas las clases' })
   @ApiResponse({ status: 200, description: 'Lista de clases', type: [Class] })
-  findAll() {
-    return this.classesService.findAll();
+  async findAll() {
+    try {
+      return await this.classesService.findAll();
+    } catch (error) {
+      throw new InternalServerErrorException('Error al obtener las clases');
+    }
   }
 
   @Get(':id')
@@ -45,8 +54,12 @@ export class ClassesController {
   @ApiParam({ name: 'id', description: 'UUID de la clase' })
   @ApiResponse({ status: 200, description: 'Clase encontrada', type: Class })
   @ApiResponse({ status: 404, description: 'Clase no encontrada' })
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.classesService.findOne(id);
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    try {
+      return await this.classesService.findOne(id);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al buscar la clase');
+    }
   }
 
   @Put(':id')
@@ -55,8 +68,15 @@ export class ClassesController {
   @ApiBody({ type: UpdateClassDto })
   @ApiResponse({ status: 200, description: 'Clase actualizada', type: Class })
   @ApiResponse({ status: 404, description: 'Clase no encontrada' })
-  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateDto: UpdateClassDto) {
-    return this.classesService.update(id, updateDto);
+  async update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateDto: UpdateClassDto,
+  ) {
+    try {
+      return await this.classesService.update(id, updateDto);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al actualizar la clase');
+    }
   }
 
   @Delete(':id')
@@ -64,8 +84,11 @@ export class ClassesController {
   @ApiParam({ name: 'id', description: 'UUID de la clase a eliminar' })
   @ApiResponse({ status: 200, description: 'Clase eliminada exitosamente' })
   @ApiResponse({ status: 404, description: 'Clase no encontrada' })
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.classesService.remove(id);
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    try {
+      return await this.classesService.remove(id);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al eliminar la clase');
+    }
   }
 }
-
