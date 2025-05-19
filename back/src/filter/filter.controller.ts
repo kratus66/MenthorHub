@@ -1,5 +1,5 @@
 // src/filter/classes.controller.ts
-import { Controller, Get, Query, Body, Post } from '@nestjs/common';
+import { Controller, Get, Query, Body, Post, InternalServerErrorException } from '@nestjs/common';
 import { FilterService } from './filter.service';
 import { FilterClassesDto } from './dto/filterClass.dto';
 import { PaginationDto } from './dto/PaginationDto';
@@ -26,11 +26,10 @@ export class FilterController {
     @Query() pagination: PaginationDto,
     @Body() filters: FilterClassesDto,
   ) {
-    return this.classesService.findAll(filters, pagination);
+    try {
+      return await this.classesService.findAll(filters, pagination);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al filtrar las clases');
+    }
   }
 }
-
-
-
-
-

@@ -6,6 +6,7 @@ import {
   Body,
   Delete,
   UseGuards,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { TasksService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -37,24 +38,36 @@ export class TasksController {
   @ApiOperation({ summary: 'Crear una tarea (solo para profesores)' })
   @ApiBody({ type: CreateTaskDto })
   @ApiResponse({ status: 201, description: 'Tarea creada exitosamente', type: Task })
-  create(@Body() dto: CreateTaskDto, @CurrentUser() user: User) {
-    return this.tasksService.createByTeacher(user.id, dto);
+  async create(@Body() dto: CreateTaskDto, @CurrentUser() user: User) {
+    try {
+      return await this.tasksService.createByTeacher(user.id, dto);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al crear la tarea');
+    }
   }
 
   @Get('teacher')
   @Roles(Role.TEACHER)
   @ApiOperation({ summary: 'Obtener tareas creadas por el profesor autenticado' })
   @ApiResponse({ status: 200, description: 'Listado de tareas', type: [Task] })
-  findAllTeacher(@CurrentUser() user: User) {
-    return this.tasksService.findByTeacher(user.id);
+  async findAllTeacher(@CurrentUser() user: User) {
+    try {
+      return await this.tasksService.findByTeacher(user.id);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al obtener las tareas del profesor');
+    }
   }
 
   @Get('student')
   @Roles(Role.STUDENT)
   @ApiOperation({ summary: 'Obtener tareas asignadas al estudiante autenticado' })
   @ApiResponse({ status: 200, description: 'Listado de tareas', type: [Task] })
-  findAllStudent(@CurrentUser() user: User) {
-    return this.tasksService.findByStudent(user.id);
+  async findAllStudent(@CurrentUser() user: User) {
+    try {
+      return await this.tasksService.findByStudent(user.id);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al obtener las tareas del estudiante');
+    }
   }
 
   @Delete(':id')
@@ -62,8 +75,11 @@ export class TasksController {
   @ApiOperation({ summary: 'Eliminar una tarea (solo si pertenece al profesor)' })
   @ApiParam({ name: 'id', description: 'UUID de la tarea a eliminar' })
   @ApiResponse({ status: 200, description: 'Tarea eliminada' })
-  remove(@Param('id') id: string, @CurrentUser() user: User) {
-    return this.tasksService.deleteIfOwnedByTeacher(user.id, id);
+  async remove(@Param('id') id: string, @CurrentUser() user: User) {
+    try {
+      return await this.tasksService.deleteIfOwnedByTeacher(user.id, id);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al eliminar la tarea');
+    }
   }
 }
-

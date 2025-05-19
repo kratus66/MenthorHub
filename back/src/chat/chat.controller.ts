@@ -4,6 +4,7 @@ import {
   Post,
   Body,
   Param,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import {
@@ -42,7 +43,7 @@ export class ChatController {
       ],
     },
   })
-  findMessagesByClass(@Param('classId') classId: string) {
+  async findMessagesByClass(@Param('classId') classId: string) {
     return this.chatService.getMessagesByClass(classId);
   }
 
@@ -63,6 +64,10 @@ export class ChatController {
     description: 'Mensaje guardado exitosamente',
   })
   async sendMessage(@Body() body: CreateChatDto) {
-    return this.chatService.saveMessage(body);
+    try {
+      return await this.chatService.saveMessage(body);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al guardar el mensaje');
+    }
   }
 }

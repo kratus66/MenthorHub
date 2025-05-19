@@ -7,6 +7,7 @@ import {
   Param,
   Body,
   ParseUUIDPipe,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { PaymentsService } from './payment.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
@@ -30,26 +31,38 @@ export class PaymentsController {
   @ApiParam({ name: 'userId', description: 'UUID del usuario', type: String })
   @ApiBody({ type: CreatePaymentDto })
   @ApiResponse({ status: 201, description: 'Pago creado exitosamente', type: Payment })
-  create(
+  async create(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Body() dto: CreatePaymentDto,
   ) {
-    return this.paymentsService.create(userId, dto);
+    try {
+      return await this.paymentsService.create(userId, dto);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al crear el pago');
+    }
   }
 
   @Get('user/:userId')
   @ApiOperation({ summary: 'Obtener todos los pagos de un usuario' })
   @ApiParam({ name: 'userId', description: 'UUID del usuario', type: String })
   @ApiResponse({ status: 200, description: 'Lista de pagos del usuario', type: [Payment] })
-  findByUser(@Param('userId', ParseUUIDPipe) userId: string) {
-    return this.paymentsService.findByUser(userId);
+  async findByUser(@Param('userId', ParseUUIDPipe) userId: string) {
+    try {
+      return await this.paymentsService.findByUser(userId);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al obtener los pagos del usuario');
+    }
   }
 
   @Get()
   @ApiOperation({ summary: 'Obtener todos los pagos' })
   @ApiResponse({ status: 200, description: 'Lista completa de pagos', type: [Payment] })
-  findAll() {
-    return this.paymentsService.findAll();
+  async findAll() {
+    try {
+      return await this.paymentsService.findAll();
+    } catch (error) {
+      throw new InternalServerErrorException('Error al obtener los pagos');
+    }
   }
 
   @Put(':id')
@@ -57,19 +70,26 @@ export class PaymentsController {
   @ApiParam({ name: 'id', description: 'UUID del pago', type: String })
   @ApiBody({ type: UpdatePaymentDto })
   @ApiResponse({ status: 200, description: 'Pago actualizado correctamente', type: Payment })
-  update(
+  async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdatePaymentDto,
   ) {
-    return this.paymentsService.update(id, dto);
+    try {
+      return await this.paymentsService.update(id, dto);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al actualizar el pago');
+    }
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Eliminar un pago por ID' })
   @ApiParam({ name: 'id', description: 'UUID del pago', type: String })
   @ApiResponse({ status: 200, description: 'Pago eliminado correctamente' })
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.paymentsService.remove(id);
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    try {
+      return await this.paymentsService.remove(id);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al eliminar el pago');
+    }
   }
 }
-
