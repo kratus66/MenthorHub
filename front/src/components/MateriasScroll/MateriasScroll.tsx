@@ -12,8 +12,8 @@ const MateriasScroll = ({ categoria = 'Música' }: SelectedCategoryType) => {
    const materias = materiasPorCategoria[categoriaReal] || [];
    const [materiaSeleccionada, setMateriaSeleccionada] = useState('');
 
-   const handleMateriaClick = (id: string) => {
-      setMateriaSeleccionada(id);
+   const handleMateriaClick = (nombre: string) => {
+      setMateriaSeleccionada(nombre);
    };
 
    console.log('Categoria que recibe MateriasScroll:' + categoria);
@@ -26,7 +26,7 @@ const MateriasScroll = ({ categoria = 'Música' }: SelectedCategoryType) => {
                {materias.map((materia, index) => (
                   <button
                      key={index}
-                     onClick={() => handleMateriaClick(materia.id)}
+                     onClick={() => handleMateriaClick(materia.nombre)}
                   >
                      <CategoriaCard
                         id={materia.id}
