@@ -16,9 +16,9 @@ const CategoriaScroll = ({ onCategoriaSeleccionada }: Props) => {
 
    return (
       <>
-         <div className="min-h-[17rem] w-full flex flex-col gap-2">
+         <div className="min-h-[15rem] w-full flex flex-col gap-2">
             <h2 className="text-4xl">Categorias</h2>
-            <div className="h-[14rem] flex flex-nowrap overflow-x-scroll overflow-y-visible">
+            <div className="h-[12rem] flex flex-nowrap overflow-x-scroll overflow-y-visible gap-2">
                {categorias_array.map((categoria, index) => (
                   <button
                      key={index}
