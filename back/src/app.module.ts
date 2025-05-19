@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config'; // ⬅️ Faltaba esto
+import { ConfigModule } from '@nestjs/config';
 
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { ChatModule } from './chat/chat.module';
@@ -20,45 +20,45 @@ import { Notification } from './notifications/notification.entity';
 import { Category } from './entities/categorias.entities';
 import { CategoriesModule } from './categorias/categoria.module';
 import { SubmissionModule } from './submission/submission.module';
-
 import { SeederModule } from './seeder/seeder.module';
+import { ChatMessage } from './chat/chat.entity'; // ✅ Añadido
 
 @Module({
-   imports: [
-      ConfigModule.forRoot({ isGlobal: true }), // ✅ Agregado
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
 
-      FilterModule,
-      ChatbotModule,
-      ChatModule,
-      ClassesModule,
-      PaymentsModule,
-      AuthModule,
-      TasksModule,
-      NotificationsModule,
-      CategoriesModule,
-      SubmissionModule,
-      SeederModule,
+    FilterModule,
+    ChatbotModule,
+    ChatModule,
+    ClassesModule,
+    PaymentsModule,
+    AuthModule,
+    TasksModule,
+    NotificationsModule,
+    CategoriesModule,
+    SubmissionModule,
+    SeederModule,
 
-      TypeOrmModule.forRoot({
-         type: 'postgres',
-         host: process.env.DB_HOST,
-         port: parseInt(process.env.DB_PORT || '5432'),
-         username: process.env.DB_USERNAME,
-         password: process.env.DB_PASSWORD,
-         database: process.env.DB_NAME,
-         entities: [
-            User,
-            Class,
-            Task,
-            Submission,
-            Payment,
-            Notification,
-            Category,
-            
-         ],
-         synchronize: true,
-         dropSchema: true,
-      }),
-   ],
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT || '5432'),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      entities: [
+        User,
+        Class,
+        Task,
+        Submission,
+        Payment,
+        Notification,
+        Category,
+        ChatMessage, // ✅ Añadido aquí
+      ],
+      synchronize: true,
+      dropSchema: true,
+    }),
+  ],
 })
 export class AppModule {}
