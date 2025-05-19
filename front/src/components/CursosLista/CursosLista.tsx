@@ -91,7 +91,7 @@ const CursosLista = ({
                </p>
             )}
 
-            {cursosPaginados.map((curso, index) => (
+            {cursosPaginados.map((curso) => (
                <Link to={`/cursos/${curso.id}`} key={curso.id}>
                   <div className="p-4 border rounded shadow-sm bg-white hover:bg-gray-50 hover:cursor-pointer transition-colors flex justify-between">
                      <div>
