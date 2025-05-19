@@ -26,10 +26,10 @@ const AppWrapper = () => {
    // const [user, setUser] = useState<{
    // Solo para evitar "'setUser' is declared but its value is never read." en el deploy
    const [user] = useState<{
-      role: 'profesor' | 'alumno' | 'otro';
+      role: 'profesor' | 'alumno' | 'admin';
       nombre: string;
    } | null>({
-      role: 'alumno',
+      role: 'profesor',
       nombre: 'Juan Pérez',
    });
 
