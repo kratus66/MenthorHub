@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, InternalServerErrorException } from '@nestjs/common';
 import { ChatbotService } from './chatbot.service';
 import { AskBotDto } from '../chatbot/dto/ask-bot.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
@@ -20,9 +20,12 @@ export class ChatbotController {
     },
   })
   @ApiBody({ type: AskBotDto })
-  askBot(@Body() askBotDto: AskBotDto) {
-    const response = this.chatbotService.getBotResponse(askBotDto.message);
-    return { response };
+  async askBot(@Body() askBotDto: AskBotDto) {
+    try {
+      const response = await this.chatbotService.getBotResponse(askBotDto.message);
+      return { response };
+    } catch (error) {
+      throw new InternalServerErrorException('Error al procesar la respuesta del chatbot');
+    }
   }
 }
-

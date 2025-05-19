@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, InternalServerErrorException } from '@nestjs/common';
 import { CategoriesService } from './categorias.service';
 import { CreateCategoryDto } from '../dto/create-category.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -11,13 +11,21 @@ export class CategoriesController {
   @Post()
   @ApiOperation({ summary: 'Crear categoría' })
   @ApiResponse({ status: 201, description: 'Categoría creada' })
-  create(@Body() dto: CreateCategoryDto) {
-    return this.categoriesService.create(dto);
+  async create(@Body() dto: CreateCategoryDto) {
+    try {
+      return await this.categoriesService.create(dto);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al crear la categoría');
+    }
   }
 
   @Get()
   @ApiOperation({ summary: 'Listar categorías' })
-  findAll() {
-    return this.categoriesService.findAll();
+  async findAll() {
+    try {
+      return await this.categoriesService.findAll();
+    } catch (error) {
+      throw new InternalServerErrorException('Error al obtener las categorías');
+    }
   }
 }
