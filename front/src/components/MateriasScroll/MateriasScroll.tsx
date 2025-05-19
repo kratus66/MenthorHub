@@ -6,39 +6,36 @@ type SelectedCategoryType = {
    categoria: string;
 };
 
-const MateriasScroll = ({ categoria }: SelectedCategoryType) => {
-   const materias = materiasPorCategoria[categoria] || [];
+const MateriasScroll = ({ categoria = 'Música' }: SelectedCategoryType) => {
+   const categoriaReal =
+      categoria && categoria.trim() !== '' ? categoria : 'Música';
+   const materias = materiasPorCategoria[categoriaReal] || [];
    const [materiaSeleccionada, setMateriaSeleccionada] = useState('');
 
-   const handleMateriaClick = (id: string) => {
-      setMateriaSeleccionada(id);
-      console.log('Materia seleccionada:', id);
+   const handleMateriaClick = (nombre: string) => {
+      setMateriaSeleccionada(nombre);
    };
+
+   console.log('Categoria que recibe MateriasScroll:' + categoria);
 
    return (
       <>
-         <div className="min-h-[17rem] w-full flex flex-col gap-2">
+         <div className="min-h-[15rem] w-full flex flex-col gap-2">
             <h2 className="text-4xl">Materias:</h2>
-            <div className="h-[13rem] flex flex-nowrap overflow-x-scroll overflow-y-visible">
-               {materias.length > 0 ? (
-                  materias.map((materia, index) => (
-                     <button
-                        key={index}
-                        onClick={() => handleMateriaClick(materia.id)}
-                     >
-                        <CategoriaCard
-                           id={materia.id}
-                           nombre={materia.nombre}
-                           imagen={materia.imagen}
-                           seleccionada={materiaSeleccionada === materia.id}
-                        />
-                     </button>
-                  ))
-               ) : (
-                  <p className="text-lg text-gray-600">
-                     No hay materias para esta categoría.
-                  </p>
-               )}
+            <div className="h-[12rem] flex flex-nowrap overflow-x-scroll overflow-y-visible gap-2">
+               {materias.map((materia, index) => (
+                  <button
+                     key={index}
+                     onClick={() => handleMateriaClick(materia.nombre)}
+                  >
+                     <CategoriaCard
+                        id={materia.id}
+                        nombre={materia.nombre}
+                        imagen={materia.imagen}
+                        seleccionada={materiaSeleccionada === materia.nombre}
+                     />
+                  </button>
+               ))}
             </div>
          </div>
       </>

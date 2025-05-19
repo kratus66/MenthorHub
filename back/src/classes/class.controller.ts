@@ -27,8 +27,8 @@ export class ClassesController {
 
   @Post()
   @ApiOperation({ summary: 'Crear una nueva clase' })
-  @ApiResponse({ status: 201, description: 'Clase creada exitosamente', type: Class })
   @ApiBody({ type: CreateClassDto })
+  @ApiResponse({ status: 201, description: 'Clase creada exitosamente', type: Class })
   create(@Body() createDto: CreateClassDto) {
     return this.classesService.create(createDto);
   }
@@ -42,7 +42,7 @@ export class ClassesController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Obtener una clase por ID' })
-  @ApiParam({ name: 'id', type: String })
+  @ApiParam({ name: 'id', description: 'UUID de la clase' })
   @ApiResponse({ status: 200, description: 'Clase encontrada', type: Class })
   @ApiResponse({ status: 404, description: 'Clase no encontrada' })
   findOne(@Param('id', ParseUUIDPipe) id: string) {
@@ -50,8 +50,8 @@ export class ClassesController {
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Actualizar una clase' })
-  @ApiParam({ name: 'id', type: String })
+  @ApiOperation({ summary: 'Actualizar una clase existente' })
+  @ApiParam({ name: 'id', description: 'UUID de la clase a actualizar' })
   @ApiBody({ type: UpdateClassDto })
   @ApiResponse({ status: 200, description: 'Clase actualizada', type: Class })
   @ApiResponse({ status: 404, description: 'Clase no encontrada' })
@@ -61,10 +61,11 @@ export class ClassesController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'Eliminar una clase' })
-  @ApiParam({ name: 'id', type: String })
-  @ApiResponse({ status: 200, description: 'Clase eliminada' })
+  @ApiParam({ name: 'id', description: 'UUID de la clase a eliminar' })
+  @ApiResponse({ status: 200, description: 'Clase eliminada exitosamente' })
   @ApiResponse({ status: 404, description: 'Clase no encontrada' })
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.classesService.remove(id);
   }
 }
+

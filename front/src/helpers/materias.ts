@@ -2,7 +2,7 @@ const materiasPorCategoria: Record<
    string,
    { id: string; nombre: string; imagen: string }[]
 > = {
-   Musica: [
+   Música: [
       {
          nombre: 'Teoría Musical',
          imagen: '/materia-test.jpg',
@@ -41,7 +41,7 @@ const materiasPorCategoria: Record<
          id: 'Apreciacion Musical',
       },
    ],
-   Matematica: [
+   Matemática: [
       {
          nombre: 'Literatura Clásica',
          imagen: '/materia-test.jpg',
@@ -162,7 +162,7 @@ const materiasPorCategoria: Record<
          id: 'Espanol Avanzado',
       },
    ],
-   Geografia: [
+   Geografía: [
       { nombre: 'Pintura', imagen: '/materia-test.jpg', id: 'Pintura' },
       { nombre: 'Dibujo', imagen: '/materia-test.jpg', id: 'Dibujo' },
       { nombre: 'Escultura', imagen: '/materia-test.jpg', id: 'Escultura' },
@@ -194,6 +194,34 @@ const materiasPorCategoria: Record<
       { nombre: 'Vóleibol', imagen: '/materia-test.jpg', id: 'Voleibol' },
    ],
    Salud: [
+      {
+         nombre: 'Educación Sexual Integral',
+         imagen: '/materia-test.jpg',
+         id: 'Educacion Sexual Integral',
+      },
+      { nombre: 'Nutrición', imagen: '/materia-test.jpg', id: 'Nutricion' },
+      {
+         nombre: 'Primeros Auxilios',
+         imagen: '/materia-test.jpg',
+         id: 'Primeros Auxilios',
+      },
+      {
+         nombre: 'Salud Mental',
+         imagen: '/materia-test.jpg',
+         id: 'Salud Mental',
+      },
+      {
+         nombre: 'Higiene y Prevención',
+         imagen: '/materia-test.jpg',
+         id: 'Higiene y Prevencion',
+      },
+      {
+         nombre: 'Anatomía Humana',
+         imagen: '/materia-test.jpg',
+         id: 'Anatomia Humana',
+      },
+   ],
+   Tecnología: [
       {
          nombre: 'Educación Sexual Integral',
          imagen: '/materia-test.jpg',

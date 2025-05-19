@@ -6,6 +6,7 @@ $FRONTEND_DIR = "$REPO_DIR\front"
 # --- 1. Detener todos los procesos Node existentes ---
 Write-Output "=== Deteniendo procesos anteriores ==="
 kill-port 3001 4173
+taskkill /F /IM node.exe /T 2> $null
 
 # --- 2. Actualizar repositorio ---
 Write-Output "=== Actualizando código desde GitHub ==="

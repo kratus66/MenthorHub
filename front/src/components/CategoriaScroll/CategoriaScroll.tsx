@@ -1,34 +1,37 @@
-import { useState } from 'react';
 import categorias_array from '../../helpers/categorias';
 import CategoriaCard from '../CategoriaCard/CategoriaCard';
 
 type Props = {
    onCategoriaSeleccionada: (categoriaId: string) => void;
+   onCategoriaActiva: (categoriaId: string) => void;
+   categoriaActiva?: string;
 };
 
-const CategoriaScroll = ({ onCategoriaSeleccionada }: Props) => {
-   const [categoriaActiva, setCategoriaActiva] = useState<string | null>(null);
-
+const CategoriaScroll = ({
+   onCategoriaSeleccionada,
+   onCategoriaActiva,
+   categoriaActiva,
+}: Props) => {
    const handleCategoriaClick = (id: string) => {
-      setCategoriaActiva(id);
+      onCategoriaActiva(id);
       onCategoriaSeleccionada(id);
    };
 
    return (
       <>
-         <div className="min-h-[17rem] w-full flex flex-col gap-2">
+         <div className="min-h-[15rem] w-full flex flex-col gap-2">
             <h2 className="text-4xl">Categorias</h2>
-            <div className="h-[14rem] flex flex-nowrap overflow-x-scroll overflow-y-visible">
+            <div className="h-[12rem] flex flex-nowrap overflow-x-scroll overflow-y-visible gap-2">
                {categorias_array.map((categoria, index) => (
                   <button
                      key={index}
-                     onClick={() => handleCategoriaClick(categoria.id)}
+                     onClick={() => handleCategoriaClick(categoria.nombre)}
                   >
                      <CategoriaCard
                         id={categoria.id}
                         nombre={categoria.nombre}
                         imagen={categoria.imagen}
-                        seleccionada={categoriaActiva === categoria.id}
+                        seleccionada={categoriaActiva === categoria.nombre}
                      />
                   </button>
                ))}
