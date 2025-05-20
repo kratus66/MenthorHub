@@ -56,13 +56,10 @@ export class CronService implements OnModuleInit {
     for (const task of pendingTasks) {
       const message = `Tienes pendiente: ${task.title} (fecha límite: ${task.dueDate.toDateString()})`;
 
-<<<<<<< Updated upstream
-      // Log local
-      console.log(`📢 ${task.student?.fullName} tiene pendiente: ${task.title} (fecha límite: ${task.dueDate})`);
-=======
+
       // Log en consola
       console.log(`📢 ${task.student?.nombre} tiene pendiente: ${task.title} (fecha límite: ${task.dueDate})`);
->>>>>>> Stashed changes
+
 
       // Guardar en base de datos
       await this.notificationRepository.save({

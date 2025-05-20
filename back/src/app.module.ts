@@ -39,7 +39,7 @@ import { ChatMessage } from './chat/chat.entity'; // ✅ Añadido
     SubmissionModule,
     SeederModule,
 
-<<<<<<< Updated upstream
+ 
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -60,28 +60,5 @@ import { ChatMessage } from './chat/chat.entity'; // ✅ Añadido
       synchronize: false,
     }),
   ],
-=======
-      TypeOrmModule.forRoot({
-         type: 'postgres',
-         host: 'localhost',
-         port: parseInt(process.env.DB_PORT || '5432'),
-         username: 'postgres',
-         password: 'admin',
-         database: 'MentorHub_PF',
-         entities: [
-            User,
-            Class,
-            Task,
-            Submission,
-            Payment,
-            Notification,
-            Category,
-            
-         ],
-         synchronize: true,
-         dropSchema: true,
-      }),
-   ],
->>>>>>> Stashed changes
 })
 export class AppModule {}
