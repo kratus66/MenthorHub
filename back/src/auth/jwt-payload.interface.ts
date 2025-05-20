@@ -2,6 +2,6 @@
 export interface JwtPayload {
     email: string;
     sub: string;
-    rol: string;
+    role: string;
   }
   

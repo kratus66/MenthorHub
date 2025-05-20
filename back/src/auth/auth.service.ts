@@ -14,7 +14,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(dto: RegisterDto, profileImagePath: string): Promise<{ token: string }> {
+  async register(dto: RegisterDto, profileImagePath: string): Promise<any> {
     const existingUser = await this.usersRepository.findOne({ where: { email: dto.email } });
     if (existingUser) {
       throw new UnauthorizedException('El correo ya está registrado');
@@ -43,8 +43,19 @@ export class AuthService {
     await this.usersRepository.save(newUser);
 
     const token = this.generateToken(newUser);
-    return { token };
+    return {
+      message: 'Registro exitoso',
+      token,
+      user: {
+        id: newUser.id,
+        nombre: newUser.name,
+        email: newUser.email,
+        rol: newUser.role,
+        Image: profileImagePath,
+        // agrega aquí otros campos que quieras exponer, sin incluir datos sensibles
+      },
   }
+}
 
   async login(loginDto: LoginDto): Promise<{ token: string }> {
     const { email, password } = loginDto;
