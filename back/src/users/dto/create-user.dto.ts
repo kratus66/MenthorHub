@@ -5,58 +5,47 @@ import {
   IsIn,
   IsNotEmpty,
   IsPhoneNumber,
-  Matches
+  Matches,
+  IsOptional,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
-  @ApiProperty({
-    example: 'Ana Martínez',
-    description: 'Nombre completo del usuario',
-  })
   @IsNotEmpty()
   @IsString()
-  nombre!: string;
+  name!: string;
 
-  @ApiProperty({
-    example: 'ana@example.com',
-    description: 'Correo electrónico del usuario',
-  })
   @IsEmail()
   email!: string;
 
-  @ApiProperty({
-    example: '+573004567890',
-    description: 'Número de teléfono en formato internacional',
-  })
   @IsPhoneNumber(undefined)
   phoneNumber!: string;
 
-  @ApiProperty({
-    example: 'Colombia',
-    description: 'País de residencia del usuario',
-  })
   @IsString()
   @IsNotEmpty()
   country!: string;
 
-  @ApiProperty({
-    example: 'ClaveSegura123',
-    description: 'Contraseña del usuario (mínimo 6 caracteres)',
-  })
   @IsString()
-  @MinLength(8, { message: 'La contraseña debe tener mínimo 8 caracteres' })
+  @MinLength(8)
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/, {
-    message:
-      'Debe incluir mayúscula, minúscula, número y símbolo',
+    message: 'Contraseña débil',
   })
   password!: string;
 
-  @ApiProperty({
-    example: 'student',
-    description: 'Rol asignado al usuario',
-    enum: ['admin', 'teacher', 'student'],
-  })
   @IsIn(['admin', 'teacher', 'student'])
   role!: 'admin' | 'teacher' | 'student';
+
+  @IsOptional()
+  estudios?: string;
+
+  @IsOptional()
+  provincia?: string;
+
+  @IsOptional()
+  localidad?: string;
+
+  @IsOptional()
+  avatarId?: number;
+
+  @IsOptional()
+  profileImage?: string;
 }

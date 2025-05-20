@@ -7,30 +7,43 @@ import {
   IsNumber,
   IsIn,
   IsOptional,
+  MaxLength,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class RegisterDto {
-  @ApiProperty()
+  @ApiProperty({ example: 'Ana Martínez' })
   @IsString()
   @IsNotEmpty()
-  nombre: string;
+  @MinLength(5, { message: 'El nombre debe tener mínimo 5 caracteres' })
+  @MaxLength(50, { message: 'El nombre no debe superar 50 caracteres' })
+  @Matches(/^[a-zA-ZÁÉÍÓÚáéíóúñÑ\s']+$/, {
+    message: 'El nombre solo puede contener letras y espacios',
+  })
+  name: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: '+18095551122' })
   @IsString()
-  @MinLength(6)
-  celular: string;
+  @MinLength(10)
+  @Matches(/^\+?[0-9]{10,15}$/, {
+    message: 'Número de celular inválido',
+  })
+  phoneNumber: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'ana@example.com' })
   @IsEmail()
   email: string;
 
   @ApiProperty()
-  @MinLength(6)
+  @IsString()
+  @MinLength(8)
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/, {
+    message: 'Contraseña débil',
+  })
   password: string;
 
   @ApiProperty()
-  @MinLength(6)
+  @MinLength(8)
   confirmPassword: string;
 
   @ApiProperty()
@@ -39,7 +52,7 @@ export class RegisterDto {
 
   @ApiProperty({ type: 'string', format: 'binary' })
   @IsOptional()
-  profileImage?: any; // será manejado por interceptor
+  profileImage?: any;
 
   @ApiProperty()
   @IsString()
@@ -47,11 +60,11 @@ export class RegisterDto {
 
   @ApiProperty()
   @IsIn(['student', 'teacher', 'admin'])
-  rol: string;
+  role: string;
 
   @ApiProperty()
   @IsString()
-  pais: string;
+  country: string;
 
   @ApiProperty()
   @IsString()

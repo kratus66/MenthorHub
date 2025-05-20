@@ -5,18 +5,24 @@ import {
   IsIn,
   IsOptional,
   IsPhoneNumber,
-  Matches
+  Matches,
+  MaxLength,
 } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateUserDto {
   @ApiPropertyOptional({
-    example: 'Juan Pérez',
-    description: 'Nombre completo del usuario',
-  })
-  @IsOptional()
-  @IsString()
-  nombre?: string;
+  example: 'Juan Pérez',
+  description: 'Nombre completo del usuario',
+})
+@IsOptional()
+@IsString({ message: 'El nombre debe ser texto' })
+@MinLength(5, { message: 'El nombre debe tener mínimo 5 caracteres' })
+@MaxLength(50, { message: 'El nombre no debe exceder 50 caracteres' })
+@Matches(/^[a-zA-ZÁÉÍÓÚáéíóúñÑ\s']+$/, {
+  message: 'El nombre solo puede contener letras y espacios',
+})
+name?: string;
 
   @ApiPropertyOptional({
     example: 'juan@example.com',
@@ -31,7 +37,7 @@ export class UpdateUserDto {
     description: 'Número de teléfono en formato internacional',
   })
   @IsOptional()
-  @IsPhoneNumber('DO', { message: 'Número telefónico no válido' })
+  @IsPhoneNumber(undefined, { message: 'Número telefónico no válido' })
   phoneNumber?: string;
 
   @ApiPropertyOptional({
@@ -39,19 +45,18 @@ export class UpdateUserDto {
     description: 'País de residencia',
   })
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'El país debe ser texto' })
   country?: string;
 
   @ApiPropertyOptional({
-    example: 'MiClaveSegura123',
-    description: 'Contraseña del usuario (mínimo 6 caracteres)',
+    example: 'MiClaveSegura123!',
+    description: 'Contraseña del usuario (mínimo 8 caracteres)',
   })
   @IsOptional()
   @IsString()
   @MinLength(8, { message: 'La contraseña debe tener mínimo 8 caracteres' })
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/, {
-    message:
-      'Debe incluir mayúscula, minúscula, número y símbolo',
+    message: 'Debe incluir mayúscula, minúscula, número y símbolo',
   })
   password?: string;
 
@@ -64,4 +69,3 @@ export class UpdateUserDto {
   @IsIn(['admin', 'teacher', 'student'], { message: 'Rol inválido' })
   role?: 'admin' | 'teacher' | 'student';
 }
-

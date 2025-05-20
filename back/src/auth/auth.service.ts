@@ -27,15 +27,15 @@ export class AuthService {
     const hashedPassword = await hash(dto.password, 10);
 
     const newUser = this.usersRepository.create({
-      nombre: dto.nombre,
+      name: dto.name,
       email: dto.email,
       password: hashedPassword,
-      celular: dto.celular,
+      phoneNumber: dto.phoneNumber,
       avatarId: dto.avatarId,
       profileImage: profileImagePath,
       estudios: dto.estudios,
-      rol: dto.rol as 'student' | 'teacher' | 'admin',
-      pais: dto.pais,
+      role: dto.role as 'student' | 'teacher' | 'admin',
+      country: dto.country,
       provincia: dto.provincia,
       localidad: dto.localidad,
     });
@@ -59,7 +59,7 @@ export class AuthService {
   }
 
   generateToken(user: User): string {
-    const payload = { email: user.email, sub: user.id, rol: user.rol };
+    const payload = { email: user.email, sub: user.id, role: user.role };
     return this.jwtService.sign(payload);
   }
 }

@@ -51,16 +51,18 @@ export class SeederService implements OnApplicationBootstrap {
 
   private async seedTeachers() {
     const data: { id: string; nombre: string }[] = this.loadJsonFile('professors-with-uuid.json');
-    const existing = await this.userRepo.count({ where: { rol: 'teacher' } });
+    const existing = await this.userRepo.count({ where: { role: 'teacher' } });
 
     if (existing === 0) {
       const teachers = data.map((t) =>
         this.userRepo.create({
           id: t.id,
-          nombre: t.nombre,
+          name: t.nombre,
           password: 'hashed-password-placeholder',
-          email: `${t.nombre?.toLowerCase().replace(/ /g, '')}@mail.com`,
-          rol: 'teacher',
+          email: `${t.nombre.toLowerCase().replace(/ /g, '')}@mail.com`,
+          role: 'teacher',
+          phoneNumber: '+18095550000',
+          country: 'RD',
         }),
       );
       await this.userRepo.save(teachers);
@@ -83,7 +85,7 @@ export class SeederService implements OnApplicationBootstrap {
 
     for (const cls of data) {
       const profesor = await this.userRepo.findOne({
-        where: { id: cls.teacherId, rol: 'teacher' },
+        where: { id: cls.teacherId, role: 'teacher' },
       });
 
       const categoria = await this.categoryRepo.findOne({

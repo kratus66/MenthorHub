@@ -58,7 +58,7 @@ export class CronService implements OnModuleInit {
 
 
       // Log en consola
-      console.log(`📢 ${task.student?.nombre} tiene pendiente: ${task.title} (fecha límite: ${task.dueDate})`);
+      console.log(`📢 ${task.student?.name} tiene pendiente: ${task.title} (fecha límite: ${task.dueDate})`);
 
 
       // Guardar en base de datos

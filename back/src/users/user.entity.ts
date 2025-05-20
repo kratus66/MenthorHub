@@ -10,7 +10,7 @@ import {
 import { Class } from '../classes/class.entity';
 import { Submission } from '../submission/submission.entity';
 import { Payment } from '../payment/payment.entity';
-import { Task } from '../task/task.entity'; // 👈 Importación agregada
+import { Task } from '../task/task.entity';
 import { Notification } from '../notifications/notification.entity';
 
 @Entity()
@@ -19,7 +19,7 @@ export class User {
   id: string;
 
   @Column()
-  nombre!: string;
+  name!: string;
 
   @Column({ unique: true })
   email!: string;
@@ -28,10 +28,10 @@ export class User {
   password!: string;
 
   @Column({ default: 'student' })
-  rol!: 'admin' | 'teacher' | 'student';
+  role!: 'admin' | 'teacher' | 'student';
 
   @Column({ nullable: true })
-  celular?: string;
+  phoneNumber?: string;
 
   @Column({ nullable: true })
   avatarId?: number;
@@ -43,7 +43,7 @@ export class User {
   estudios?: string;
 
   @Column({ nullable: true })
-  pais?: string;
+  country?: string;
 
   @Column({ nullable: true })
   provincia?: string;
