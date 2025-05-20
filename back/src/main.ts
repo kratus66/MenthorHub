@@ -22,7 +22,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.useGlobalInterceptors(); // (Opcional si usas alguno)
   // Para compartir la instancia de io, crea un provider personalizado o usa app.locals si accedes desde middlewares/express
-    (app as any).io = io; // 👈 clave para acceder desde servicios (temporal, usa un provider para producción)
+  (global as any).io = io;
 
   // Swagger
   const config = new DocumentBuilder()
