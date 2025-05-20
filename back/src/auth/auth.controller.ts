@@ -16,7 +16,8 @@ import {
   ApiBody,
   ApiConsumes,
 } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
+
+import { CloudinaryFileInterceptor } from '../common/interceptors/cloudinary.interceptor';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -24,7 +25,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
-  @UseInterceptors(FileInterceptor('profileImage'))
+  @UseInterceptors(CloudinaryFileInterceptor('profileImage'))
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Registrar un nuevo usuario con foto' })
   @ApiBody({

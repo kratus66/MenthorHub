@@ -43,6 +43,7 @@ const NavBar: React.FC = () => {
             id="searchBar"
             type="search"
             className="rounded-full rounded-bl-none rounded-tl-none h-full px-4 w-[15rem] focus:outline-0 focus:border-0"
+            placeholder='Buscar...' 
           />
         </div>
 
