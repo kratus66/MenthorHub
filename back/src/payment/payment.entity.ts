@@ -1,4 +1,3 @@
-// src/payment/payment.entity.ts
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -22,8 +21,7 @@ export enum PaymentStatus {
 @Entity()
 export class Payment {
   @PrimaryGeneratedColumn('uuid')
-id!: string;
-
+  id!: string;
 
   @ManyToOne(() => User, (user) => user.payments, { eager: true })
   user!: User;
@@ -37,6 +35,9 @@ id!: string;
   @Column({ type: 'enum', enum: PaymentType })
   type!: PaymentType;
 
+  @Column()
+  paymentMethod!: 'paypal' | 'card';
+
   @Column({
     type: 'enum',
     enum: PaymentStatus,
@@ -47,4 +48,3 @@ id!: string;
   @CreateDateColumn()
   createdAt!: Date;
 }
-

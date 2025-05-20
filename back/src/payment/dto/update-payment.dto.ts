@@ -22,4 +22,13 @@ export class UpdatePaymentDto {
   @IsOptional()
   @IsEnum(PaymentStatus)
   status?: PaymentStatus;
+
+  @ApiPropertyOptional({
+    example: 'paypal',
+    description: 'Método de pago (paypal o card)',
+    enum: ['paypal', 'card'],
+  })
+  @IsOptional()
+  @IsEnum(['paypal', 'card'])
+  paymentMethod?: 'paypal' | 'card';
 }

@@ -19,10 +19,20 @@ export class PaymentsService {
     const user = await this.userRepo.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('Usuario no encontrado');
 
+    // Simulación de lógica por método de pago
+    if (dto.paymentMethod === 'paypal') {
+      console.log('Simulando proceso de pago con PayPal...');
+      // Aquí podrías validar, loguear o simular una redirección
+    } else if (dto.paymentMethod === 'card') {
+      console.log('Simulando proceso de pago con tarjeta...');
+      // Aquí podrías simular tokenización o verificación
+    }
+
     const payment = this.paymentRepo.create({
       amount: dto.amount,
       currency: dto.currency,
-      type: dto.type as PaymentType, // Cast explícito
+      type: dto.type as PaymentType,
+      paymentMethod: dto.paymentMethod,
       status: PaymentStatus.COMPLETED,
       user,
     });
@@ -40,15 +50,14 @@ export class PaymentsService {
     return this.paymentRepo.find();
   }
 
-  async update(id: string, dto: UpdatePaymentDto)
-: Promise<Payment> {
-      const updateData: Partial<Payment> = {};
+  async update(id: string, dto: UpdatePaymentDto): Promise<Payment> {
+    const updateData: Partial<Payment> = {};
 
-      if (dto.amount !== undefined) updateData.amount = dto.amount;
-      if (dto.currency !== undefined) updateData.currency = dto.currency;
-      if (dto.type) updateData.type = dto.type as PaymentType;
-      if (dto.status) updateData.status = dto.status as PaymentStatus;
-
+    if (dto.amount !== undefined) updateData.amount = dto.amount;
+    if (dto.currency !== undefined) updateData.currency = dto.currency;
+    if (dto.type) updateData.type = dto.type as PaymentType;
+    if (dto.status) updateData.status = dto.status as PaymentStatus;
+    if (dto.paymentMethod) updateData.paymentMethod = dto.paymentMethod;
 
     const payment = await this.paymentRepo.preload({
       id,

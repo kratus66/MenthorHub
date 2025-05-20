@@ -1,5 +1,4 @@
-// update-class.dto.ts
-import { IsString, IsOptional } from 'class-validator';
+import { IsString, IsOptional, IsUUID } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateClassDto {
@@ -18,4 +17,33 @@ export class UpdateClassDto {
   @IsString()
   @IsOptional()
   description?: string;
+
+  @ApiPropertyOptional({
+    example: 'Tecnología',
+    description: 'Nuevo sector de la clase',
+  })
+  @IsString()
+  @IsOptional()
+  sector?: string;
+
+  @ApiPropertyOptional({
+    example: 'a1d0c6e8-2fcf-4b1e-bf41-b0c2460cc071',
+    description: 'Nuevo ID de la categoría (UUID)',
+  })
+  @IsUUID()
+  @IsOptional()
+  categoryId?: string;
+
+  @ApiPropertyOptional({
+    example: {
+      nombre: 'Programación',
+      imagen: 'https://ejemplo.com/categoria.jpg',
+    },
+    description: 'Nueva información visual de la categoría',
+  })
+  @IsOptional()
+  categoryInfo?: {
+    nombre: string;
+    imagen: string;
+  };
 }

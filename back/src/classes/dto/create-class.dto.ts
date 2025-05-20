@@ -11,7 +11,7 @@ export class CreateClassDto {
   title!: string;
 
   @ApiProperty({
-    example: 'Este curso enseña los fundamentos de NestJS con ejemplos prácticos.',
+    example: 'Este curso enseña los fundamentos de NestJS...',
     description: 'Descripción de la clase',
   })
   @IsString()
@@ -33,5 +33,25 @@ export class CreateClassDto {
   @IsUUID()
   @IsNotEmpty()
   categoryId!: string;
-}
 
+  @ApiProperty({
+    example: {
+      nombre: 'Programación',
+      imagen: 'https://ejemplo.com/categoria.jpg',
+    },
+    description: 'Información visual de la categoría (opcional para mostrar)',
+  })
+  @IsNotEmpty()
+  categoryInfo!: {
+    nombre: string;
+    imagen: string;
+  };
+
+  @ApiProperty({
+    example: 'Tecnología',
+    description: 'Sector al que pertenece la clase',
+  })
+  @IsString()
+  @IsNotEmpty()
+  sector!: string;
+}

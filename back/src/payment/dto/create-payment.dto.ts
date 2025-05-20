@@ -1,4 +1,4 @@
-import { IsNumber, IsString, IsEnum } from 'class-validator';
+import { IsNumber, IsString, IsEnum, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePaymentDto {
@@ -23,4 +23,12 @@ export class CreatePaymentDto {
   })
   @IsEnum(['student_subscription', 'teacher_monthly_fee'])
   type!: 'student_subscription' | 'teacher_monthly_fee';
+
+  @ApiProperty({
+    example: 'paypal',
+    description: 'Método de pago (paypal o card)',
+    enum: ['paypal', 'card'],
+  })
+  @IsEnum(['paypal', 'card'])
+  paymentMethod!: 'paypal' | 'card';
 }
