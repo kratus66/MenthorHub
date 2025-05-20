@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import sampleClasses from '../../helpers/fakeClasses';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import axiosInstance from '../../services/axiosInstance';
 
 type CategoriaType = {
    categoria: string;
@@ -8,6 +8,34 @@ type CategoriaType = {
    onCategoriaSeleccionada: (categoriaId: string) => void;
    onCategoriaActiva: (categoriaId: string) => void;
    onMateriaSeleccionada: (materiaId: string) => void;
+};
+
+type clasesType = {
+   id: string;
+   title: string;
+   description: string;
+   createdAt: string;
+   teacher: {
+      id: string;
+      name: string;
+      email: string;
+      password: string;
+      role: string;
+      phoneNumber: string;
+      avatarId: string;
+      profileImage: null;
+      estudios: string;
+      country: string;
+      provincia: string;
+      localidad: string;
+      createdAt: string;
+   };
+   students: [];
+   tasks: [];
+   category: {
+      id: string;
+      name: string;
+   };
 };
 
 const ITEMS_POR_PAGINA = 10;
@@ -20,14 +48,26 @@ const CursosLista = ({
    onMateriaSeleccionada,
 }: CategoriaType) => {
    const [paginaActual, setPaginaActual] = useState(1);
+   const [clases, setClases] = useState<clasesType[]>([]);
 
-   const cursosFiltrados = sampleClasses.filter((curso) => {
+   useEffect(() => {
+      axiosInstance
+         .get('/clases')
+         .then((res) => {
+            setClases(res.data);
+         })
+         .catch((err) => {
+            console.error('Error al obtener las clases:', err);
+         });
+   }, []);
+
+   const cursosFiltrados = clases.filter((curso) => {
       const coincideCategoria = categoria
-         ? curso.category.nombre === categoria
+         ? curso.category.name === categoria
          : true;
-      const coincideMateria = materiaSeleccionada
-         ? curso.materia === materiaSeleccionada
-         : true;
+      const coincideMateria = materiaSeleccionada;
+      // ? curso.materia === materiaSeleccionada
+      // : true;
       return coincideCategoria && coincideMateria;
    });
 
@@ -103,8 +143,8 @@ const CursosLista = ({
                         </p>
                      </div>
                      <div className="flex flex-col">
-                        <h3>Categoría: {curso.category.nombre}</h3>
-                        <h3>Materia: {curso.materia}</h3>
+                        <h3>Categoría: {curso.category.name}</h3>
+                        {/* <h3>Materia: {curso.materia}</h3> */}
                      </div>
                   </div>
                </Link>

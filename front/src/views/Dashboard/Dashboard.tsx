@@ -1,15 +1,13 @@
 import MateriasScroll from '../../components/MateriasScroll/MateriasScroll';
 import CategoriaScroll from '../../components/CategoriaScroll/CategoriaScroll';
-import { useState } from 'react';
 import CursosLista from '../../components/CursosLista/CursosLista';
+import { useState } from 'react';
 
 const Dashboard = () => {
    const [categoriaSeleccionada, setCategoriaSeleccionada] =
       useState<string>('');
    const [categoriaActiva, setCategoriaActiva] = useState<string | null>(null);
    const [materiaSeleccionada, setMateriaSeleccionada] = useState('');
-
-   console.log('Materia Seleccionada:' + materiaSeleccionada);
 
    return (
       <>
