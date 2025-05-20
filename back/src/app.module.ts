@@ -57,7 +57,7 @@ import { ChatMessage } from './chat/chat.entity'; // ✅ Añadido
         Category,
         ChatMessage, // ✅ Añadido aquí
       ],
-      synchronize: false,
+      synchronize: true,
     }),
   ],
 })
