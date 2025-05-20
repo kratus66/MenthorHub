@@ -16,7 +16,7 @@ MentorHub es una plataforma innovadora diseñada para facilitar la conexión ent
 - **Backend**: NestJS (Node.js)  
 - **Base de datos**: PostgreSQL (hosteada en AWS)  
 - **Autenticación**: JWT / OAuth2  
-- **Infraestructura**: AWS (EC2, RDS, S3)  
+- **Infraestructura**: AWS (EC2)  
 
 ## 📌 Próximos pasos  
 - [ ] Implementar sistema de recomendaciones basado en IA.  
