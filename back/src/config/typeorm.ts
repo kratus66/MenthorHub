@@ -14,12 +14,21 @@ dotenv.config();
 
 const AppDataSource = new DataSource({
   type: 'postgres',
+<<<<<<< Updated upstream
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT || '5432', 10),
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   synchronize: false,
+=======
+  host: 'localhost',
+  port: parseInt('5432', 10),
+  username: 'postgres',
+  password: 'admin',
+  database: 'MentorHub_PF',
+  synchronize: true,
+>>>>>>> Stashed changes
   logging: true,
   entities: [User, Class, Task, Submission, Payment, Category, Notification],
   migrations: [__dirname + '/../migrations/*{.ts,.js}'],

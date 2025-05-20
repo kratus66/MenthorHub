@@ -25,7 +25,7 @@ export class ClassesService {
 
     // ✅ Buscar user con rol teacher
     const teacher = await this.userRepository.findOne({
-      where: { id: teacherId, role: 'teacher' },
+      where: { id: teacherId, rol: 'teacher' },
     });
 
     if (!teacher) throw new NotFoundException('Profesor no encontrado o no tiene rol teacher');

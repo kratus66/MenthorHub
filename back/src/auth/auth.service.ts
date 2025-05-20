@@ -14,17 +14,30 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(registerDto: RegisterDto): Promise<{ token: string }> {
-    const { fullName, email, phoneNumber, country, password, role } = registerDto;
-    const hashedPassword = await hash(password, 10);
+  async register(dto: RegisterDto, profileImagePath: string): Promise<{ token: string }> {
+    const existingUser = await this.usersRepository.findOne({ where: { email: dto.email } });
+    if (existingUser) {
+      throw new UnauthorizedException('El correo ya está registrado');
+    }
+
+    if (dto.password !== dto.confirmPassword) {
+      throw new UnauthorizedException('Las contraseñas no coinciden');
+    }
+
+    const hashedPassword = await hash(dto.password, 10);
 
     const newUser = this.usersRepository.create({
-      fullName,
-      email,
-      phoneNumber,
-      country,
+      nombre: dto.nombre,
+      email: dto.email,
       password: hashedPassword,
-      role: role as 'admin' | 'teacher' | 'student',
+      celular: dto.celular,
+      avatarId: dto.avatarId,
+      profileImage: profileImagePath,
+      estudios: dto.estudios,
+      rol: dto.rol as 'student' | 'teacher' | 'admin',
+      pais: dto.pais,
+      provincia: dto.provincia,
+      localidad: dto.localidad,
     });
 
     await this.usersRepository.save(newUser);
@@ -46,8 +59,7 @@ export class AuthService {
   }
 
   generateToken(user: User): string {
-    const payload = { email: user.email, sub: user.id, role: user.role };
+    const payload = { email: user.email, sub: user.id, rol: user.rol };
     return this.jwtService.sign(payload);
   }
 }
-

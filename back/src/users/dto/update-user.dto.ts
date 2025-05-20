@@ -16,7 +16,7 @@ export class UpdateUserDto {
   })
   @IsOptional()
   @IsString()
-  fullName?: string;
+  nombre?: string;
 
   @ApiPropertyOptional({
     example: 'juan@example.com',

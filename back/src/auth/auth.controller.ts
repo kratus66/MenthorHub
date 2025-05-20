@@ -1,5 +1,11 @@
 // src/auth/auth.controller.ts
-import { Controller, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -8,20 +14,45 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBody,
+  ApiConsumes,
 } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 
-@ApiTags('Auth') // Agrupa este controlador bajo la etiqueta "Auth" en Swagger
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
-  @ApiOperation({ summary: 'Registrar un nuevo usuario' })
-  @ApiBody({ type: RegisterDto })
+  @UseInterceptors(FileInterceptor('profileImage'))
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Registrar un nuevo usuario con foto' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        nombre: { type: 'string' },
+        celular: { type: 'string' },
+        email: { type: 'string', format: 'email' },
+        password: { type: 'string' },
+        confirmPassword: { type: 'string' },
+        avatarId: { type: 'integer' },
+        estudios: { type: 'string' },
+        rol: { type: 'string', enum: ['student', 'teacher', 'admin'] },
+        pais: { type: 'string' },
+        provincia: { type: 'string' },
+        localidad: { type: 'string' },
+        profileImage: { type: 'string', format: 'binary' },
+      },
+    },
+  })
   @ApiResponse({ status: 201, description: 'Usuario registrado exitosamente' })
   @ApiResponse({ status: 400, description: 'Datos inválidos o usuario ya existe' })
-  async register(@Body() registerDto: RegisterDto) {
-    return this.authService.register(registerDto);
+  async register(
+    @Body() dto: RegisterDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.authService.register(dto, file?.path);
   }
 
   @Post('login')

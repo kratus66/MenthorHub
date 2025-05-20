@@ -1,62 +1,63 @@
 import {
-  IsEmail,
   IsString,
-  MinLength,
-  IsIn,
+  IsEmail,
   IsNotEmpty,
-  IsPhoneNumber
+  MinLength,
+  Matches,
+  IsNumber,
+  IsIn,
+  IsOptional,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class RegisterDto {
-  @IsNotEmpty()
+  @ApiProperty()
   @IsString()
-  @ApiProperty({
-    example: 'Pepito Perez',
-    description: 'Nombre completo del usuario',
-  })
-  fullName!: string;
+  @IsNotEmpty()
+  nombre: string;
 
+  @ApiProperty()
+  @IsString()
+  @MinLength(6)
+  celular: string;
+
+  @ApiProperty()
   @IsEmail()
-  @ApiProperty({
-    example: 'pepitoperez@example.com',
-    description: 'Correo electrónico válido',
-  })
-  email!: string;
+  email: string;
 
-  @IsPhoneNumber(undefined)
-  @ApiProperty({
-    example: '+573214445577',
-    description: 'Número de celular en formato internacional',
-  })
-  phoneNumber!: string;
+  @ApiProperty()
+  @MinLength(6)
+  password: string;
 
+  @ApiProperty()
+  @MinLength(6)
+  confirmPassword: string;
+
+  @ApiProperty()
+  @IsNumber()
+  avatarId: number;
+
+  @ApiProperty({ type: 'string', format: 'binary' })
+  @IsOptional()
+  profileImage?: any; // será manejado por interceptor
+
+  @ApiProperty()
   @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    example: 'Colombia',
-    description: 'País de residencia del usuario',
-  })
-  country!: string;
+  estudios: string;
 
-  @IsString()
-  @MinLength(6, {
-    message: 'La contraseña debe tener al menos 6 caracteres',
-  })
-  @ApiProperty({
-    example: 'MiClave123',
-    description: 'Contraseña de al menos 6 caracteres',
-  })
-  password!: string;
+  @ApiProperty()
+  @IsIn(['student', 'teacher', 'admin'])
+  rol: string;
 
+  @ApiProperty()
   @IsString()
-  @IsIn(['user', 'admin'], {
-    message: 'El rol debe ser "user" o "admin"',
-  })
-  @ApiProperty({
-    example: 'user',
-    description: 'Rol asignado al usuario (user o admin)',
-    enum: ['user', 'admin'],
-  })
-  role!: string;
+  pais: string;
+
+  @ApiProperty()
+  @IsString()
+  provincia: string;
+
+  @ApiProperty()
+  @IsString()
+  localidad: string;
 }
