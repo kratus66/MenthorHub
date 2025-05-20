@@ -8,6 +8,7 @@ import {
   Body,
   ParseUUIDPipe,
   InternalServerErrorException,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './user.service';
 import { User } from './user.entity';
@@ -19,7 +20,9 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiProperty,
 } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('Usuarios')
 @Controller('users')
@@ -47,6 +50,26 @@ export class UsersController {
     } catch (error) {
       throw new InternalServerErrorException('Error al obtener los usuarios');
     }
+  }
+
+  /* @UseGuards(JwtAuthGuard) */
+  @Get("teacher")
+  @ApiOperation({summary:"Obtener todos los usuarios por el rol de teacher"})
+  async getTeachers(){
+    const teachers= await this.usersService.getTeachers();
+    if(!teachers){
+      throw new InternalServerErrorException("No hay profesores registrados");
+    }
+    return teachers;
+  }
+  @Get("students")
+  @ApiOperation({summary:"Obtener todos los usuarios por el rol de student"})
+  async getStudents(){
+    const students= await this.usersService.getStudents();
+    if(!students){
+      throw new InternalServerErrorException("No hay profesores registrados");
+    }
+    return students;
   }
 
   @Get(':id')
@@ -89,4 +112,7 @@ export class UsersController {
       throw new InternalServerErrorException('Error al eliminar el usuario');
     }
   }
+
+  
+
 }

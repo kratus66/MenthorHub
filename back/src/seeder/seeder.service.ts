@@ -50,27 +50,40 @@ export class SeederService implements OnApplicationBootstrap {
   }
 
   private async seedTeachers() {
-    const data: { id: string; nombre: string }[] = this.loadJsonFile('professors-with-uuid.json');
-    const existing = await this.userRepo.count({ where: { role: 'teacher' } });
+  const data: { id: string; nombre: string; email: string; password: string; role: string }[] =
+    this.loadJsonFile('professors-with-uuid.json');
 
-    if (existing === 0) {
-      const teachers = data.map((t) =>
-        this.userRepo.create({
+  const existing = await this.userRepo.count({ where: { role: 'teacher' } });
+
+  if (existing === 0) {
+    const teachers = data
+      .map((t, i) => {
+        const name = t.nombre;
+
+        if (!name) {
+          console.warn(`⚠️ Profesor en posición ${i} sin nombre válido:`, t);
+          return null;
+        }
+
+        return this.userRepo.create({
           id: t.id,
-          name: t.nombre,
-          password: 'hashed-password-placeholder',
-          email: `${t.nombre.toLowerCase().replace(/ /g, '')}@mail.com`,
+          name,
+          email: t.email ?? `${name.toLowerCase().replace(/ /g, '')}@mail.com`,
+          password: t.password ?? 'hashed-password-placeholder',
           role: 'teacher',
           phoneNumber: '+18095550000',
           country: 'RD',
-        }),
-      );
-      await this.userRepo.save(teachers);
-      console.log('✅ Usuarios con rol "teacher" precargados');
-    } else {
-      console.log('ℹ️ Usuarios "teacher" ya existen');
-    }
+        });
+      })
+      .filter((t): t is User => t !== null);
+
+    await this.userRepo.save(teachers);
+    console.log('✅ Usuarios con rol "teacher" precargados');
+  } else {
+    console.log('ℹ️ Usuarios "teacher" ya existen');
   }
+}
+
 
   private async seedClasses() {
     const data: CreateClassDto[] = this.loadJsonFile('classes-generated.json');
@@ -119,3 +132,4 @@ export class SeederService implements OnApplicationBootstrap {
     }
   }
 }
+
