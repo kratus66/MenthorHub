@@ -1,3 +1,4 @@
+// payment.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -19,22 +20,37 @@ export class PaymentsService {
     const user = await this.userRepo.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('Usuario no encontrado');
 
-    // Simulación de lógica por método de pago
+    // Validar pago mensual duplicado
+    const existing = await this.paymentRepo.findOne({
+      where: {
+        user: { id: userId },
+        month: dto.month,
+      },
+    });
+    if (existing)
+      throw new Error(`Ya existe un pago para el mes ${dto.month}`);
+
     if (dto.paymentMethod === 'paypal') {
       console.log('Simulando proceso de pago con PayPal...');
-      // Aquí podrías validar, loguear o simular una redirección
     } else if (dto.paymentMethod === 'card') {
       console.log('Simulando proceso de pago con tarjeta...');
-      // Aquí podrías simular tokenización o verificación
     }
+
+    const type: PaymentType =
+      user.role === 'student'
+        ? PaymentType.STUDENT_SUBSCRIPTION
+        : user.role === 'teacher'
+        ? PaymentType.TEACHER_SUBSCRIPTION
+        : (dto.type as PaymentType);
 
     const payment = this.paymentRepo.create({
       amount: dto.amount,
       currency: dto.currency,
-      type: dto.type as PaymentType,
+      type: type,
       paymentMethod: dto.paymentMethod,
       status: PaymentStatus.COMPLETED,
-      user,
+      month: dto.month,
+      user: user,
     });
 
     return await this.paymentRepo.save(payment);
@@ -55,9 +71,10 @@ export class PaymentsService {
 
     if (dto.amount !== undefined) updateData.amount = dto.amount;
     if (dto.currency !== undefined) updateData.currency = dto.currency;
-    if (dto.type) updateData.type = dto.type as PaymentType;
-    if (dto.status) updateData.status = dto.status as PaymentStatus;
+    if (dto.type) updateData.type = dto.type;
+    if (dto.status) updateData.status = dto.status;
     if (dto.paymentMethod) updateData.paymentMethod = dto.paymentMethod;
+    if (dto.month) updateData.month = dto.month;
 
     const payment = await this.paymentRepo.preload({
       id,

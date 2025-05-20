@@ -1,16 +1,11 @@
+// payment.entity.ts
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  CreateDateColumn,
 } from 'typeorm';
 import { User } from '../users/user.entity';
-
-export enum PaymentType {
-  STUDENT_SUBSCRIPTION = 'student_subscription',
-  TEACHER_MONTHLY_FEE = 'teacher_monthly_fee',
-}
 
 export enum PaymentStatus {
   PENDING = 'pending',
@@ -18,33 +13,36 @@ export enum PaymentStatus {
   FAILED = 'failed',
 }
 
+export enum PaymentType {
+  MONTHLY = 'monthly',
+  ONE_TIME = 'one_time',
+  STUDENT_SUBSCRIPTION = 'student_subscription',
+  TEACHER_SUBSCRIPTION = 'teacher_monthly_fee',
+}
+
 @Entity()
 export class Payment {
   @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  id: string;
 
-  @ManyToOne(() => User, (user) => user.payments, { eager: true })
-  user!: User;
-
-  @Column('decimal', { precision: 10, scale: 2 })
-  amount!: number;
+  @Column('decimal')
+  amount: number;
 
   @Column()
-  currency!: string;
+  currency: string;
 
   @Column({ type: 'enum', enum: PaymentType })
-  type!: PaymentType;
+  type: PaymentType;
 
   @Column()
-  paymentMethod!: 'paypal' | 'card';
+  paymentMethod: string;
 
-  @Column({
-    type: 'enum',
-    enum: PaymentStatus,
-    default: PaymentStatus.PENDING,
-  })
-  status!: PaymentStatus;
+  @Column({ type: 'enum', enum: PaymentStatus })
+  status: PaymentStatus;
 
-  @CreateDateColumn()
-  createdAt!: Date;
+  @Column()
+  month: string; // formato: 'YYYY-MM'
+
+  @ManyToOne(() => User, (user) => user.payments)
+  user: User;
 }
