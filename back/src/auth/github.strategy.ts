@@ -1,15 +1,11 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
-import { Strategy } from 'passport-github2';
-import { AuthService } from './auth.service';
+import { Strategy } from 'passport-github';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
-  constructor(
-    configService: ConfigService,
-    private authService: AuthService,
-  ) {
+  constructor(private configService: ConfigService) {
     super({
       clientID: configService.get<string>('GITHUB_CLIENT_ID'),
       clientSecret: configService.get<string>('GITHUB_CLIENT_SECRET'),
@@ -18,8 +14,11 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
     });
   }
 
-  async validate(accessToken: string, refreshToken: string, profile: any, done: Function) {
-    const user = await this.authService.validateOAuthLogin(profile, 'github');
-    done(null, user);
+  async validate(accessToken: string, refreshToken: string, profile: any) {
+    return {
+      email: profile.emails[0].value,
+      displayName: profile.username || profile.displayName, // GitHub usa username
+      photo: profile.photos?.[0]?.value,
+    };
   }
 }
