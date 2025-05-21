@@ -56,7 +56,14 @@ const isValidGmail = (email: string): boolean => {
   const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
   return gmailRegex.test(email);
 };
-
+const validateAcademicFields = (): boolean => {
+  const { estudios, rol, pais, provincia, localidad } = formData;
+  if (!estudios || !rol || !pais || !provincia || !localidad) {
+    alert('Por favor, completá todos los campos de Detalles Académicos.');
+    return false;
+  }
+  return true;
+};
 const validatePersonalFields = (): boolean => {
   const { nombre, celular, email, password, confirmPassword } = formData;
   if (
@@ -74,7 +81,7 @@ const validatePersonalFields = (): boolean => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
+ if (!validatePersonalFields() || !validateAcademicFields()) return;
 
  if (!isValidPhone(formData.celular)) {
     alert('Por favor, ingresá un número de celular válido con código internacional.');
