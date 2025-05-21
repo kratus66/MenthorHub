@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-   baseURL: '/api', // Reemplazá con la URL de tu backend si es otra
+   baseURL: 'http://localhost:3001/api', // Reemplazá con la URL de tu backend si es otra
    // También podés agregar otras configs si querés
 });
 
