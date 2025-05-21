@@ -14,18 +14,18 @@ const avatars = [
 const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
   const [activeTab, setActiveTab] = useState<'personal' | 'academics'>('personal');
  const [formData, setFormData] = useState({
-  nombre: '',
-  celular: '',
+  name: '',
+  phoneNumber: '',
   email: '',
   password: '',
   confirmPassword: '',
   avatarId: 0,
   profileImage: null as File | null,
-  estudios: '',
-  rol: '',
-  pais: '',
-  provincia: '',
-  localidad: '',
+  studies: '',
+  role: '',
+  country: '',
+  province: '',
+  location: '',
 });
 
 
@@ -57,18 +57,18 @@ const isValidGmail = (email: string): boolean => {
   return gmailRegex.test(email);
 };
 const validateAcademicFields = (): boolean => {
-  const { estudios, rol, pais, provincia, localidad } = formData;
-  if (!estudios || !rol || !pais || !provincia || !localidad) {
+  const { studies, role, country, province, location } = formData;
+  if (!studies || !role || !country || !province || !location) {
     alert('Por favor, completá todos los campos de Detalles Académicos.');
     return false;
   }
   return true;
 };
 const validatePersonalFields = (): boolean => {
-  const { nombre, celular, email, password, confirmPassword } = formData;
+  const { name, phoneNumber, email, password, confirmPassword } = formData;
   if (
-    nombre.trim() === '' ||
-    celular.trim() === '' ||
+    name.trim() === '' ||
+    phoneNumber.trim() === '' ||
     email.trim() === '' ||
     password.trim() === '' ||
     confirmPassword.trim() === ''
@@ -83,7 +83,7 @@ const validatePersonalFields = (): boolean => {
     e.preventDefault();
  if (!validatePersonalFields() || !validateAcademicFields()) return;
 
- if (!isValidPhone(formData.celular)) {
+ if (!isValidPhone(formData.phoneNumber)) {
     alert('Por favor, ingresá un número de celular válido con código internacional.');
     return;
   }
@@ -97,22 +97,24 @@ const validatePersonalFields = (): boolean => {
     }
    
 
+const dataToSend = new FormData(); 
+dataToSend.append('name', formData.name);
+dataToSend.append('phoneNumber', formData.phoneNumber.replace(/\s|-/g, ''));
+dataToSend.append('email', formData.email);
+dataToSend.append('password', formData.password);
+dataToSend.append('confirmPassword', formData.confirmPassword); // faltaba
+dataToSend.append('avatarId', formData.avatarId.toString());
+dataToSend.append('studies', formData.studies);
+dataToSend.append('role', formData.role);
+dataToSend.append('country', formData.country);
+dataToSend.append('province', formData.province);
+dataToSend.append('location', formData.location);
 
-    const dataToSend = new FormData();
-    dataToSend.append('nombre', formData.nombre);
-   dataToSend.append('celular', formData.celular.replace(/\s|-/g, ''));
-    dataToSend.append('email', formData.email);
-    dataToSend.append('password', formData.password);
-    dataToSend.append('avatarId', formData.avatarId.toString());
-    dataToSend.append('estudios', formData.estudios);
-dataToSend.append('rol', formData.rol);
-dataToSend.append('pais', formData.pais);
-dataToSend.append('provincia', formData.provincia);
-dataToSend.append('localidad', formData.localidad);
+if (formData.profileImage) {
+  dataToSend.append('profileImage', formData.profileImage);
+}
 
-    if (formData.profileImage) {
-      dataToSend.append('profileImage', formData.profileImage);
-    }
+    
 
     onSubmit(dataToSend);
   };
@@ -142,10 +144,10 @@ dataToSend.append('localidad', formData.localidad);
             <label>
               Nombre Completo <span className="text-red-600">*</span>
               <input
-                type="text"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleChange}
+   type="text"
+  name="name"
+  value={formData.name}
+  onChange={handleChange}
                 className="w-full rounded px-3 py-2 mt-1 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Nombre completo"
                 required
@@ -155,9 +157,9 @@ dataToSend.append('localidad', formData.localidad);
               Nº de celular <span className="text-red-600">*</span>
               <input
                 type="tel"
-                name="celular"
-                value={formData.celular}
-                onChange={handleChange}
+  name="phoneNumber"
+  value={formData.phoneNumber}
+  onChange={handleChange}
                 className="w-full rounded px-3 py-2 mt-1 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Nº de celular"
                 required
@@ -166,10 +168,10 @@ dataToSend.append('localidad', formData.localidad);
             <label>
               E-mail <span className="text-red-600">*</span>
               <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
+               type="email"
+  name="email"
+  value={formData.email}
+  onChange={handleChange}
                 className="w-full rounded px-3 py-2 mt-1 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="email@example.com"
                 required
@@ -208,9 +210,9 @@ dataToSend.append('localidad', formData.localidad);
     <label>
       Estudios
       <select
-        name="estudios"
-        value={formData.estudios}
-        onChange={handleSelectChange}
+        name="studies"
+  value={formData.studies}
+  onChange={handleSelectChange}
         required
         className="w-full rounded px-3 py-2 mt-1 border border-gray-300"
       >
@@ -224,9 +226,9 @@ dataToSend.append('localidad', formData.localidad);
     <label>
       Rol
       <select
-        name="rol"
-        value={formData.rol}
-        onChange={handleSelectChange}
+        name="role"
+  value={formData.role}
+  onChange={handleSelectChange}
         required
         className="w-full rounded px-3 py-2 mt-1 border border-gray-300"
       >
@@ -241,9 +243,9 @@ dataToSend.append('localidad', formData.localidad);
       País
       <input
         type="text"
-        name="pais"
-        value={formData.pais}
-        onChange={handleChange}
+  name="country"
+  value={formData.country}
+  onChange={handleChange}
         required
         className="w-full rounded px-3 py-2 mt-1 border border-gray-300"
         placeholder="Ej: Argentina"
@@ -254,9 +256,9 @@ dataToSend.append('localidad', formData.localidad);
       Provincia
       <input
         type="text"
-        name="provincia"
-        value={formData.provincia}
-        onChange={handleChange}
+  name="province"
+  value={formData.province}
+  onChange={handleChange}
         required
         className="w-full rounded px-3 py-2 mt-1 border border-gray-300"
         placeholder="Ej: Buenos Aires"
@@ -267,9 +269,9 @@ dataToSend.append('localidad', formData.localidad);
       Localidad
       <input
         type="text"
-        name="localidad"
-        value={formData.localidad}
-        onChange={handleChange}
+        name="location"
+  value={formData.location}
+  onChange={handleChange}
         required
         className="w-full rounded px-3 py-2 mt-1 border border-gray-300"
         placeholder="Ej: Quilmes"
@@ -295,10 +297,10 @@ dataToSend.append('localidad', formData.localidad);
           </label>
           <input
             type="file"
-            id="profileImage"
-            name="profileImage"
-            accept="image/*"
-            onChange={handleChange}
+  id="profileImage"
+  name="profileImage"
+  accept="image/*"
+  onChange={handleChange}
             className="hidden"
           />
         </div>

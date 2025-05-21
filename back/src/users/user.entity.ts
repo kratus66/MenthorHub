@@ -12,8 +12,9 @@ import { Submission } from '../submission/submission.entity';
 import { Payment } from '../payment/payment.entity';
 import { Task } from '../task/task.entity';
 import { Notification } from '../notifications/notification.entity';
+import { IsEmail } from 'class-validator';  
 
-@Entity()
+@Entity()   
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
