@@ -6,7 +6,7 @@ import { Class } from '../classes/class.entity';
 import { User } from '../users/user.entity';
 import * as fs from 'fs';
 import * as path from 'path';
-import { CreateClassDto } from '../dto/CreateClassDto';
+import { CreateClassDto } from '../classes/dto/create-class.dto'; 
 import { CreateCategoryDto } from '../dto/create-category.dto';
 
 @Injectable()

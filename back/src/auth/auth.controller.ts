@@ -5,6 +5,9 @@ import {
   Body,
   UploadedFile,
   UseInterceptors,
+  Get,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -16,7 +19,7 @@ import {
   ApiBody,
   ApiConsumes,
 } from '@nestjs/swagger';
-
+import { AuthGuard } from '@nestjs/passport'; 
 import { CloudinaryFileInterceptor } from '../common/interceptors/cloudinary.interceptor';
 
 @ApiTags('Auth')
@@ -64,4 +67,17 @@ export class AuthController {
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
+
+  @Get('google/redirect')
+  @UseGuards(AuthGuard('google'))
+  googleRedirect(@Req() req: any) {
+  return this.authService.handleOAuthLogin(req.user, 'google');
+  }
+
+  @Get('github/redirect')
+  @UseGuards(AuthGuard('github'))
+  githubRedirect(@Req() req: any) {
+  return this.authService.handleOAuthLogin(req.user, 'github');
+  }
+
 }
