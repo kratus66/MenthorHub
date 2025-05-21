@@ -15,6 +15,7 @@ type clasesType = {
    title: string;
    description: string;
    createdAt: string;
+   materia: string;
    teacher: {
       id: string;
       name: string;
@@ -51,9 +52,11 @@ const CursosLista = ({
    const [clases, setClases] = useState<clasesType[]>([]);
 
    useEffect(() => {
+      console.log('useEffect ejecutado');
       axiosInstance
          .get('/classes')
          .then((res) => {
+            console.log('Respuesta del backend:', res.data);
             setClases(res.data);
          })
          .catch((err) => {
@@ -61,13 +64,15 @@ const CursosLista = ({
          });
    }, []);
 
+   console.log(clases);
+
    const cursosFiltrados = clases.filter((curso) => {
       const coincideCategoria = categoria
          ? curso.category.name === categoria
          : true;
-      const coincideMateria = materiaSeleccionada;
-      // ? curso.materia === materiaSeleccionada
-      // : true;
+      const coincideMateria = materiaSeleccionada
+         ? curso.materia === materiaSeleccionada
+         : true;
       return coincideCategoria && coincideMateria;
    });
 
