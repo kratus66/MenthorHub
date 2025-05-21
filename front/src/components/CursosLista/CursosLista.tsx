@@ -61,6 +61,8 @@ const CursosLista = ({
          });
    }, []);
 
+   console.log(clases);
+
    const cursosFiltrados = clases.filter((curso) => {
       const coincideCategoria = categoria
          ? curso.category.name === categoria
