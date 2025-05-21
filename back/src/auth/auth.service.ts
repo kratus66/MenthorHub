@@ -33,11 +33,11 @@ export class AuthService {
       phoneNumber: dto.phoneNumber,
       avatarId: dto.avatarId,
       profileImage: profileImagePath,
-      estudios: dto.estudios,
+      estudios: dto.studies,
       role: dto.role as 'student' | 'teacher' | 'admin',
       country: dto.country,
-      provincia: dto.provincia,
-      localidad: dto.localidad,
+      provincia: dto.province,
+      localidad: dto.location,
     });
 
     await this.usersRepository.save(newUser);
