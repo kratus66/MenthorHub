@@ -1,4 +1,12 @@
-import { Controller, Get, Param, ParseUUIDPipe, InternalServerErrorException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  InternalServerErrorException,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './notification.entity';
@@ -7,10 +15,17 @@ import {
   ApiOperation,
   ApiParam,
   ApiResponse,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RoleGuard } from '../common/guards/role.guard';
+import { Roles } from '../decorator/role';
+import { Role } from '../common/constants/roles.enum';
 
 @ApiTags('Notificaciones')
+@ApiBearerAuth('JWT-auth')
 @Controller('notifications')
+@UseGuards(JwtAuthGuard, RoleGuard)
 export class NotificationsController {
   constructor(
     @InjectRepository(Notification)
@@ -18,6 +33,7 @@ export class NotificationsController {
   ) {}
 
   @Get(':userId')
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Obtener notificaciones de un usuario' })
   @ApiParam({
     name: 'userId',

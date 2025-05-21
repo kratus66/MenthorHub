@@ -12,7 +12,7 @@ import { TasksService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { Roles } from '../common/decorators/roles.decorator';
-import { Role } from '../decorator/roles.enum';
+import { Role } from '../common/constants/roles.enum'; // ✅ Usa la ruta correcta y el enum correcto
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { User } from '../users/user.entity';
 import { RoleGuard } from '../common/guards/role.guard';
@@ -34,7 +34,7 @@ export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post()
-  @Roles(Role.TEACHER)
+  @Roles(Role.Teacher) // ✅ corregido
   @ApiOperation({ summary: 'Crear una tarea (solo para profesores)' })
   @ApiBody({ type: CreateTaskDto })
   @ApiResponse({ status: 201, description: 'Tarea creada exitosamente', type: Task })
@@ -47,7 +47,7 @@ export class TasksController {
   }
 
   @Get('teacher')
-  @Roles(Role.TEACHER)
+  @Roles(Role.Teacher) // ✅ corregido
   @ApiOperation({ summary: 'Obtener tareas creadas por el profesor autenticado' })
   @ApiResponse({ status: 200, description: 'Listado de tareas', type: [Task] })
   async findAllTeacher(@CurrentUser() user: User) {
@@ -59,7 +59,7 @@ export class TasksController {
   }
 
   @Get('student')
-  @Roles(Role.STUDENT)
+  @Roles(Role.Student) // ✅ corregido
   @ApiOperation({ summary: 'Obtener tareas asignadas al estudiante autenticado' })
   @ApiResponse({ status: 200, description: 'Listado de tareas', type: [Task] })
   async findAllStudent(@CurrentUser() user: User) {
@@ -71,7 +71,7 @@ export class TasksController {
   }
 
   @Delete(':id')
-  @Roles(Role.TEACHER)
+  @Roles(Role.Teacher) // ✅ corregido
   @ApiOperation({ summary: 'Eliminar una tarea (solo si pertenece al profesor)' })
   @ApiParam({ name: 'id', description: 'UUID de la tarea a eliminar' })
   @ApiResponse({ status: 200, description: 'Tarea eliminada' })
@@ -83,3 +83,4 @@ export class TasksController {
     }
   }
 }
+

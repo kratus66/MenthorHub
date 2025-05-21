@@ -18,7 +18,8 @@ import { CreateSubmissionDto } from './dto/CreateSubmissions.dto';
 import { UpdateSubmissionDto } from './dto/updatesubmission.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RoleGuard } from '../common/guards/role.guard';
-import { Roles } from '../common/decorators/roles.decorator';
+import { Role } from '../common/constants/roles.enum';
+import { Roles } from '../decorator/role'; // ✅ asegúrate que apunta al decorador
 import { Express } from 'express';
 import {
   ApiTags,
@@ -39,7 +40,7 @@ export class SubmissionsController {
 
   @Post()
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles('student')
+  @Roles(Role.Student)
   @UseInterceptors(CloudinaryFileInterceptor)
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Crear una entrega con archivo (solo estudiantes)' })
@@ -71,7 +72,7 @@ export class SubmissionsController {
 
   @Get()
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles('teacher', 'admin')
+  @Roles(Role.Teacher, Role.Admin)
   @ApiOperation({ summary: 'Obtener todas las entregas (solo profesores/admin)' })
   @ApiResponse({ status: 200, description: 'Listado de entregas' })
   async findAll() {
@@ -84,7 +85,7 @@ export class SubmissionsController {
 
   @Get('my-submissions')
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles('student')
+  @Roles(Role.Student)
   @ApiOperation({ summary: 'Obtener entregas del estudiante autenticado' })
   @ApiResponse({ status: 200, description: 'Entregas del usuario autenticado' })
   async findMy(@Req() req: any) {
@@ -96,7 +97,7 @@ export class SubmissionsController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard) // ⚠️ acceso general autenticado (sin roles específicos)
   @ApiOperation({ summary: 'Obtener una entrega por ID' })
   @ApiParam({ name: 'id', description: 'UUID de la entrega' })
   @ApiResponse({ status: 200, description: 'Entrega encontrada' })
@@ -111,15 +112,12 @@ export class SubmissionsController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles('teacher', 'admin')
+  @Roles(Role.Teacher, Role.Admin)
   @ApiOperation({ summary: 'Actualizar una entrega (solo profesor/admin)' })
   @ApiParam({ name: 'id', description: 'UUID de la entrega' })
   @ApiBody({ type: UpdateSubmissionDto })
   @ApiResponse({ status: 200, description: 'Entrega actualizada' })
-  async update(
-    @Param('id') id: string,
-    @Body() dto: UpdateSubmissionDto,
-  ) {
+  async update(@Param('id') id: string, @Body() dto: UpdateSubmissionDto) {
     try {
       return await this.submissionsService.update(id, dto);
     } catch (error) {
@@ -129,7 +127,7 @@ export class SubmissionsController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles('student', 'admin')
+  @Roles(Role.Student, Role.Admin)
   @ApiOperation({ summary: 'Eliminar una entrega (estudiante o admin)' })
   @ApiParam({ name: 'id', description: 'UUID de la entrega' })
   @ApiResponse({ status: 200, description: 'Entrega eliminada' })
@@ -141,3 +139,5 @@ export class SubmissionsController {
     }
   }
 }
+
+
