@@ -52,7 +52,7 @@ const CursosLista = ({
 
    useEffect(() => {
       axiosInstance
-         .get('/clases')
+         .get('/classes')
          .then((res) => {
             setClases(res.data);
          })
