@@ -56,7 +56,7 @@ export class RegisterDto {
 
   @ApiProperty()
   @IsString()
-  estudios: string;
+  studies: string;
 
   @ApiProperty()
   @IsIn(['student', 'teacher', 'admin'])
@@ -68,9 +68,9 @@ export class RegisterDto {
 
   @ApiProperty()
   @IsString()
-  provincia: string;
+  province: string;
 
   @ApiProperty()
   @IsString()
-  localidad: string;
+  location: string;
 }
