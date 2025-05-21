@@ -44,8 +44,8 @@ export class AuthService {
 
     const token = this.generateToken(newUser);
     return {
-      message: 'Registro exitoso',
-      token,
+      message: `Inicio de sesión exitoso. Bienvenido, ${newUser.name}`,
+      
       user: {
         id: newUser.id,
         nombre: newUser.name,
@@ -57,17 +57,30 @@ export class AuthService {
   }
 }
 
-  async login(loginDto: LoginDto): Promise<{ token: string }> {
-    const { email, password } = loginDto;
-    const user = await this.usersRepository.findOne({ where: { email } });
+async login(loginDto: LoginDto): Promise<any> {
+  const { email, password } = loginDto;
+  const user = await this.usersRepository.findOne({ where: { email } });
 
-    if (!user || !(await compare(password, user.password))) {
-      throw new UnauthorizedException('Credenciales incorrectas');
-    }
-
-    const token = this.generateToken(user);
-    return { token };
+  if (!user || !(await compare(password, user.password))) {
+    throw new UnauthorizedException('Credenciales incorrectas');
   }
+
+  const token = this.generateToken(user);
+
+  return {
+    message: `Inicio de sesión exitoso. Bienvenido, ${user.name}`,
+    token,
+
+    user: {
+      id: user.id,
+      nombre: user.name,
+      email: user.email,
+      rol: user.role,
+      Image: user.profileImage,
+      // agrega aquí otros campos que quieras exponer, sin incluir datos sensibles
+    },
+  };
+}
 
   generateToken(user: User): string {
     const payload = { email: user.email, sub: user.id, role: user.role };
