@@ -1,0 +1,535 @@
+diff --git a/back/src/dto/CreateClassDto.ts b/back/src/dto/CreateClassDto.ts
+deleted file mode 100644
+index f2b04a4..0000000
+--- a/back/src/dto/CreateClassDto.ts
++++ /dev/null
+@@ -1,33 +0,0 @@
+-import { IsString, IsNotEmpty, IsArray, IsNumber,IsUUID } from 'class-validator';
+-import { ApiProperty } from '@nestjs/swagger';
+-
+-export class CreateClassDto {
+-  @ApiProperty({
+-    description: 'Título de la clase',
+-    example: 'Curso de NestJS Avanzado',
+-  })
+-  @IsString()
+-  @IsNotEmpty()
+-  title: string;
+-
+-  @ApiProperty({
+-    description: 'Descripción detallada de la clase',
+-    example: 'Este curso cubre NestJS con TypeORM, autenticación, y despliegue en producción.',
+-  })
+-  @IsString()
+-  @IsNotEmpty()
+-  description: string;
+-
+-  @ApiProperty({
+-    description: 'ID del profesor que dicta la clase',
+-    example: 3,
+-  })
+-  @IsNumber()
+-  teacherId: string;
+-
+-  @ApiProperty({ example: 'uuid-de-categoria' })
+-  @IsUUID()
+-  categoryId: string; // 👈 Añadido como obligatorio
+-
+-
+-}
+diff --git a/front/public/categoria-tecnologia.jpeg b/front/public/categoria-tecnologia.jpeg
+deleted file mode 100644
+index 80e3b34..0000000
+Binary files a/front/public/categoria-tecnologia.jpeg and /dev/null differ
+diff --git a/front/src/components/Background/Background.tsx b/front/src/components/Background/Background.tsx
+deleted file mode 100644
+index c774ab7..0000000
+--- a/front/src/components/Background/Background.tsx
++++ /dev/null
+@@ -1,22 +0,0 @@
+-interface BackgroundProps {
+-  children?: React.ReactNode;
+-}
+-
+-const Background = ({ children }: BackgroundProps) => {
+-  return (
+-    <div className="h-full">
+-      <div className="absolute z-50 h-full w-full">{children}</div>
+-      <div className="h-full aspect-[630/982] bg-[#007AFF] relative bg-opacity-75 -z-1">
+-        <svg
+-          viewBox="0 0 100 100"
+-          preserveAspectRatio="none"
+-          className="absolute top-0 left-0 w-full h-full -z-1"
+-        >
+-          <path d="M100,0 Q90,90 0,100 L0,0 Z" fill="#007AFF" />
+-        </svg>
+-      </div>
+-    </div>
+-  );
+-};
+-
+-export default Background;
+diff --git a/front/src/components/MenVir/MenVir.tsx b/front/src/components/MenVir/MenVir.tsx
+deleted file mode 100644
+index 53ed6a9..0000000
+--- a/front/src/components/MenVir/MenVir.tsx
++++ /dev/null
+@@ -1,38 +0,0 @@
+-import React, { type RefObject } from "react";
+-
+-interface VideoContainerProps {
+-  className?: string; // Para agregar más clases al div contenedor
+-  videoRef?: RefObject<HTMLVideoElement | null>; // Opcional
+-  onEnded?: () => void; // Opcional
+-  src: string; // Obligatorio
+-  loop?: boolean; // Opcional con valor por defecto true
+-}
+-
+-const MenVir: React.FC<VideoContainerProps> = ({
+-  className = "",
+-  videoRef,
+-  onEnded,
+-  src,
+-  loop = true,
+-}) => {
+-  return (
+-    <div className="h-full aspect-[630/982] absolute">
+-      <div
+-        className={`absolute inset-y-0 right-0 flex items-center justify-center w-full h-full ${className}`}
+-      >
+-        <video
+-          ref={videoRef}
+-          autoPlay
+-          muted
+-          playsInline
+-          loop={loop}
+-          onEnded={onEnded}
+-          src={src}
+-          className="w-[90%] h-[90%] object-contain"
+-        />
+-      </div>
+-    </div>
+-  );
+-};
+-
+-export default MenVir;
+diff --git a/front/src/helpers/fakeClasses.ts b/front/src/helpers/fakeClasses.ts
+deleted file mode 100644
+index f7caaed..0000000
+--- a/front/src/helpers/fakeClasses.ts
++++ /dev/null
+@@ -1,414 +0,0 @@
+-import type { Class, Professor, Task, User } from '../types/entities';
+-import type { Categoria } from '../types/Categoria';
+-
+-const sampleClasses: Class[] = [
+-   {
+-      id: '1a2b3c4d-0001',
+-      title: 'Introducción a la Programación',
+-      description:
+-         'Aprende los conceptos básicos de programación con JavaScript.',
+-      teacher: { id: 'prof-001', name: 'Juan Pérez' } as Professor,
+-      students: [
+-         { id: 'user-101', name: 'Ana' },
+-         { id: 'user-102', name: 'Carlos' },
+-      ] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-01',
+-         nombre: 'Tecnología',
+-         imagen: '/categoria-tecnologia.jpeg',
+-      } as Categoria,
+-      materia: 'Salud Mental',
+-      createdAt: new Date('2024-09-01T09:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0002',
+-      title: 'Historia del Arte',
+-      description:
+-         'Estudia las principales corrientes artísticas desde el Renacimiento hasta hoy.',
+-      teacher: { id: 'prof-002', name: 'María López' } as Professor,
+-      students: [
+-         { id: 'user-103', name: 'Lucía' },
+-         { id: 'user-104', name: 'Jorge' },
+-      ] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-02',
+-         nombre: 'Historia',
+-         imagen: '/categoria-historia.jpg',
+-      } as Categoria,
+-      materia: 'Inglés',
+-      createdAt: new Date('2024-09-02T10:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0003',
+-      title: 'Matemática Financiera',
+-      description: 'Conocé cómo aplicar fórmulas financieras en el mundo real.',
+-      teacher: { id: 'prof-003', name: 'Carlos Sánchez' } as Professor,
+-      students: [{ id: 'user-105', name: 'Matías' }] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-03',
+-         nombre: 'Matemática',
+-         imagen: '/categoria-matematica.png',
+-      } as Categoria,
+-      materia: 'Teoría Literaria',
+-      createdAt: new Date('2024-09-03T11:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0004',
+-      title: 'Física Cuántica Básica',
+-      description:
+-         'Una introducción accesible a los fundamentos de la física moderna.',
+-      teacher: { id: 'prof-004', name: 'Sofía Martínez' } as Professor,
+-      students: [] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-01',
+-         nombre: 'Matemática',
+-         imagen: '/categoria-matematica.png',
+-      } as Categoria,
+-      materia: 'Narrativa',
+-      createdAt: new Date('2024-09-04T12:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0005',
+-      title: 'Literatura Contemporánea',
+-      description: 'Análisis de obras destacadas del siglo XXI.',
+-      teacher: { id: 'prof-005', name: 'Germán Díaz' } as Professor,
+-      students: [
+-         { id: 'user-106', name: 'Valentina' },
+-         { id: 'user-107', name: 'Martín' },
+-         { id: 'user-108', name: 'Florencia' },
+-      ] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-02',
+-         nombre: 'Lenguajes',
+-         imagen: '/categoria-lenguajes.webp',
+-      } as Categoria,
+-      materia: 'Psicología',
+-      createdAt: new Date('2024-09-05T13:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0006',
+-      title: 'Biología Marina',
+-      description: 'Explora los ecosistemas marinos y su biodiversidad.',
+-      teacher: { id: 'prof-006', name: 'Ignacio Suárez' } as Professor,
+-      students: [{ id: 'user-109', name: 'Camila' }] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-04',
+-         nombre: 'Ciencia',
+-         imagen: '/categoria-ciencia.jpg',
+-      } as Categoria,
+-      materia: 'Física',
+-      createdAt: new Date('2024-09-06T14:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0007',
+-      title: 'Fotografía Digital',
+-      description:
+-         'Técnicas y herramientas para capturar imágenes impactantes.',
+-      teacher: { id: 'prof-007', name: 'Laura Torres' } as Professor,
+-      students: [] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-05',
+-         nombre: 'Tecnología',
+-         imagen: '/categoria-tecnologia.jpeg',
+-      } as Categoria,
+-      materia: 'Anatomía Humana',
+-      createdAt: new Date('2024-09-07T15:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0008',
+-      title: 'Cocina Internacional',
+-      description: 'Prepará platos de distintas partes del mundo.',
+-      teacher: { id: 'prof-008', name: 'Diego Rodríguez' } as Professor,
+-      students: [
+-         { id: 'user-110', name: 'Federico' },
+-         { id: 'user-111', name: 'Laura' },
+-      ] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-06',
+-         nombre: 'Salud',
+-         imagen: '/categoria-salud.webp',
+-      } as Categoria,
+-      materia: 'Anatomía Humana',
+-      createdAt: new Date('2024-09-08T16:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0009',
+-      title: 'Diseño UX/UI',
+-      description:
+-         'Aprende los principios clave para crear interfaces efectivas.',
+-      teacher: { id: 'prof-009', name: 'Andrea Gómez' } as Professor,
+-      students: [
+-         { id: 'user-112', name: 'Bruno' },
+-         { id: 'user-113', name: 'Julieta' },
+-      ] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-01',
+-         nombre: 'Tecnología',
+-         imagen: '/categoria-tecnologia.jpeg',
+-      } as Categoria,
+-      materia: 'Primeros Auxilios',
+-      createdAt: new Date('2024-09-09T17:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0010',
+-      title: 'Psicología del Desarrollo',
+-      description: 'Un recorrido por las etapas del crecimiento humano.',
+-      teacher: { id: 'prof-010', name: 'Ricardo Herrera' } as Professor,
+-      students: [{ id: 'user-114', name: 'Sabrina' }] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-07',
+-         nombre: 'Salud',
+-         imagen: '/categoria-salud.webp',
+-      } as Categoria,
+-      materia: 'Anatomía Humana',
+-      createdAt: new Date('2024-09-10T18:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0011',
+-      title: 'Teoría Musical Básica',
+-      description: 'Conocé los fundamentos del lenguaje musical y la notación.',
+-      teacher: { id: 'prof-011', name: 'Esteban Correa' } as Professor,
+-      students: [] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-08',
+-         nombre: 'Música',
+-         imagen: '/categoria-musica.png',
+-      } as Categoria,
+-      materia: 'Historia de la música',
+-      createdAt: new Date('2024-09-11T08:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0012',
+-      title: 'Análisis de Datos con Python',
+-      description:
+-         'Procesamiento de datos y visualización con bibliotecas modernas.',
+-      teacher: { id: 'prof-012', name: 'Paula Ríos' } as Professor,
+-      students: [
+-         { id: 'user-115', name: 'Tomás' },
+-         { id: 'user-116', name: 'Elena' },
+-      ] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-09',
+-         nombre: 'Tecnología',
+-         imagen: '/categoria-tecnologia.jpeg',
+-      } as Categoria,
+-      materia: 'Anatomía Humana',
+-      createdAt: new Date('2024-09-12T08:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0013',
+-      title: 'Geografía Física del Uruguay',
+-      description: 'Relieve, clima y recursos naturales de nuestro país.',
+-      teacher: { id: 'prof-013', name: 'Luciana Bentancor' } as Professor,
+-      students: [] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-10',
+-         nombre: 'Geografía',
+-         imagen: '/categoria-geografia.jpg',
+-      } as Categoria,
+-      materia: 'Pintura',
+-      createdAt: new Date('2024-09-13T08:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0014',
+-      title: 'Economía Personal',
+-      description:
+-         'Aprendé a administrar tus ingresos y ahorrar con inteligencia.',
+-      teacher: { id: 'prof-014', name: 'Mario Paredes' } as Professor,
+-      students: [{ id: 'user-117', name: 'Romina' }] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-11',
+-         nombre: 'Finanzas',
+-         imagen: '/categoria-finanzas.jpg',
+-      } as Categoria,
+-      materia: 'Robótica',
+-      createdAt: new Date('2024-09-14T08:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0015',
+-      title: 'Inglés Conversacional A1',
+-      description: 'Comenzá a hablar inglés desde cero con situaciones reales.',
+-      teacher: { id: 'prof-015', name: 'Victoria Ayala' } as Professor,
+-      students: [] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-12',
+-         nombre: 'Lenguajes',
+-         imagen: '/categoria-lenguajes.webp',
+-      } as Categoria,
+-      materia: 'Psicología',
+-      createdAt: new Date('2024-09-15T08:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0016',
+-      title: 'Técnicas de Primeros Auxilios',
+-      description: 'Respondé a emergencias con seguridad y eficacia.',
+-      teacher: { id: 'prof-016', name: 'Héctor Gómez' } as Professor,
+-      students: [
+-         { id: 'user-118', name: 'Daniela' },
+-         { id: 'user-119', name: 'Nicolás' },
+-      ] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-13',
+-         nombre: 'Salud',
+-         imagen: '/categoria-salud.webp',
+-      } as Categoria,
+-      materia: 'Anatomía Humana',
+-      createdAt: new Date('2024-09-16T08:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0017',
+-      title: 'Fútbol y Estrategia',
+-      description: 'Entrenamiento técnico y táctico para equipos de base.',
+-      teacher: { id: 'prof-017', name: 'Santiago Ferrer' } as Professor,
+-      students: [] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-14',
+-         nombre: 'Deporte',
+-         imagen: '/categoria-deportes.png',
+-      } as Categoria,
+-      materia: 'Básquetbol',
+-      createdAt: new Date('2024-09-17T08:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0018',
+-      title: 'Astronomía para Principiantes',
+-      description: 'Explorá el universo y aprendé sobre estrellas y planetas.',
+-      teacher: { id: 'prof-018', name: 'Mónica Etcheverry' } as Professor,
+-      students: [{ id: 'user-120', name: 'Iván' }] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-15',
+-         nombre: 'Ciencia',
+-         imagen: '/categoria-ciencia.jpg',
+-      } as Categoria,
+-      materia: 'Química',
+-      createdAt: new Date('2024-09-18T08:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0019',
+-      title: 'Introducción al Ajedrez',
+-      description:
+-         'Aprendé a jugar ajedrez desde las reglas básicas hasta tácticas iniciales.',
+-      teacher: { id: 'prof-019', name: 'Silvia Ortiz' } as Professor,
+-      students: [] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-16',
+-         nombre: 'Deporte',
+-         imagen: '/categoria-deportes.png',
+-      } as Categoria,
+-      materia: 'Fútbol',
+-      createdAt: new Date('2024-09-19T08:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0020',
+-      title: 'Redacción Académica',
+-      description: 'Mejorá tu escritura formal para ensayos y trabajos.',
+-      teacher: { id: 'prof-020', name: 'Marcelo Piñeyro' } as Professor,
+-      students: [] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-17',
+-         nombre: 'Lenguajes',
+-         imagen: '/categoria-lenguajes.webp',
+-      } as Categoria,
+-      materia: 'Sociología',
+-      createdAt: new Date('2024-09-20T08:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0021',
+-      title: 'Guitarra Inicial',
+-      description: 'Domina acordes básicos y ritmos populares.',
+-      teacher: { id: 'prof-021', name: 'Natalia Viera' } as Professor,
+-      students: [] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-18',
+-         nombre: 'Música',
+-         imagen: '/categoria-musica.png',
+-      } as Categoria,
+-      materia: 'Teoría Musical',
+-      createdAt: new Date('2024-09-21T08:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0022',
+-      title: 'Estadística Aplicada',
+-      description: 'Analizá datos reales con herramientas estadísticas.',
+-      teacher: { id: 'prof-022', name: 'Julián Morales' } as Professor,
+-      students: [{ id: 'user-121', name: 'Agustina' }] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-19',
+-         nombre: 'Matemática',
+-         imagen: '/categoria-matematica.png',
+-      } as Categoria,
+-      materia: 'Teoría Literaria',
+-      createdAt: new Date('2024-09-22T08:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0023',
+-      title: 'Nutrición y Bienestar',
+-      description:
+-         'Descubrí cómo llevar una alimentación saludable y balanceada.',
+-      teacher: { id: 'prof-023', name: 'Carla Medina' } as Professor,
+-      students: [] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-20',
+-         nombre: 'Salud',
+-         imagen: '/categoria-salud.webp',
+-      } as Categoria,
+-      materia: 'Nutricion',
+-      createdAt: new Date('2024-09-23T08:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0024',
+-      title: 'La Segunda Guerra Mundial',
+-      description:
+-         'Analizá las causas, desarrollo y consecuencias del conflicto global.',
+-      teacher: { id: 'prof-024', name: 'Andrés Pérez' } as Professor,
+-      students: [] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-21',
+-         nombre: 'Historia',
+-         imagen: '/categoria-historia.jpg',
+-      } as Categoria,
+-      materia: 'Inglés',
+-      createdAt: new Date('2024-09-24T08:00:00'),
+-   },
+-   {
+-      id: '1a2b3c4d-0025',
+-      title: 'JavaScript Intermedio',
+-      description: 'Avanzá en tu dominio de JavaScript con proyectos reales.',
+-      teacher: { id: 'prof-025', name: 'Emilia Castro' } as Professor,
+-      students: [] as User[],
+-      tasks: [] as Task[],
+-      category: {
+-         id: 'cat-22',
+-         nombre: 'Tecnología',
+-         imagen: '/categoria-tecnologia.jpeg',
+-      } as Categoria,
+-      materia: 'Anatomía Humana',
+-      createdAt: new Date('2024-09-25T08:00:00'),
+-   },
+-];
+-
+-export default sampleClasses;
