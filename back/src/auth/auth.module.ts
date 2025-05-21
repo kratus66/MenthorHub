@@ -29,6 +29,7 @@ import { GithubStrategy } from './github.strategy';
     JwtStrategy,
     GoogleStrategy,
     GithubStrategy,
+    ConfigService, // ← Agrega esto
   ],
 
   exports: [AuthService],
