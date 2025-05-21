@@ -3,6 +3,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class LoginDto {
   @IsEmail({}, { message: 'Correo no válido' })
+  @ApiProperty({
+    example:"pepitoperez@example.com",
+    description: "ingrese un email"
+  })
   email!: string;
 
   @Length(8, 20) // ✅ Ahora está correctamente importado

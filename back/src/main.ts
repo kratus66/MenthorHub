@@ -1,11 +1,16 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { IoAdapter } from '@nestjs/platform-socket.io';
-import { Server } from 'socket.io';
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
+import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+import { IoAdapter } from "@nestjs/platform-socket.io";
+import { Server } from "socket.io";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Habilitar CORS para solicitudes HTTP
+  app.enableCors({
+    origin: "*",
+  });
 
   // Habilitar Socket.IO global
   app.useWebSocketAdapter(new IoAdapter(app));
@@ -14,28 +19,28 @@ async function bootstrap() {
   const server = app.getHttpServer();
   const io = new Server(server, {
     cors: {
-      origin: '*',
+      origin: "*",
     },
   });
 
   // Inyectar la instancia manualmente
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix("api");
   app.useGlobalInterceptors(); // (Opcional si usas alguno)
   // Para compartir la instancia de io, crea un provider personalizado o usa app.locals si accedes desde middlewares/express
   (global as any).io = io;
 
   // Swagger
   const config = new DocumentBuilder()
-    .setTitle('MentorHub API')
-    .setDescription('Documentación de la API de MentorHub')
-    .setVersion('1.0')
+    .setTitle("MentorHub API")
+    .setDescription("Documentación de la API de MentorHub")
+    .setVersion("1.0")
     .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup("api", app, document);
 
   await app.listen(3001);
-  console.log('Application is running on: http://localhost:3001');
+  console.log("Application is running on: http://localhost:3001");
 }
 bootstrap();

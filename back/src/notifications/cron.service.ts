@@ -10,8 +10,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThanOrEqual } from 'typeorm';
 import { Task } from '../task/task.entity';
 import { Notification } from '../notifications/notification.entity';
-import { User } from '../users/user.entity';
 import { HttpAdapterHost } from '@nestjs/core';
+
 
 @Injectable()
 export class CronService implements OnModuleInit {

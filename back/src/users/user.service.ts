@@ -33,4 +33,14 @@ export class UsersService {
   async remove(id: string): Promise<void> {
     await this.usersRepository.delete(id);
   }
+  async getTeachers():Promise<User[]>{
+    const teachers= await this.usersRepository.findBy({role:'teacher'})
+    return teachers;
+  }
+
+  async getStudents(){
+    const students= await this.usersRepository.findBy({role:'student'})
+    return students;
+    
+  }
 }
