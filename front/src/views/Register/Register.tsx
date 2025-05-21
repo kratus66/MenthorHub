@@ -6,7 +6,7 @@ import axios from 'axios';
 const Register: React.FC = () => {
   const handleSubmit = async (formData: FormData) => {
     try {  
-      const response = await axios.post('http://localhost:3001/auth/register', formData, {  
+      const response = await axios.post('http://localhost:3001/api/auth/register', formData, {  
        headers: { 'Content-Type': 'multipart/form-data' }
       });
       console.log('Respuesta del servidor:', response.data);

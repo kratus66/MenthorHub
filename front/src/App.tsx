@@ -18,7 +18,7 @@ import Register from './views/Register/Register';
 import Dashboard from './views/Dashboard/Dashboard';
 import Terminos from './views/terminos-condiciones/Terminos';
 import Layout from './components/layout/Layout';
-import CursoDetalle from './views/CursoDetalles/CursoDetalles';
+// import CursoDetalle from './views/CursoDetalles/CursoDetalles';
 
 const AppWrapper = () => {
    //esto es de prueba , cambia role a 'profesor' o 'alumno'
@@ -60,7 +60,7 @@ const AppWrapper = () => {
                   )}
 
                   <Route path="/panel" element={<Dashboard />} />
-                  <Route path="/cursos/:id" element={<CursoDetalle />} />
+                  {/* <Route path="/cursos/:id" element={<CursoDetalle />} /> */}
                   <Route path="/about-us" element={<AboutUs />} />
                   <Route path="/terminos" element={<Terminos />} />
                </Routes>
