@@ -1,17 +1,10 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  ManyToMany,
-  OneToMany,
-  JoinTable,
-  CreateDateColumn,
+  Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, OneToMany,
+  JoinTable, CreateDateColumn
 } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Task } from '../task/task.entity';
 import { Category } from '../entities/categorias.entities';
-
 
 @Entity()
 export class Class {
@@ -24,11 +17,14 @@ export class Class {
   @Column('text')
   description!: string;
 
-  // ✅ Usa función de tipo para evitar errores de metadatos circulares
+  @Column()
+  materia!: string;
+
+  @Column('text', { array: true, nullable: true })
+  multimedia!: string[];
+
   @ManyToOne(() => User, (user) => user.classesTaught, { nullable: false })
   teacher!: User;
-
-
 
   @ManyToMany(() => User, (user) => user.classesEnrolled)
   @JoinTable()
@@ -46,4 +42,5 @@ export class Class {
   @CreateDateColumn()
   createdAt!: Date;
 }
+
 

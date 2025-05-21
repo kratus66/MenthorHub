@@ -1,3 +1,4 @@
+
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -6,8 +7,7 @@ import { Class } from '../classes/class.entity';
 import { User } from '../users/user.entity';
 import * as fs from 'fs';
 import * as path from 'path';
-import { CreateClassDto } from '../classes/dto/create-class.dto'; 
-
+import { CreateClassDto } from '../classes/dto/create-class.dto';
 import { CreateCategoryDto } from '../dto/create-category.dto';
 
 @Injectable()
@@ -51,40 +51,39 @@ export class SeederService implements OnApplicationBootstrap {
   }
 
   private async seedTeachers() {
-  const data: { id: string; nombre: string; email: string; password: string; role: string }[] =
-    this.loadJsonFile('professors-with-uuid.json');
+    const data: { id: string; nombre: string; email: string; password: string; role: string }[] =
+      this.loadJsonFile('professors-with-uuid.json');
 
-  const existing = await this.userRepo.count({ where: { role: 'teacher' } });
+    const existing = await this.userRepo.count({ where: { role: 'teacher' } });
 
-  if (existing === 0) {
-    const teachers = data
-      .map((t, i) => {
-        const name = t.nombre;
+    if (existing === 0) {
+      const teachers = data
+        .map((t, i) => {
+          const name = t.nombre;
 
-        if (!name) {
-          console.warn(`⚠️ Profesor en posición ${i} sin nombre válido:`, t);
-          return null;
-        }
+          if (!name) {
+            console.warn(`⚠️ Profesor en posición ${i} sin nombre válido:`, t);
+            return null;
+          }
 
-        return this.userRepo.create({
-          id: t.id,
-          name,
-          email: t.email ?? `${name.toLowerCase().replace(/ /g, '')}@mail.com`,
-          password: t.password ?? 'hashed-password-placeholder',
-          role: 'teacher',
-          phoneNumber: '+18095550000',
-          country: 'RD',
-        });
-      })
-      .filter((t): t is User => t !== null);
+          return this.userRepo.create({
+            id: t.id,
+            name,
+            email: t.email ?? `${name.toLowerCase().replace(/ /g, '')}@mail.com`,
+            password: t.password ?? 'hashed-password-placeholder',
+            role: 'teacher',
+            phoneNumber: '+18095550000',
+            country: 'RD',
+          });
+        })
+        .filter((t): t is User => t !== null);
 
-    await this.userRepo.save(teachers);
-    console.log('✅ Usuarios con rol "teacher" precargados');
-  } else {
-    console.log('ℹ️ Usuarios "teacher" ya existen');
+      await this.userRepo.save(teachers);
+      console.log('✅ Usuarios con rol "teacher" precargados');
+    } else {
+      console.log('ℹ️ Usuarios "teacher" ya existen');
+    }
   }
-}
-
 
   private async seedClasses() {
     const data: CreateClassDto[] = this.loadJsonFile('classes-generated.json');
@@ -116,6 +115,7 @@ export class SeederService implements OnApplicationBootstrap {
       const nuevaClase = this.classRepo.create({
         title: cls.title,
         description: cls.description,
+        materia: cls.materia ?? cls.title, // <- solución: evitar null
         teacher: profesor,
         category: categoria,
         students: [],
