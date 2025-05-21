@@ -9,6 +9,7 @@ import {
   Matches,
   IsOptional,
 } from 'class-validator';
+import { Role } from '../../common/constants/roles.enum';
 
 export class CreateUserDto {
   @ApiProperty()
