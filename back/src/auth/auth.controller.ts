@@ -68,16 +68,27 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
-  @Get('google/redirect')
+  // 🔹 INICIO del flujo OAuth
+  @Get('google')
   @UseGuards(AuthGuard('google'))
-  googleRedirect(@Req() req: any) {
+  googleLogin() {}
+
+  @Get('github')
+  @UseGuards(AuthGuard('github'))
+  githubLogin() {}
+
+  // 🔹 CALLBACK de los providers
+@Get('google/redirect')
+@UseGuards(AuthGuard('google'))
+googleRedirect(@Req() req: any) {
   return this.authService.handleOAuthLogin(req.user, 'google');
-  }
+}
+
 
   @Get('github/redirect')
   @UseGuards(AuthGuard('github'))
   githubRedirect(@Req() req: any) {
-  return this.authService.handleOAuthLogin(req.user, 'github');
+    return this.authService.handleOAuthLogin(req.user, 'github');
   }
-
 }
+

@@ -13,11 +13,13 @@ import { GithubStrategy } from './github.strategy';
   imports: [
     UsersModule,
     PassportModule,
-    ConfigModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET')|| 'ment0rhUb_2025_superclave',
+        secret: configService.get<string>('JWT_SECRET') || 'ment0rhUb_2025_superclave',
         signOptions: { expiresIn: '1h' },
       }),
       inject: [ConfigService],
@@ -30,7 +32,6 @@ import { GithubStrategy } from './github.strategy';
     GoogleStrategy,
     GithubStrategy,
   ],
-
   exports: [AuthService],
 })
 export class AuthModule {}

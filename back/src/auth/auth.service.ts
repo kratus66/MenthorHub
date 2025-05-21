@@ -49,10 +49,10 @@ export class AuthService {
       
       user: {
         id: newUser.id,
-        nombre: newUser.name,
+        name: newUser.name,
         email: newUser.email,
-        rol: newUser.role,
-        Image: profileImagePath,
+        role: newUser.role,
+        profileImage: profileImagePath,
         // agrega aquí otros campos que quieras exponer, sin incluir datos sensibles
       },
   }
@@ -74,10 +74,10 @@ async login(loginDto: LoginDto): Promise<any> {
 
     user: {
       id: user.id,
-      nombre: user.name,
+      name: user.name,
       email: user.email,
-      rol: user.role,
-      Image: user.profileImage,
+      role: user.role,
+      profileImage: user.profileImage,
       // agrega aquí otros campos que quieras exponer, sin incluir datos sensibles
     },
   };
