@@ -8,7 +8,10 @@ import { JwtStrategy } from './jwt.strategy';
 import { UsersModule } from '../users/user.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GoogleStrategy } from './google.strategy';
-// import { GithubStrategy } from './github.strategy'; 
+
+// Log de carga del módulo
+console.log('AuthModule cargado');
+
 @Module({
   imports: [
     UsersModule,
@@ -18,10 +21,14 @@ import { GoogleStrategy } from './google.strategy';
     }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET') || 'ment0rhUb_2025_superclave',
-        signOptions: { expiresIn: '1h' },
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const secret = configService.get<string>('JWT_SECRET') || 'ment0rhUb_2025_superclave';
+        console.log('JwtModule secret cargado:', secret);
+        return {
+          secret,
+          signOptions: { expiresIn: '1h' },
+        };
+      },
       inject: [ConfigService],
     }),
   ],
@@ -34,4 +41,8 @@ import { GoogleStrategy } from './google.strategy';
   ],
   exports: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule {
+  constructor() {
+    console.log('AuthModule initialization complete');
+  }
+}

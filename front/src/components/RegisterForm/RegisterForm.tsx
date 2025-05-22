@@ -307,27 +307,22 @@ if (formData.profileImage) {
 
         <div className="w-full mt-4">
           <p className="text-xs mb-1 font-semibold">Seleccionar Avatar</p>
-          <div className="flex justify-between gap-2">
-            {avatars.map((a) => (
-              <button
-                key={a.id}
-                type="button"
-                onClick={() => handleAvatarSelect(a.id)}
-                className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-all duration-200 
-                  ${formData.avatarId === a.id ? 'ring-4 ring-blue-500' : 'ring-2 ring-gray-300 hover:ring-blue-300'}`}
-              >
-                {a.emoji}
-              </button>
-            ))}
-          </div>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={formData.avatarId} 
-            readOnly
-            className="w-full mt-2"
-          />
+         <div className="flex gap-1 mt-4 flex-wrap justify-center">
+  {avatars.map((avatar) => (
+    <button
+      key={avatar.id}
+      type="button"
+      onClick={() => handleAvatarSelect(avatar.id)}
+      className={`text-3xl p-2 rounded-full ${
+        formData.avatarId === avatar.id ? 'ring-2 ring-blue-600' : 'hover:bg-gray-200'
+      }`}
+    >
+      {avatar.emoji}
+    </button>
+  ))}
+</div>
+
+          
         </div>
 <button
   type="button"

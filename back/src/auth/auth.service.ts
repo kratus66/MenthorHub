@@ -109,7 +109,7 @@ async handleOAuthLogin(
       id: user.id,
       nombre: user.name,
       email: user.email,
-      rol: user.role,
+      role: user.role,
       profileImage: user.profileImage,
     },
   };
