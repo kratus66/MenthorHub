@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -6,6 +6,7 @@ import { User } from '../users/user.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { compare, hash } from 'bcrypt';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +14,7 @@ export class AuthService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
     private  jwtService: JwtService,
+    private mailerService: MailerService,
   ) {}
 
   async register(dto: RegisterDto, profileImagePath: string): Promise<any> {
@@ -43,9 +45,16 @@ export class AuthService {
 
     await this.usersRepository.save(newUser);
 
-    const token = this.generateToken(newUser);
+    const token = this.generateEmailVerificationToken(newUser);
+    const confirmUrl = `http://localhost:3001/api/auth/confirm-email?token=${token}`;
+    
+    await this.mailerService.sendMail({
+      to: newUser.email,
+      subject: 'Confirma tu correo',
+      html: `<p>Hola ${newUser.name}, haz clic aquí para confirmar tu correo:</p><a href="${confirmUrl}">Confirmar correo</a>`,
+    }); 
     return {
-      message: `Inicio de sesión exitoso. Bienvenido, ${newUser.name}`,
+      message: `Querido ${newUser.name}, te has registrado correctamente, por favor confirma tu correo para poder iniciar sesión`,
       
       user: {
         id: newUser.id,
@@ -64,6 +73,10 @@ async login(loginDto: LoginDto): Promise<any> {
 
   if (!user || !(await compare(password, user.password))) {
     throw new BadRequestException('Credenciales incorrectas');
+  }
+
+  if (!user.isEmailConfirmed) {
+    throw new UnauthorizedException('Debes confirmar tu correo antes de iniciar sesión');
   }
 
   const token = this.generateToken(user);
@@ -120,4 +133,11 @@ async handleOAuthLogin(
     const payload = { email: user.email, sub: user.id, role: user.role };
     return this.jwtService.sign(payload);
   }
+  generateEmailVerificationToken(user: User): string {
+    return this.jwtService.sign(
+      { email: user.email },
+    { secret: process.env.JWT_EMAIL_SECRET, expiresIn: '1d' },
+  );
 }
+}
+
