@@ -61,99 +61,119 @@ export default function CrearClase() {
   }
 };
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
-      <input
-        type="text"
-        placeholder="Título"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className="w-full border p-2 rounded"
-        required
-      />
-      <textarea
-        placeholder="Descripción"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        className="w-full border p-2 rounded"
-        required
-      />
-      <input
-        type="text"
-        placeholder="Materia"
-        value={materia}
-        onChange={(e) => setMateria(e.target.value)}
-        className="w-full border p-2 rounded"
-        required
-      />
-      <input
-        type="text"
-        placeholder="ID del profesor"
-        value={teacherId}
-        onChange={(e) => setTeacherId(e.target.value)}
-        className="w-full border p-2 rounded"
-        required
-      />
-      <input
-        type="text"
-        placeholder="ID de la categoría"
-        value={categoryId}
-        onChange={(e) => setCategoryId(e.target.value)}
-        className="w-full border p-2 rounded"
-        required
-      />
-
-      {/* Botones para subir archivos */}
-      <div className="flex gap-4">
-        <button type="button" onClick={() => imageInputRef.current?.click()}>
-          <ImageIcon />
-        </button>
-        <input
-          type="file"
-          accept="image/*"
-          ref={imageInputRef}
-          onChange={handleFileChange}
-          hidden
-        />
-
-        <button type="button" onClick={() => videoInputRef.current?.click()}>
-          <Video />
-        </button>
-        <input
-          type="file"
-          accept="video/*"
-          ref={videoInputRef}
-          onChange={handleFileChange}
-          hidden
-        />
-
-        <button type="button" onClick={() => fileInputRef.current?.click()}>
-          <Paperclip />
-        </button>
-        <input
-          type="file"
-          accept=".pdf,.doc,.docx,.zip,.rar"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          hidden
-        />
+ return (
+  <div className="min-h-screen bg-blue-600 flex gap-4 px-6 py-8">
+    
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white border-4 border-blue-400 rounded-xl p-6 flex-1 shadow-lg"
+    >
+  
+      <div className="flex items-center gap-2 mb-4">
+        <h2 className="text-2xl font-bold text-blue-600">Crear Clase</h2>
+        <select className="border rounded px-2 py-1 text-sm">
+          <option>Ciencia y Tecnología</option>
+        </select>
+        <select className="border rounded px-2 py-1 text-sm">
+          <option>Informática</option>
+        </select>
       </div>
 
-      {/* Lista de archivos cargados */}
+    
+      <input
+        type="text"
+        placeholder="Clase/Título"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        className="w-full border rounded-lg px-4 py-2 mb-4 text-gray-700"
+        required
+      />
+
+   
+      <textarea
+        placeholder="Descripción de la clase"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        className="w-full border rounded-lg px-4 py-2 mb-4 text-gray-700 h-[600px] resize-none"
+        required
+      />
+
+      
+      <input type="text" value={materia} onChange={(e) => setMateria(e.target.value)} className="hidden" required />
+      <input type="text" value={teacherId} onChange={(e) => setTeacherId(e.target.value)} className="hidden" required />
+      <input type="text" value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="hidden" required />
+
+     
+      <div className="flex items-center gap-4 mb-4">
+        <button
+          type="button"
+          onClick={() => imageInputRef.current?.click()}
+          className="bg-gray-100 p-2 rounded-full text-blue-600 hover:bg-gray-200"
+        >
+          <ImageIcon />
+        </button>
+        <input type="file" accept="image/*" ref={imageInputRef} onChange={handleFileChange} hidden />
+
+        <button
+          type="button"
+          onClick={() => videoInputRef.current?.click()}
+          className="bg-gray-100 p-2 rounded-full text-blue-600 hover:bg-gray-200"
+        >
+          <Video />
+        </button>
+        <input type="file" accept="video/*" ref={videoInputRef} onChange={handleFileChange} hidden />
+
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          className="bg-gray-100 p-2 rounded-full text-blue-600 hover:bg-gray-200"
+        >
+          <Paperclip />
+        </button>
+        <input type="file" accept=".pdf,.doc,.docx,.zip,.rar" ref={fileInputRef} onChange={handleFileChange} hidden />
+      </div>
+
+     
       {archivos.length > 0 && (
-        <ul className="text-sm mt-2">
+        <ul className="text-sm text-gray-600 mb-4">
           {archivos.map((file, i) => (
             <li key={i}>{file.name}</li>
           ))}
         </ul>
       )}
 
-      <button
-        type="submit"
-        className="bg-blue-600 text-white px-4 py-2 rounded"
-      >
-        Crear Clase
-      </button>
+    
+      <div className="flex justify-end gap-3 mt-6">
+        <button
+          type="button"
+          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg"
+        >
+          Publicar
+        </button>
+      </div>
     </form>
-  );
+
+  
+    <aside className="w-72 bg-white p-5 rounded-xl shadow-lg border border-gray-200">
+      <h3 className="font-semibold mb-3 text-blue-600 text-lg">Sugerencias</h3>
+      <ul className="space-y-3 text-sm text-blue-900">
+        <li className="cursor-pointer hover:underline">
+          Why having a blog on your website is more important than ever
+        </li>
+        <li className="cursor-pointer hover:underline">
+          Top tips for rolling out a new brand voice across your business
+        </li>
+        <li className="cursor-pointer hover:underline">
+          4 Ways to Up Your Personalization Game
+        </li>
+      </ul>
+    </aside>
+  </div>
+);
 }
