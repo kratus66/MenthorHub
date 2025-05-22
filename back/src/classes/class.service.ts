@@ -60,20 +60,69 @@ export class ClassesService {
   }
 
   async findAll(): Promise<Class[]> {
-    return this.classRepository.find({ relations: ['teacher', 'students', 'tasks', 'category'] });
+  return this.classRepository.find({
+    where: { estado: true },
+    relations: ['teacher', 'students', 'tasks', 'category'],
+  });
   }
 
   async findOne(id: string): Promise<Class> {
-    const found = await this.classRepository.findOne({
-      where: { id },
-      relations: ['teacher', 'students', 'tasks', 'category']
-    });
-    if (!found) throw new NotFoundException(`Clase con ID ${id} no encontrada`);
-    return found;
+  const found = await this.classRepository.findOne({
+    where: { id, estado: true },
+    relations: ['teacher', 'students', 'tasks', 'category'],
+  });
+
+  if (!found) {
+    throw new NotFoundException(`Clase con ID ${id} no encontrada`);
   }
 
+  return found;
+}
+
   async remove(id: string): Promise<void> {
-    const result = await this.classRepository.delete(id);
-    if (result.affected === 0) throw new NotFoundException('Clase no encontrada');
+  console.log('🕵️ Buscando clase con ID:', id);
+
+  const classToRemove = await this.classRepository.findOne({
+    where: { id },
+    loadRelationIds: false, // 👈 importante: evita problemas con relaciones
+  });
+
+  if (!classToRemove) {
+    console.warn('❌ Clase no encontrada en la base de datos');
+    throw new NotFoundException('Clase no encontrada');
   }
+
+  classToRemove.estado = false;
+  classToRemove.fechaEliminado = new Date();
+
+  try {
+    await this.classRepository.save(classToRemove);
+  } catch (error) {
+    console.error('❌ Error al guardar la clase eliminada:', error);
+    throw new InternalServerErrorException('Error al eliminar la clase');
+  }
+}
+
+  async findDeleted(): Promise<Class[]> {
+  return this.classRepository.find({
+    where: { estado: false },
+    relations: ['teacher', 'students', 'tasks', 'category'],
+  });
+}
+
+async restore(id: string): Promise<Class> {
+  const classToRestore = await this.classRepository.findOne({ where: { id } });
+
+  if (!classToRestore) {
+    throw new NotFoundException('Clase no encontrada');
+  }
+
+  classToRestore.estado = true;
+  classToRestore.fechaEliminado = undefined; // ← esto corrige el segundo error
+
+  return this.classRepository.save(classToRestore);
+}
+
+
+
 }

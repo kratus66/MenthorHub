@@ -7,22 +7,23 @@ import {
   IsPhoneNumber,
   Matches,
   MaxLength,
+  IsBoolean,
 } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateUserDto {
   @ApiPropertyOptional({
-  example: 'Juan Pérez',
-  description: 'Nombre completo del usuario',
-})
-@IsOptional()
-@IsString({ message: 'El nombre debe ser texto' })
-@MinLength(5, { message: 'El nombre debe tener mínimo 5 caracteres' })
-@MaxLength(50, { message: 'El nombre no debe exceder 50 caracteres' })
-@Matches(/^[a-zA-ZÁÉÍÓÚáéíóúñÑ\s']+$/, {
-  message: 'El nombre solo puede contener letras y espacios',
-})
-name?: string;
+    example: 'Juan Pérez',
+    description: 'Nombre completo del usuario',
+  })
+  @IsOptional()
+  @IsString({ message: 'El nombre debe ser texto' })
+  @MinLength(5, { message: 'El nombre debe tener mínimo 5 caracteres' })
+  @MaxLength(50, { message: 'El nombre no debe exceder 50 caracteres' })
+  @Matches(/^[a-zA-ZÁÉÍÓÚáéíóúñÑ\s']+$/, {
+    message: 'El nombre solo puede contener letras y espacios',
+  })
+  name?: string;
 
   @ApiPropertyOptional({
     example: 'juan@example.com',
@@ -68,4 +69,13 @@ name?: string;
   @IsOptional()
   @IsIn(['admin', 'teacher', 'student'], { message: 'Rol inválido' })
   role?: 'admin' | 'teacher' | 'student';
+
+  @ApiPropertyOptional({
+    example: true,
+    description: 'Estado del usuario (activo/inactivo)',
+  })
+  @IsOptional()
+  @IsBoolean()
+  estado?: boolean;
 }
+

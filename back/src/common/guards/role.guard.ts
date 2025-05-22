@@ -2,7 +2,7 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { JwtPayload } from '../../auth/jwt-payload.interface';
-import { Role } from '../constants/roles.enum';
+import { Role } from '../../common/constants/roles.enum'; // ⚠️ Ajusta la ruta
 
 @Injectable()
 export class RoleGuard implements CanActivate {
