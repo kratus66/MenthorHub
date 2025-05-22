@@ -32,7 +32,16 @@ async function bootstrap() {
     .setTitle("MentorHub API")
     .setDescription("Documentación de la API de MentorHub")
     .setVersion("1.0")
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'Authorization',
+        in: 'header',
+      },
+      'JWT-auth' 
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

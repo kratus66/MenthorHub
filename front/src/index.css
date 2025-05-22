@@ -3,20 +3,30 @@
 @tailwind components;
 @tailwind utilities;
 
-/********************** FUENTE PRINCIPAL ********************/
 body,
 html {
-  width: 100%;
-  min-height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
+  max-width: 100vw;
+  max-height: 100vh;
 }
 
+button {
+  @apply outline-none;
+}
 
+/********************** FUENTE PRINCIPAL ********************/
 body,
 html,
 * {
   font-family: "Fira Sans";
+}
+
+/******************* FUENTE-SIZE RESPONSIVE *****************/
+.title {
+  @apply !text-[10.06vh];
+}
+
+.subtitle {
+  @apply !text-[4.73vh];
 }
 
 /********************** AJUSTES ROBOTITO ********************/
@@ -34,7 +44,6 @@ html,
   width: 40rem;
 }
 
-
 /********************** AJUSTES PANELES ********************/
 .-z-1 {
   z-index: -1;
@@ -51,9 +60,10 @@ html,
   padding-right: 19vw;
 }
 .panel-text {
-  margin-bottom: 6vh;
-  margin-left: 3vw;
+  padding-bottom: 8vh;
+  padding-top: 2vh;
+  padding-left: calc(3vw + 2vh);
+  padding-right: 2vh;
   z-index: 1;
-  padding: 2vh 4vh;
   font-size: 3.08vh;
 }

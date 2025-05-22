@@ -31,9 +31,9 @@ export class UserDto {
   description: 'Rol del usuario',
   enum: Role,
   examples: {
-    admin:   { summary: 'Admin',   value: Role.Admin },
-    teacher: { summary: 'Teacher', value: Role.Teacher },
-    student: { summary: 'Student', value: Role.Student },
+    admin:   { summary: 'Admin',   value: Role.ADMIN },
+    teacher: { summary: 'Teacher', value: Role.TEACHER },
+    student: { summary: 'Student', value: Role.STUDENT },
   },
 })
 @IsEnum(Role)

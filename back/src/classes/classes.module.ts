@@ -5,9 +5,8 @@ import { ClassesController } from './class.controller';
 import { Class } from './class.entity';
 import { User } from '../users/user.entity';
 import { Category } from '../entities/categorias.entities';
-
 @Module({
-  imports: [TypeOrmModule.forFeature([Class, User, Category])], // ❌ Quitamos Professor
+  imports: [TypeOrmModule.forFeature([Class, User, Category])], 
   controllers: [ClassesController],
   providers: [ClassesService],
 })

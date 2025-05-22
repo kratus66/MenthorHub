@@ -21,7 +21,7 @@ import {
   ApiParam,
   ApiBody,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RoleGuard } from '../common/guards/role.guard';
 import { Roles } from '../decorator/role'; // ✅ Asegúrate que apunta al decorador, no al enum
 import { Role } from '../common/constants/roles.enum'; // ✅ Enum con roles

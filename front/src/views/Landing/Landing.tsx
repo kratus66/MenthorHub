@@ -3,12 +3,12 @@ import Background from "../../components/Background/Background";
 import MenVir from "../../components/MenVir/MenVir";
 
 const texts = [
-  <div className="h-full flex flex-col justify-between gap-4">
+  <div className="h-full flex flex-col justify-between gap-[1.7vh]">
     <p className="text-center">
       ¿Buscas <strong>crecer profesionalmente</strong> pero no sabes por dónde
       empezar?
     </p>
-    <p>
+    <p className="text-center">
       En <strong>MentorHub</strong> conectamos a profesionales como tú con
       <strong> mentores expertos</strong> que te guiarán paso a paso hacia el
       éxito.
@@ -29,7 +29,7 @@ const texts = [
       mereces.
     </p>
   </div>,
-  <div className="h-full flex flex-col justify-between gap-4">
+  <div className="h-full flex flex-col justify-between gap-[1.7vh]">
     <p className="text-center">
       <strong>¿Por qué elegir MentorHub?</strong>
     </p>
@@ -92,14 +92,12 @@ const Landing: React.FC = () => {
   return (
     <div className="w-screen h-screen flex items-center justify-end overflow-hidden">
       <div className="w-full h-full flex flex-col justify-start">
-        <h1 className="text-center leading-none pt-[9vh]">
-          MentorHub
-        </h1>
-        <h2 className="text-center z-10">
+        <h1 className="title text-center leading-none pt-[9vh]">MentorHub</h1>
+        <h2 className="subtitle text-center z-10">
           Conectamos Mentores con Mentes Curiosas
         </h2>
-        <div className="h-full flex flex-col justify-between gap-4 panel-text leading-tight">
-          <div className="relative h-full">
+        <div className="h-full flex flex-col justify-between gap-[1.7vh] panel-text leading-tight">
+          <div className="relative h-full overflow-hidden">
             <div className="absolute top-0 left-0 w-5 h-5 text-center">
               <span className="absolute inset-0 flex justify-center items-center text-xs leading-none text-[#007AFF] opacity-50">
                 {(progress - transitionTime) * -1}
@@ -143,14 +141,17 @@ const Landing: React.FC = () => {
             ))}
           </div>
           <a
-            className="w-fit bg-[#007AFF] text-white mx-auto py-3 px-6 rounded-full hover:bg-blue-800"
+            className="w-fit bg-[#007AFF] text-white mx-auto py-3 px-6 rounded-full hover:bg-white hover:text-[#007AFF] border-2 border-[#007AFF]"
             href="/register"
           >
             Regístrate gratis en MentorHub
           </a>
           <p className="text-center">
             ¿Ya tienes una cuenta?{" "}
-            <a className="text-[#007AFF]" href="/login">
+            <a
+              className="text-[#007AFF] hover:underline underline-offset-2"
+              href="/login"
+            >
               Ingresa aquí
             </a>
           </p>
