@@ -16,7 +16,7 @@ import {
 import { SubmissionsService } from './submission.service';
 import { CreateSubmissionDto } from './dto/CreateSubmissions.dto';
 import { UpdateSubmissionDto } from './dto/updatesubmission.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RoleGuard } from '../common/guards/role.guard';
 import { Role } from '../common/constants/roles.enum';
 import { Roles } from '../decorator/role'; // ✅ asegúrate que apunta al decorador

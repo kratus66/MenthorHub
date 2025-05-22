@@ -11,8 +11,7 @@ import {
 import { TasksService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
-import { Roles } from '../common/decorators/roles.decorator';
-import { Role } from '../common/constants/roles.enum'; // ✅ Usa la ruta correcta y el enum correcto
+import { Role } from '../common/constants/roles.enum';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { User } from '../users/user.entity';
 import { RoleGuard } from '../common/guards/role.guard';
@@ -25,6 +24,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { Task } from './task.entity';
+import { Roles } from '../decorator/role';
 
 @ApiTags('Tasks')
 @ApiBearerAuth('JWT-auth')
