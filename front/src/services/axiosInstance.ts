@@ -1,9 +1,9 @@
 // src/api/axiosInstance.js
 import axios from 'axios';
 
-const apiUrl: string = import.meta.env.VITE_API_URL || "http://localhost:3001";
+const apiUrl: string = import.meta.env.VITE_API_URL || "localhost:3001";
 const axiosInstance = axios.create({
-    baseURL: `${apiUrl}/api`, // Reemplazá con la URL de tu backend si es otra
+    baseURL: `${ window.location.protocol }//${apiUrl}/api`, // Reemplazá con la URL de tu backend si es otra
     // También podés agregar otras configs si querés
 });
 
