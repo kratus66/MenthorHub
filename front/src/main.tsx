@@ -1,4 +1,4 @@
-import React from 'react';
+/* import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App.tsx';
@@ -11,3 +11,37 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       </UserProvider>
    </React.StrictMode>
 );
+ */
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App.tsx";
+import ServerChecker from "./services/axios.ServerChecker.ts";
+import ServerError from "./components/ServerError/ServerError.tsx";
+import LoadingScreen from "./components/LoadingScreen/LoadingScreen.tsx";
+
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+
+async function initApp() {
+  // Mostrar pantalla de carga antes de la verificación del servidor
+  root.render(<LoadingScreen />);
+
+  try {
+    const servidorActivo = await ServerChecker.checkServer();
+
+    if (servidorActivo) {
+      root.render(
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      );
+    } else {
+      root.render(<ServerError />);
+    }
+  } catch (error) {
+    console.error("Error al verificar el servidor:", error);
+    root.render(<ServerError />);
+  }
+}
+
+initApp();
