@@ -1,9 +1,10 @@
 // src/api/axiosInstance.js
 import axios from 'axios';
 
+const apiUrl: string = import.meta.env.VITE_API_URL || "http://localhost:3001";
 const axiosInstance = axios.create({
-   baseURL: 'http://localhost:3001/api', // Reemplazá con la URL de tu backend si es otra
-   // También podés agregar otras configs si querés
+    baseURL: `${apiUrl}/api`, // Reemplazá con la URL de tu backend si es otra
+    // También podés agregar otras configs si querés
 });
 
 // Ejemplo opcional de interceptor de request para token
