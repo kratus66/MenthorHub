@@ -1,5 +1,5 @@
 import { IsString, Length, IsEnum } from 'class-validator';
-import { Role } from '../decorator/roles.enum';
+import { Role } from '../common/constants/roles.enum';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UserDto {

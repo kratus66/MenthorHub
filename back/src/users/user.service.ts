@@ -16,31 +16,50 @@ export class UsersService {
   }
 
   async findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+    return this.usersRepository.find({ where: { estado: true } });
   }
 
   async findById(id: string): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { id } });
+    return this.usersRepository.findOne({ where: { id, estado: true } });
   }
 
   async update(id: string, data: Partial<User>): Promise<User> {
-    await this.usersRepository.update(id, data);
-    const updated = await this.findById(id);
-    if (!updated) throw new Error('Usuario no encontrado');
-    return updated;
+  const user = await this.usersRepository.findOne({ where: { id } });
+  if (!user) {
+    throw new Error('Usuario no encontrado');
   }
+
+  if (data.estado !== undefined && data.estado !== user.estado) {
+    data.fechaCambioEstado = new Date();
+  }
+
+  await this.usersRepository.update(id, data);
+
+  const updated = await this.usersRepository.findOne({ where: { id } });
+  if (!updated) {
+    throw new Error('Error inesperado: no se pudo recuperar el usuario actualizado');
+  }
+
+  return updated;
+}
+
+
 
   async remove(id: string): Promise<void> {
-    await this.usersRepository.delete(id);
+    await this.usersRepository.update(id, {
+      estado: false,
+      fechaCambioEstado: new Date(),
+    });
   }
-  async getTeachers():Promise<User[]>{
-    const teachers= await this.usersRepository.findBy({role:'teacher'})
-    return teachers;
+  async getTeachers(): Promise<User[]> {
+    return this.usersRepository.find({
+      where: { role: 'teacher', estado: true },
+    });
   }
 
-  async getStudents(){
-    const students= await this.usersRepository.findBy({role:'student'})
-    return students;
-    
+    async getStudents(): Promise<User[]> {
+    return this.usersRepository.find({
+      where: { role: 'student', estado: true },
+    });
   }
 }
