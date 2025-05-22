@@ -2,16 +2,22 @@ import React from 'react';
 import RegisterForm from '../../components/RegisterForm/RegisterForm';
 import imagenRobot from "../../images/imagenRobot.png";
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Register: React.FC = () => {
+  const navigate = useNavigate();
+
   const handleSubmit = async (formData: FormData) => {
     try {  
       const response = await axios.post('http://localhost:3001/api/auth/register', formData, {  
-       headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
       console.log('Respuesta del servidor:', response.data);
+      
+      navigate('/login');
     } catch (error) {
       console.error('Error al registrar:', error);
+     
     }
   };
 
