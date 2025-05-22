@@ -1,6 +1,12 @@
 import {
-  Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, OneToMany,
-  JoinTable, CreateDateColumn
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  ManyToMany,
+  OneToMany,
+  JoinTable,
+  CreateDateColumn,
 } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Task } from '../task/task.entity';
@@ -19,6 +25,9 @@ export class Class {
 
   @Column()
   materia!: string;
+
+  @Column()
+  sector!: string;
 
   @Column('text', { array: true, nullable: true })
   multimedia!: string[];
@@ -41,6 +50,13 @@ export class Class {
 
   @CreateDateColumn()
   createdAt!: Date;
+
+  @Column({ default: true })
+  estado!: boolean;
+
+  @Column({ type: 'timestamp', nullable: true })
+  fechaEliminado?: Date | null;
+
 }
 
 
