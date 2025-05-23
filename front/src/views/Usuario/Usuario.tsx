@@ -15,12 +15,12 @@ const UserProfile: React.FC = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Estado para la foto de perfil, que intenta cargar desde localStorage al iniciar
+ 
   const [profilePic, setProfilePic] = useState<string>(() => {
     return localStorage.getItem('profilePic') || 'https://i.pravatar.cc/150?img=3'
   })
 
-  // Cuando cambie la foto, actualizamos localStorage
+ 
   useEffect(() => {
     localStorage.setItem('profilePic', profilePic)
   }, [profilePic])
