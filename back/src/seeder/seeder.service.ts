@@ -113,14 +113,19 @@ export class SeederService implements OnApplicationBootstrap {
       }
 
       const nuevaClase = this.classRepo.create({
-        title: cls.title,
-        description: cls.description,
-        materia: cls.materia ?? cls.title, // <- solución: evitar null
-        teacher: profesor,
-        category: categoria,
-        students: [],
-        tasks: [],
-      });
+      title: cls.title,
+      description: cls.description,
+      materia: cls.materia ?? cls.title,
+      sector: cls.sector ?? 'General',
+      multimedia: cls.multimedia ?? [], // 👈 soporte para multimedia
+      teacher: profesor,
+      category: categoria,
+      students: [],
+      tasks: [],
+      estado: true,
+    });
+
+
 
       clasesAInsertar.push(nuevaClase);
     }

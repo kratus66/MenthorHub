@@ -1,8 +1,18 @@
+import { useUser } from "../../context/UserContext";
+import { useNavigate } from "react-router-dom";
 import Background from "../../components/Background/Background";
 import LoginForm from "../../components/LoginForm/LoginForm";
 import MenVir from "../../components/MenVir/MenVir";
 
 export default function Login() {
+  const { user } = useUser();
+  const navigate = useNavigate();
+
+  if (user) {
+    navigate("/panel");
+    return null;
+  }
+
   return (
     <div className="w-screen h-screen flex items-center justify-end">
       <div className="w-full h-full flex flex-col justify-start">
@@ -57,12 +67,12 @@ export default function Login() {
                   </a>
                 </div>
                 <p className="w-fit self-center">
-                  ¿Aun no tienes cuenta?{" "}
+                  ¿Aún no tienes cuenta?{" "}
                   <a
                     className="text-[#007AFF] hover:underline underline-offset-2"
                     href="/register"
                   >
-                    Registrate gratis.
+                    Regístrate gratis.
                   </a>
                 </p>
               </div>

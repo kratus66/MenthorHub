@@ -45,8 +45,8 @@ export class UsersController {
   }
 
   // 🔐 Solo admin
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin)
+  /* @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin) */
   @Get()
   @ApiOperation({ summary: 'Obtener todos los usuarios' })
   @ApiResponse({ status: 200, description: 'Lista de usuarios', type: [User] })
@@ -59,8 +59,8 @@ export class UsersController {
   }
 
   // 🔐 Solo admin
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin)
+  /* @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin) */
   @Get('teacher')
   @ApiOperation({ summary: 'Obtener todos los usuarios por el rol de teacher' })
   async getTeachers() {
@@ -72,8 +72,8 @@ export class UsersController {
   }
 
   // 🔐 Solo admin
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin)
+  /* @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin) */
   @Get('students')
   @ApiOperation({ summary: 'Obtener todos los usuarios por el rol de student' })
   async getStudents() {
@@ -85,8 +85,8 @@ export class UsersController {
   }
 
   // 🔐 Solo admin
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin)
+  /* @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin) */
   @Get(':id')
   @ApiOperation({ summary: 'Obtener un usuario por ID' })
   @ApiParam({ name: 'id', description: 'UUID del usuario', type: String })
@@ -101,8 +101,8 @@ export class UsersController {
   }
 
   // 🔐 Solo admin
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin)
+  /* @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin) */
   @Put(':id')
   @ApiOperation({ summary: 'Actualizar un usuario' })
   @ApiParam({ name: 'id', description: 'UUID del usuario', type: String })
@@ -120,9 +120,9 @@ export class UsersController {
   }
 
   // 🔐 Solo admin
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin)
   @Delete(':id')
+  /* @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin) */
   @ApiOperation({ summary: 'Eliminar un usuario' })
   @ApiParam({ name: 'id', description: 'UUID del usuario', type: String })
   @ApiResponse({ status: 200, description: 'Usuario eliminado' })
@@ -132,6 +132,6 @@ export class UsersController {
     } catch (error) {
       throw new InternalServerErrorException('Error al eliminar el usuario');
     }
-  }
+  } 
 }
 

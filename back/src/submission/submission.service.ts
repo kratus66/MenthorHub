@@ -39,8 +39,12 @@ export class SubmissionsService {
   }
 
   findAll() {
-    return this.submissionsRepo.find({ relations: ['student', 'task'] });
-  }
+  return this.submissionsRepo.find({
+    where: { estado: true },
+    relations: ['student', 'task'],
+  });
+}
+
 
   findOne(id: string) {
     return this.submissionsRepo.findOne({ where: { id }, relations: ['student', 'task'] });
@@ -54,18 +58,15 @@ export class SubmissionsService {
     return this.submissionsRepo.save(submission);
   }
 
-  async remove(id: string) {
-    const submission = await this.submissionsRepo.findOne({ where: { id } });
-    if (!submission) throw new NotFoundException(`Submission with id ${id} not found`);
-    return this.submissionsRepo.remove(submission);
-  }
+  
 
   async findByStudent(studentId: string) {
-    return this.submissionsRepo.find({
-      where: { student: { id: studentId } },
-      relations: ['task'],
-    });
-  }
+  return this.submissionsRepo.find({
+    where: { student: { id: studentId }, estado: true },
+    relations: ['task'],
+  });
+}
+
 
   async findByTask(taskId: string) {
     return this.submissionsRepo.find({
@@ -73,4 +74,38 @@ export class SubmissionsService {
       relations: ['student'],
     });
   }
+
+  async remove(id: string) {
+  const submission = await this.submissionsRepo.findOne({ where: { id } });
+
+  if (!submission) {
+    throw new NotFoundException(`Submission with id ${id} not found`);
+  }
+
+  submission.estado = false;
+  submission.fechaEliminado = new Date();
+
+  return this.submissionsRepo.save(submission);
+}
+
+async restore(id: string): Promise<Submission> {
+  const submission = await this.submissionsRepo.findOne({ where: { id } });
+
+  if (!submission) {
+    throw new NotFoundException(`Submission con id ${id} no encontrada`);
+  }
+
+  submission.estado = true;
+  submission.fechaEliminado = null;
+
+  return this.submissionsRepo.save(submission);
+}
+
+  async findEliminadas(): Promise<Submission[]> {
+  return this.submissionsRepo.find({
+    where: { estado: false },
+    relations: ['student', 'task'],
+  });
+}
+
 }

@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import Background from "../../components/Background/Background";
 import MenVir from "../../components/MenVir/MenVir";
+import { useUser } from "../../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 const texts = [
   <div className="h-full flex flex-col justify-between gap-[1.7vh]">
@@ -57,6 +59,14 @@ const transitionTime = 25;
 const radius = 45;
 
 const Landing: React.FC = () => {
+  const { user } = useUser();
+  const navigate = useNavigate();
+
+  if (user) {
+    navigate("/panel");
+    return null;
+  }
+
   const [current, setCurrent] = useState(0);
   const [progress, setProgress] = useState(0);
   const circumference = 50 * 2 * Math.PI;

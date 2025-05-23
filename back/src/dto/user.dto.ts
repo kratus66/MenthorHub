@@ -1,5 +1,5 @@
 import { IsString, Length, IsEnum } from 'class-validator';
-import { Role } from '../decorator/roles.enum';
+import { Role } from '../common/constants/roles.enum';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UserDto {
@@ -31,12 +31,12 @@ export class UserDto {
   description: 'Rol del usuario',
   enum: Role,
   examples: {
-    admin:   { summary: 'Admin',   value: Role.ADMIN },
-    teacher: { summary: 'Teacher', value: Role.TEACHER },
-    student: { summary: 'Student', value: Role.STUDENT },
+    admin:   { summary: 'Admin',   value: Role.Admin },
+    teacher: { summary: 'Teacher', value: Role.Teacher },
+    student: { summary: 'Student', value: Role.Student },
   },
 })
 @IsEnum(Role)
-role: Role;
+role: Role; 
 
 }
