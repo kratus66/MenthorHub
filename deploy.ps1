@@ -22,7 +22,8 @@ npm install
 npm run build
 
 # Iniciar backend en una nueva ventana de PowerShell
-Start-Process powershell -ArgumentList "-Command", "cd '$BACKEND_DIR'; npm start" -WindowStyle Minimized
+# Start-Process powershell -ArgumentList "-Command", "cd '$BACKEND_DIR'; npm start" -WindowStyle Minimized
+Start-Process powershell -ArgumentList "-Command", "cd '$BACKEND_DIR'; npm run start:dev" -WindowStyle Minimized
 Write-Output "Backend iniciado en http://localhost:3001"
 
 Start-Sleep -Seconds 10
@@ -35,7 +36,8 @@ npm install
 npm run build
 
 # Iniciar frontend en una nueva ventana de PowerShell
-Start-Process powershell -ArgumentList "-Command", "cd '$FRONTEND_DIR'; npm run preview" -WindowStyle Minimized
+# Start-Process powershell -ArgumentList "-Command", "cd '$FRONTEND_DIR'; npm run preview" -WindowStyle Minimized
+Start-Process powershell -ArgumentList "-Command", "cd '$FRONTEND_DIR'; npm run dev" -WindowStyle Minimized
 Write-Output "Frontend iniciado en http://localhost:4173"
 
 Write-Output "=== ¡Despliegue completado! ==="
