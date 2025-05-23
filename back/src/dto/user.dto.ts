@@ -37,6 +37,6 @@ export class UserDto {
   },
 })
 @IsEnum(Role)
-role: Role;
+role: Role; 
 
 }

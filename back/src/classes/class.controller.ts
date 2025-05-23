@@ -30,6 +30,7 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RoleGuard } from '../common/guards/role.guard';
 import { Roles } from '../decorator/role';
 import { Role } from '../common/constants/roles.enum';
+import { EnrollStudentDto } from './dto/enroll-student.dto';
 
 @ApiTags('Clases')
 @ApiBearerAuth('JWT-auth')
@@ -119,6 +120,19 @@ async restore(@Param('id', ParseUUIDPipe) id: string) {
         throw new InternalServerErrorException('Error al actualizar la clase');
       }
     }
+    @Delete(':id/unenroll')
+    @UseGuards(JwtAuthGuard)
+    @ApiOperation({ summary: 'Desinscribir estudiante de una clase' })
+    @ApiParam({ name: 'id', description: 'UUID de la clase' })
+    @ApiBody({ type: EnrollStudentDto })
+    @ApiResponse({ status: 200, description: 'Estudiante desinscrito correctamente', type: Class })
+    async unenrollStudent(
+      @Param('id', ParseUUIDPipe) classId: string,
+      @Body() { studentId }: EnrollStudentDto
+    ) {
+      return this.classesService.unenrollStudent(classId, studentId);
+    }
+
 
 @Delete(':id')
 /* @UseGuards(JwtAuthGuard, RoleGuard)
@@ -137,7 +151,39 @@ async remove(@Param('id', ParseUUIDPipe) id: string) {
 }
 
   
+    @Get('teacher/:id')
+ /*  @UseGuards(JwtAuthGuard) */
+  @ApiOperation({ summary: 'Obtener clases dictadas por un profesor' })
+  @ApiParam({ name: 'id', description: 'UUID del profesor' })
+  @ApiResponse({ status: 200, description: 'Clases encontradas', type: [Class] })
+  async findByTeacher(@Param('id', ParseUUIDPipe) id: string) {
+    return this.classesService.findByTeacher(id);
+  }
 
+  
+
+    @Get('student/:id')
+  /* @UseGuards(JwtAuthGuard) */
+  @ApiOperation({ summary: 'Obtener clases inscritas por un estudiante' })
+  @ApiParam({ name: 'id', description: 'UUID del estudiante' })
+  @ApiResponse({ status: 200, description: 'Clases encontradas', type: [Class] })
+  async findByStudent(@Param('id', ParseUUIDPipe) id: string) {
+    return this.classesService.findByStudent(id);
+  }
+  
+
+  @Post(':id/enroll')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Inscribir estudiante en una clase' })
+  @ApiParam({ name: 'id', description: 'UUID de la clase' })
+  @ApiBody({ type: EnrollStudentDto })
+  @ApiResponse({ status: 200, description: 'Estudiante inscrito correctamente', type: Class })
+  async enrollStudent(
+    @Param('id', ParseUUIDPipe) classId: string,
+    @Body() { studentId }: EnrollStudentDto
+  ) {
+    return this.classesService.enrollStudent(classId, studentId);
+  }
 
 
 }

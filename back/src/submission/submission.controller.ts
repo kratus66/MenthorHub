@@ -71,8 +71,8 @@ export class SubmissionsController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Teacher, Role.Admin)
+  /* @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Teacher, Role.Admin) */
   @ApiOperation({ summary: 'Obtener todas las entregas (solo profesores/admin)' })
   @ApiResponse({ status: 200, description: 'Listado de entregas' })
   async findAll() {
@@ -82,10 +82,22 @@ export class SubmissionsController {
       throw new InternalServerErrorException('Error al obtener las entregas');
     }
   }
+  @Get('eliminadas')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Teacher, Role.Admin)
+  @ApiOperation({ summary: 'Obtener entregas eliminadas (profesor/admin)' })
+  @ApiResponse({ status: 200, description: 'Listado de entregas eliminadas' })
+  async findEliminadas() {
+  try {
+    return await this.submissionsService.findEliminadas();
+  } catch (error) {
+    throw new InternalServerErrorException('Error al obtener entregas eliminadas');
+  }
+  }
 
   @Get('my-submissions')
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Student)
+  /* @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Student) */
   @ApiOperation({ summary: 'Obtener entregas del estudiante autenticado' })
   @ApiResponse({ status: 200, description: 'Entregas del usuario autenticado' })
   async findMy(@Req() req: any) {
@@ -97,7 +109,7 @@ export class SubmissionsController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard) // ⚠️ acceso general autenticado (sin roles específicos)
+  /* @UseGuards(JwtAuthGuard) */ // ⚠️ acceso general autenticado (sin roles específicos)
   @ApiOperation({ summary: 'Obtener una entrega por ID' })
   @ApiParam({ name: 'id', description: 'UUID de la entrega' })
   @ApiResponse({ status: 200, description: 'Entrega encontrada' })
@@ -109,10 +121,23 @@ export class SubmissionsController {
       throw new InternalServerErrorException('Error al buscar la entrega');
     }
   }
+  @Put(':id/restore')
+/* @UseGuards(JwtAuthGuard, RoleGuard)
+@Roles(Role.Teacher, Role.Admin) */
+@ApiOperation({ summary: 'Restaurar una entrega eliminada' })
+@ApiParam({ name: 'id', description: 'UUID de la entrega' })
+@ApiResponse({ status: 200, description: 'Entrega restaurada correctamente' })
+async restore(@Param('id') id: string) {
+  try {
+    return await this.submissionsService.restore(id);
+  } catch (error) {
+    throw new InternalServerErrorException('Error al restaurar la entrega');
+  }
+}
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Teacher, Role.Admin)
+  /* @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Teacher, Role.Admin) */
   @ApiOperation({ summary: 'Actualizar una entrega (solo profesor/admin)' })
   @ApiParam({ name: 'id', description: 'UUID de la entrega' })
   @ApiBody({ type: UpdateSubmissionDto })

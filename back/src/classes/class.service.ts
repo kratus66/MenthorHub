@@ -8,6 +8,7 @@ import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from '../dto/update-class.dto';
 import { cloudinary } from '../config/cloudinary.config';
 import { isInstance } from 'class-validator';
+import { InternalServerErrorException } from '@nestjs/common';
 
 @Injectable()
 export class ClassesService {
@@ -123,6 +124,83 @@ async restore(id: string): Promise<Class> {
   return this.classRepository.save(classToRestore);
 }
 
+  async findByTeacher(teacherId: string): Promise<Class[]> {
+  const teacher = await this.userRepository.findOne({ where: { id: teacherId, role: 'teacher' } });
+
+  if (!teacher) {
+    throw new NotFoundException(`Profesor con ID ${teacherId} no encontrado`);
+  }
+
+  return this.classRepository.find({
+    where: { teacher: { id: teacherId }, estado: true },
+    relations: ['category', 'students', 'tasks'],
+  });
+}
+
+  async findByStudent(studentId: string): Promise<Class[]> {
+  const student = await this.userRepository.findOne({ where: { id: studentId, role: 'student' } });
+
+  if (!student) {
+    throw new NotFoundException(`Estudiante con ID ${studentId} no encontrado`);
+  }
+
+    return this.classRepository
+    .createQueryBuilder('class')
+    .leftJoinAndSelect('class.teacher', 'teacher')
+    .leftJoinAndSelect('class.students', 'students')
+    .leftJoinAndSelect('class.tasks', 'tasks')
+    .leftJoinAndSelect('class.category', 'category')
+    .where('class.estado = :estado', { estado: true })
+    .andWhere('students.id = :studentId', { studentId })
+    .getMany();
+  }
+
+  async enrollStudent(classId: string, studentId: string): Promise<Class> {
+  const clase = await this.classRepository.findOne({
+    where: { id: classId, estado: true },
+    relations: ['students'],
+  });
+
+  if (!clase) {
+    throw new NotFoundException('Clase no encontrada o inactiva');
+  }
+
+  const student = await this.userRepository.findOne({ where: { id: studentId, role: 'student' } });
+
+  if (!student) {
+    throw new NotFoundException('Estudiante no encontrado');
+  }
+
+  const alreadyEnrolled = clase.students.some((s) => s.id === studentId);
+  if (alreadyEnrolled) {
+    throw new Error('El estudiante ya está inscrito en esta clase');
+  }
+
+  clase.students.push(student);
+
+  return this.classRepository.save(clase);
+}
+
+  async unenrollStudent(classId: string, studentId: string): Promise<Class> {
+  const clase = await this.classRepository.findOne({
+    where: { id: classId, estado: true },
+    relations: ['students'],
+  });
+
+  if (!clase) {
+    throw new NotFoundException('Clase no encontrada o inactiva');
+  }
+
+  const studentIndex = clase.students.findIndex((s) => s.id === studentId);
+
+  if (studentIndex === -1) {
+    throw new NotFoundException('El estudiante no está inscrito en esta clase');
+  }
+
+  clase.students.splice(studentIndex, 1); // ❌ Remueve del array
+
+  return this.classRepository.save(clase);
+}
 
 
 }

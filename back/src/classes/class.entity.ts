@@ -23,10 +23,10 @@ export class Class {
   @Column('text')
   description!: string;
 
-  @Column()
+  @Column({ nullable: true }) // 👈 permite nulos por ahora
   materia!: string;
 
-  @Column()
+  @Column({ nullable: true }) // 👈 solución rápida
   sector!: string;
 
   @Column('text', { array: true, nullable: true })
