@@ -28,6 +28,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -36,6 +37,7 @@ export class AuthController {
     private jwtService: JwtService,
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
+
   @Post('register')
   @UseInterceptors(CloudinaryFileInterceptor('profileImage'))
   @ApiConsumes('multipart/form-data')
@@ -60,29 +62,31 @@ export class AuthController {
     },
   })
   @ApiResponse({ status: 201, description: 'Usuario registrado exitosamente' })
-  @ApiResponse({ status: 400, description: 'Datos inválidos o usuario ya existe' })
   async register(
     @Body() dto: RegisterDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
     return this.authService.register(dto, file?.path);
   }
+
   @Get('confirm-email')
-async confirmEmail(@Query('token') token: string) {
-  try {
-    const payload = this.jwtService.verify(token, { secret: process.env.JWT_EMAIL_SECRET });
-    const user = await this.userRepository.findOneBy({ email: payload.email });
+  async confirmEmail(@Query('token') token: string) {
+    try {
+      const payload = this.jwtService.verify(token, {
+        secret: process.env.JWT_EMAIL_SECRET,
+      });
 
-    if (!user) throw new NotFoundException('Usuario no encontrado');
+      const user = await this.userRepository.findOneBy({ email: payload.email });
+      if (!user) throw new NotFoundException('Usuario no encontrado');
 
-    user.isEmailConfirmed = true;
-    await this.userRepository.save(user);
+      user.isEmailConfirmed = true;
+      await this.userRepository.save(user);
 
-    return { message: 'Correo confirmado correctamente' };
-  } catch (err) {
-    throw new BadRequestException('Token inválido o expirado');
+      return { message: 'Correo confirmado correctamente' };
+    } catch (err) {
+      throw new BadRequestException('Token inválido o expirado');
+    }
   }
-}
 
   @Post('login')
   @ApiOperation({ summary: 'Iniciar sesión' })
@@ -93,7 +97,7 @@ async confirmEmail(@Query('token') token: string) {
     return this.authService.login(loginDto);
   }
 
-  // 🔹 INICIO del flujo OAuth
+  // 🔹 Inicio de OAuth
   @Get('google')
   @UseGuards(AuthGuard('google'))
   googleLogin() {}
@@ -102,13 +106,12 @@ async confirmEmail(@Query('token') token: string) {
   @UseGuards(AuthGuard('github'))
   githubLogin() {}
 
-  // 🔹 CALLBACK de los providers
-@Get('google/redirect')
-@UseGuards(AuthGuard('google'))
-googleRedirect(@Req() req: any) {
-  return this.authService.handleOAuthLogin(req.user, 'google');
-}
-
+  // 🔹 Callback OAuth
+  @Get('google/redirect')
+  @UseGuards(AuthGuard('google'))
+  googleRedirect(@Req() req: any) {
+    return this.authService.handleOAuthLogin(req.user, 'google');
+  }
 
   @Get('github/redirect')
   @UseGuards(AuthGuard('github'))
@@ -116,4 +119,3 @@ googleRedirect(@Req() req: any) {
     return this.authService.handleOAuthLogin(req.user, 'github');
   }
 }
-

@@ -10,7 +10,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GoogleStrategy } from './google.strategy';
 import { GithubStrategy } from './github.strategy';
 import { MailerModule } from '@nestjs-modules/mailer';
-
+import { EmailModule } from '../email/email.module';
 // Log de carga del módulo
 console.log('AuthModule cargado');
 
@@ -21,9 +21,10 @@ console.log('AuthModule cargado');
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    EmailModule,
     JwtModule.registerAsync({
       imports: [ConfigModule,
-                MailerModule,
+        
       ],
       useFactory: async (configService: ConfigService) => {
         const secret = configService.get<string>('JWT_SECRET') || 'ment0rhUb_2025_superclave';
