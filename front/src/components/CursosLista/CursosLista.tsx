@@ -52,19 +52,15 @@ const CursosLista = ({
    const [clases, setClases] = useState<clasesType[]>([]);
 
    useEffect(() => {
-      console.log('useEffect ejecutado');
       axiosInstance
          .get('/classes')
          .then((res) => {
-            console.log('Respuesta del backend:', res.data);
             setClases(res.data);
          })
          .catch((err) => {
             console.error('Error al obtener las clases:', err);
          });
    }, []);
-
-   console.log(clases);
 
    const cursosFiltrados = clases.filter((curso) => {
       const coincideCategoria = categoria

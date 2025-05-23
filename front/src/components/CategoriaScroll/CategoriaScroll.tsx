@@ -1,5 +1,6 @@
-import categorias_array from '../../helpers/categorias';
+import { useEffect, useState } from 'react';
 import CategoriaCard from '../CategoriaCard/CategoriaCard';
+import axiosInstance from '../../services/axiosInstance';
 
 type Props = {
    onCategoriaSeleccionada: (categoriaId: string) => void;
@@ -8,12 +9,31 @@ type Props = {
    categoriaActiva?: string;
 };
 
+type CategoryType = {
+   id: string;
+   name: string;
+   imagen: string;
+};
+
 const CategoriaScroll = ({
    onCategoriaSeleccionada,
    onMateriaSeleccionada,
    onCategoriaActiva,
    categoriaActiva,
 }: Props) => {
+   const [categorias, setCategorias] = useState<CategoryType[]>([]);
+
+   useEffect(() => {
+      axiosInstance
+         .get('/categories')
+         .then((res) => {
+            setCategorias(res.data);
+         })
+         .catch((err) => {
+            console.error('Error al obtener las clases:', err);
+         });
+   }, []);
+
    const handleCategoriaClick = (id: string) => {
       onCategoriaActiva(id);
       onCategoriaSeleccionada(id);
@@ -23,18 +43,18 @@ const CategoriaScroll = ({
    return (
       <>
          <div className="min-h-[13rem] w-full flex flex-col gap-2">
-            <h2 className="text-4xl">Categorias</h2>
+            <h2 className="text-4xl">Sector:</h2>
             <div className="h-[10rem] flex flex-nowrap overflow-x-scroll overflow-y-visible gap-2">
-               {categorias_array.map((categoria, index) => (
+               {categorias.map((categoria, index) => (
                   <button
                      key={index}
-                     onClick={() => handleCategoriaClick(categoria.nombre)}
+                     onClick={() => handleCategoriaClick(categoria.name)}
                   >
                      <CategoriaCard
                         id={categoria.id}
-                        nombre={categoria.nombre}
+                        nombre={categoria.name}
                         imagen={categoria.imagen}
-                        seleccionada={categoriaActiva === categoria.nombre}
+                        seleccionada={categoriaActiva === categoria.name}
                      />
                   </button>
                ))}
