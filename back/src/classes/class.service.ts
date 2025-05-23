@@ -7,8 +7,6 @@ import { Category } from '../entities/categorias.entities';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from '../dto/update-class.dto';
 import { cloudinary } from '../config/cloudinary.config';
-import { isInstance } from 'class-validator';
-import { InternalServerErrorException } from '@nestjs/common';
 
 @Injectable()
 export class ClassesService {
