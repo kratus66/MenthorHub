@@ -28,9 +28,10 @@ const AppDataSource = new DataSource({
   extra: {
     ssl: {
       rejectUnauthorized: false,
-    },
+      sslmode: "require"
+    }
   },
-  ssl: true,
+  ssl: true
 });
 
 export default AppDataSource;
