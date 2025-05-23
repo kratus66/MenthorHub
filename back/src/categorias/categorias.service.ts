@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Category } from '../entities/categorias.entities';
+import { Category } from './categorias.entity';
 import { Repository } from 'typeorm';
 import { CreateCategoryDto } from '../dto/create-category.dto';
 
@@ -12,7 +12,11 @@ export class CategoriesService {
   ) {}
 
   async create(dto: CreateCategoryDto) {
-    const category = this.categoryRepo.create(dto);
+    const category = this.categoryRepo.create({
+      name: dto.name,
+      imageUrl: dto.imageUrl,
+      description: dto.description,
+    });
     return await this.categoryRepo.save(category);
   }
 

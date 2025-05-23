@@ -1,14 +1,14 @@
-
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Category } from '../entities/categorias.entities';
+import { Category } from '../categorias/categorias.entity'; 
 import { Class } from '../classes/class.entity';
 import { User } from '../users/user.entity';
 import * as fs from 'fs';
 import * as path from 'path';
 import { CreateClassDto } from '../classes/dto/create-class.dto';
 import { CreateCategoryDto } from '../dto/create-category.dto';
+import { Materias } from '../materias/materias.entity';
 
 @Injectable()
 export class SeederService implements OnApplicationBootstrap {
@@ -21,12 +21,19 @@ export class SeederService implements OnApplicationBootstrap {
 
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+
+    @InjectRepository(Materias)
+    private readonly materiaRepo: Repository<Materias>,
   ) {}
 
   async onApplicationBootstrap() {
     console.log('🚀 Ejecutando SeederService...');
     await this.seedCategories();
+
     await this.seedTeachers();
+  
+    await this.seedMaterias();    // <--- Agregado aquí
+    
     await this.seedClasses();
   }
 
@@ -85,6 +92,43 @@ export class SeederService implements OnApplicationBootstrap {
     }
   }
 
+  private async seedMaterias() {
+    const data: { id: string; descripcion: string; imagenUrl?: string; categoryId: string }[] =
+      this.loadJsonFile('materias-with-uuid.json');
+
+    const existing = await this.materiaRepo.count();
+    if (existing > 0) {
+      console.log('ℹ️ Materias ya existen');
+      return;
+    }
+
+    const materiasAInsertar = [];
+
+    for (const m of data) {
+      const category = await this.categoryRepo.findOne({ where: { id: m.categoryId } });
+      if (!category) {
+        console.warn(`⚠️ Categoría no encontrada para materia: ${m.descripcion}`);
+        continue;
+      }
+
+      const nuevaMateria = this.materiaRepo.create({
+        id: m.id,
+        descripcion: m.descripcion,
+        imagenUrl: m.imagenUrl,
+        category,
+      });
+
+      materiasAInsertar.push(nuevaMateria);
+    }
+
+    if (existing === 0) {
+      await this.materiaRepo.save(materiasAInsertar);
+      console.log('✅ Materias precargadas');
+    } else {
+      console.log('ℹ️ Materias ya existen');
+    }
+  }
+
   private async seedClasses() {
     const data: CreateClassDto[] = this.loadJsonFile('classes-generated.json');
     const existing = await this.classRepo.count();
@@ -105,37 +149,39 @@ export class SeederService implements OnApplicationBootstrap {
         where: { id: cls.categoryId },
       });
 
-      if (!profesor || !categoria) {
+      const materia = await this.materiaRepo.findOne({
+        where: { id: cls.materiaId },
+      });
+
+      if (!profesor || !categoria || !materia) {
         console.warn(`⚠️ Clase omitida: "${cls.title}"`);
         if (!profesor) console.warn(`   ❌ Profesor no encontrado: ${cls.teacherId}`);
         if (!categoria) console.warn(`   ❌ Categoría no encontrada: ${cls.categoryId}`);
+        if (!materia) console.warn(`   ❌ Materia no encontrada: ${cls.materiaId}`);
         continue;
       }
 
       const nuevaClase = this.classRepo.create({
-      title: cls.title,
-      description: cls.description,
-      materia: cls.materia ?? cls.title,
-      sector: cls.sector ?? 'General',
-      multimedia: cls.multimedia ?? [], // 👈 soporte para multimedia
-      teacher: profesor,
-      category: categoria,
-      students: [],
-      tasks: [],
-      estado: true,
-    });
-
-
+        title: cls.title,
+        description: cls.description,
+        materia: materia,
+        sector: cls.sector ?? 'General',
+        multimedia: cls.multimedia ?? [],
+        teacher: profesor,
+        category: categoria,
+        students: [],
+        tasks: [],
+        estado: true,
+      });
 
       clasesAInsertar.push(nuevaClase);
     }
 
-    if (clasesAInsertar.length > 0) {
+    if (existing === 0) {
       await this.classRepo.save(clasesAInsertar);
-      console.log(`✅ ${clasesAInsertar.length} clases precargadas`);
+      console.log('✅ Clases precargadas');
     } else {
-      console.warn('⚠️ No se insertó ninguna clase');
+      console.log('ℹ️ Clases ya existen');
     }
   }
 }
-

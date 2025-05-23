@@ -12,7 +12,8 @@ if (!fs.existsSync(destDir)) {
 const filesToCopy = [
   'categories-with-uuid.json',
   'professors-with-uuid.json',
-  'classes-generated.json'
+  'classes-generated.json',
+  'materias-with-uuid.json' // ✅ Agregado aquí
 ];
 
 filesToCopy.forEach((file) => {
@@ -26,4 +27,3 @@ filesToCopy.forEach((file) => {
     console.warn(`⚠️ No se encontró: ${file}`);
   }
 });
-

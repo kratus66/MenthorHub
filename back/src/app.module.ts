@@ -20,11 +20,12 @@ import { FilterModule } from './filter/filter.module';
 import { TasksModule } from './task/tasks.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { Notification } from './notifications/notification.entity';
-import { Category } from './entities/categorias.entities';
+import { Category } from './categorias/categorias.entity';
 import { CategoriesModule } from './categorias/categoria.module';
 import { SubmissionModule } from './submission/submission.module';
 import { SeederModule } from './seeder/seeder.module';
 import { ChatMessage } from './chat/chat.entity';
+import { Materias } from './materias/materias.entity';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { ChatMessage } from './chat/chat.entity';
         Notification,
         Category,
         ChatMessage,
+        Materias,
       ],
       synchronize: true,
       dropSchema: false,
