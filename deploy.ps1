@@ -1,6 +1,6 @@
 # --- Configuración de rutas ---
 $REPO_DIR = "C:\Users\Administrator\repositories\MentorHub-PF"
-$BACKEND_DIR = "$REPO_DIR\back"
+# $BACKEND_DIR = "$REPO_DIR\back"
 $FRONTEND_DIR = "$REPO_DIR\front"
 
 # --- 1. Detener todos los procesos Node existentes ---
