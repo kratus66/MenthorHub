@@ -1,23 +1,32 @@
 import React from 'react';
 import RegisterForm from '../../components/RegisterForm/RegisterForm';
 import imagenRobot from "../../images/imagenRobot.png";
-import axios from 'axios';
+import axiosInstance from '../../services/axiosInstance'; 
 import { useNavigate } from 'react-router-dom';
+
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (formData: FormData) => {
-    try {  
-      const response = await axios.post('http://localhost:3001/api/auth/register', formData, {  
+    try {
+      const response = await axiosInstance.post('/auth/register', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
+
       console.log('Respuesta del servidor:', response.data);
-      
-      navigate('/login');
-    } catch (error) {
+      toast.success(response.data.message || 'Registro exitoso');
+      setTimeout(() => navigate('/login'), 2000);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       console.error('Error al registrar:', error);
-     
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error('Error inesperado al registrar. Por favor intenta nuevamente.');
+      }
     }
   };
 
@@ -48,6 +57,18 @@ const Register: React.FC = () => {
         <h2 className="text-xl font-medium text-gray-700 mb-8">Registro</h2>
         <RegisterForm onSubmit={handleSubmit} />
       </div>
+
+   
+      <ToastContainer
+        position="top-right"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        draggable
+        theme="colored"
+      />
     </div>
   );
 };
