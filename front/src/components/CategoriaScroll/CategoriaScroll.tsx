@@ -12,7 +12,7 @@ type Props = {
 type CategoryType = {
    id: string;
    name: string;
-   imagen: string;
+   imageUrl: string;
 };
 
 const CategoriaScroll = ({
@@ -27,6 +27,7 @@ const CategoriaScroll = ({
       axiosInstance
          .get('/categories')
          .then((res) => {
+            console.log(res.data);
             setCategorias(res.data);
          })
          .catch((err) => {
@@ -53,7 +54,7 @@ const CategoriaScroll = ({
                      <CategoriaCard
                         id={categoria.id}
                         nombre={categoria.name}
-                        imagen={categoria.imagen}
+                        imagen={categoria.imageUrl}
                         seleccionada={categoriaActiva === categoria.name}
                      />
                   </button>
