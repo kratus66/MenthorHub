@@ -11,7 +11,7 @@ const LoadingScreen = () => (
       </p>
       <p className="text-[#007AFF]">
         En breve tendrás acceso a todas las herramientas para potenciar tu
-        aprendizaje y mentoría.
+        aprendizaje.
       </p>
     </div>
     <Background>
