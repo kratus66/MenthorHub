@@ -25,7 +25,11 @@ const AppDataSource = new DataSource({
   logging: true,
   entities: [User, Class, Task, Submission, Payment, Category, Notification],
   migrations: [__dirname + '/../migrations/*{.ts,.js}'],
-  ssl: { rejectUnauthorized: false }, // 🔹 Esto permite conexiones seguras
+  extra: {
+    ssl: {
+      rejectUnauthorized: false
+    }
+  }
 });
 
 export default AppDataSource;
