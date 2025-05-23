@@ -46,24 +46,8 @@ const ConoceMas: React.FC = () => {
         </div>
       </section>
 
-      
-      <section className="mb-16">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">🗣️ Testimonios</h2>
-        <div className="space-y-6">
-          <blockquote className="italic text-gray-600 border-l-4 border-blue-600 pl-4">
-            "Gracias a MentorHub conseguí mi primer trabajo como desarrollador. Los mentores me guiaron paso a paso."
-            <br />
-            <span className="text-sm font-medium text-blue-700">— Javier R., ex-estudiante</span>
-          </blockquote>
-          <blockquote className="italic text-gray-600 border-l-4 border-blue-600 pl-4">
-            "Compartir mi experiencia ayudó a otros y me motivó a seguir aprendiendo también."
-            <br />
-            <span className="text-sm font-medium text-blue-700">— Ana M., mentora</span>
-          </blockquote>
-        </div>
-      </section>
-
-      {/* CTA final */}
+   
+     
       <section className="text-center">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">¿Estás listo para empezar?</h2>
         <p className="text-gray-700 mb-6">Registrate gratis y sumate a nuestra comunidad de aprendizaje colaborativo.</p>
