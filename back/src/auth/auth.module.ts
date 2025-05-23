@@ -7,8 +7,8 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { UsersModule } from '../users/user.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { GoogleStrategy } from './google.strategy';
-import { GithubStrategy } from './github.strategy';
+// import { GoogleStrategy } from './google.strategy';
+// import { GithubStrategy } from './github.strategy';
 import { MailerModule } from '@nestjs-modules/mailer';
 
 // Log de carga del módulo
@@ -40,8 +40,8 @@ console.log('AuthModule cargado');
   providers: [
     AuthService,
     JwtStrategy,
-    GoogleStrategy,
-    GithubStrategy,
+    // GoogleStrategy,
+    // GithubStrategy,
 
   ],
   exports: [AuthService],

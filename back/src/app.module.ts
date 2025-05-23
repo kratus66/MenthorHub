@@ -36,8 +36,8 @@ import { ChatMessage } from './chat/chat.entity';
         port: parseInt(process.env.MAIL_PORT || '587'),
         secure: false, // true para SSL
         auth: {
-          user: 'celestine.terry@ethereal.email',
-          pass: 'QJBXSzfUT2yVe9y1Pm',
+          user: process.env.ETHEREAL_USER,  
+      pass: process.env.ETHEREAL_PASS,
         },
       },
       defaults: {

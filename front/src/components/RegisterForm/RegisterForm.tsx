@@ -45,25 +45,11 @@ const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
   const { name, value } = e.target;
   setFormData(prev => ({ ...prev, [name]: value }));
 };
-const isValidName = (name: string): boolean => {
-  const trimmed = name.trim();
-  const nameRegex = /^[a-zA-ZÁÉÍÓÚáéíóúñÑ\s']+$/;
-  return (
-    nameRegex.test(trimmed) &&
-    trimmed.length >= 5 &&
-    trimmed.length <= 50
-  );
-};
 
 const isValidPhone = (phone: string): boolean => {
   const cleaned = phone.replace(/[\s-]/g, '');
   const phoneRegex = /^\+?\d{8,15}$/;
   return phoneRegex.test(cleaned);
-};
-
-const isStrongPassword = (password: string): boolean => {
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-  return passwordRegex.test(password);
 };
 
 const isValidGmail = (email: string): boolean => {
@@ -96,10 +82,6 @@ const validatePersonalFields = (): boolean => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
  if (!validatePersonalFields() || !validateAcademicFields()) return;
-if (!isValidName(formData.name)) {
-  alert('El nombre debe tener entre 5 y 50 caracteres y solo puede contener letras y espacios.');
-  return;
-}
 
  if (!isValidPhone(formData.phoneNumber)) {
     alert('Por favor, ingresá un número de celular válido con código internacional.');
@@ -109,20 +91,10 @@ if (!isValidName(formData.name)) {
     alert('Por favor, ingresá un correo de Gmail válido (ej: ejemplo@gmail.com)');
     return;
   }
-  if (!isStrongPassword(formData.password)) {
-  alert('La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un carácter especial.');
-  return;
-}
-
     if (formData.password !== formData.confirmPassword) {
       alert('Las contraseñas no coinciden');
       return;
     }
-    if (formData.avatarId === 0) {
-  alert('Por favor, seleccioná un avatar.');
-  return;
-}
-
    
 
 const dataToSend = new FormData(); 
