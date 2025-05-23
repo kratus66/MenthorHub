@@ -1,10 +1,9 @@
 import React from 'react';
 import RegisterForm from '../../components/RegisterForm/RegisterForm';
 import imagenRobot from "../../images/imagenRobot.png";
-import axios from 'axios';
+import axiosInstance from '../../services/axiosInstance'; 
 import { useNavigate } from 'react-router-dom';
 
-// Import react-toastify
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -13,22 +12,17 @@ const Register: React.FC = () => {
 
   const handleSubmit = async (formData: FormData) => {
     try {
-      const response = await axios.post('http://localhost:3001/api/auth/register', formData, {
+      const response = await axiosInstance.post('/auth/register', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
+
       console.log('Respuesta del servidor:', response.data);
-
-      
       toast.success(response.data.message || 'Registro exitoso');
-
       setTimeout(() => navigate('/login'), 2000);
-      
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error('Error al registrar:', error);
-
-    
-      if (error.response && error.response.data && error.response.data.message) {
+      if (error.response?.data?.message) {
         toast.error(error.response.data.message);
       } else {
         toast.error('Error inesperado al registrar. Por favor intenta nuevamente.');

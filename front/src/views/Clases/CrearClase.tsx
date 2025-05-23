@@ -1,15 +1,15 @@
 import { useRef, useState } from "react";
 import { ImageIcon, Video, Paperclip } from "lucide-react";
+import axiosInstance from "../../services/axiosInstance"; 
 
 export default function CrearClase() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [teacherId, setTeacherId] = useState(""); // podés setearlo por defecto si ya lo sabés
+  const [teacherId, setTeacherId] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [materia, setMateria] = useState("");
   const [archivos, setArchivos] = useState<File[]>([]);
 
-  // Refs
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -21,45 +21,40 @@ export default function CrearClase() {
     }
   };
 
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  const formData = new FormData();
-  formData.append("title", title);
-  formData.append("description", description);
-  formData.append("teacherId", teacherId);
-  formData.append("categoryId", categoryId);
-  formData.append("materia", materia);
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("teacherId", teacherId);
+    formData.append("categoryId", categoryId);
+    formData.append("materia", materia);
 
-  archivos.forEach((file) => {
-    formData.append("files", file);
-  });
-
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("No estás autenticado. Por favor inicia sesión.");
-      return;
-    }
-
-    const res = await fetch("http://localhost:3001/api/classes", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
+    archivos.forEach((file) => {
+      formData.append("files", file);
     });
 
-    if (!res.ok) {
-      throw new Error("Error creando clase: " + res.statusText);
-    }
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("No estás autenticado. Por favor inicia sesión.");
+        return;
+      }
 
-    const data = await res.json();
-    console.log("Clase creada:", data);
-  } catch (err) {
-    console.error("Error al crear la clase:", err);
+      const response = await axiosInstance.post("/classes", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      const data = response.data;
+      console.log("Clase creada:", data);
+    } catch (err) {
+      console.error("Error al crear la clase:", err);
+    }
   }
-};
 
  return (
   <div className="min-h-screen bg-blue-600 flex gap-4 px-6 py-8">
