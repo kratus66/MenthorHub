@@ -37,8 +37,8 @@ import { Materias } from './materias/materias.entity';
         port: parseInt(process.env.MAIL_PORT || '587'),
         secure: false, // true para SSL
         auth: {
-          user: process.env.ETHEREAL_USER,  
-      pass: process.env.ETHEREAL_PASS,
+          user: 'celestine.terry@ethereal.email',
+          pass: 'QJBXSzfUT2yVe9y1Pm',
         },
       },
       defaults: {
