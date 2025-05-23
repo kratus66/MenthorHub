@@ -10,7 +10,8 @@ import {
 } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Task } from '../task/task.entity';
-import { Category } from '../entities/categorias.entities';
+import { Materias } from '../materias/materias.entity';
+import { Category } from '../categorias/categorias.entity';
 
 @Entity()
 export class Class {
@@ -22,9 +23,6 @@ export class Class {
 
   @Column('text')
   description!: string;
-
-  @Column({ nullable: true }) // 👈 permite nulos por ahora
-  materia!: string;
 
   @Column({ nullable: true }) // 👈 solución rápida
   sector!: string;
@@ -42,9 +40,15 @@ export class Class {
   @OneToMany(() => Task, (task) => task.classRef)
   tasks!: Task[];
 
-  @ManyToOne(() => Category, (category) => category.classes, {
+  @ManyToOne(() => Materias, (materia) => materia.clases, {
     eager: false,
     nullable: false,
+  })
+  materia!: Materias;
+
+  @ManyToOne(() => Category, (categoria) => categoria.clases, {
+    eager: false,
+    nullable: false,  
   })
   category!: Category;
 

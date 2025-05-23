@@ -58,9 +58,9 @@ const isValidEmail = (email: string): boolean => {
 };
 
 const validateAcademicFields = (): boolean => {
-  const { studies, role, country } = formData;
-  if (!studies || !role || !country ) {
-    alert('Por favor, completá los campos de Detalles Académicos.');
+  const { studies, role, country, province, location } = formData;
+  if (!studies || !role || !country || !province || !location) {
+    alert('Por favor, completá todos los campos de Detalles Académicos.');
     return false;
   }
   return true;
@@ -236,7 +236,7 @@ if (formData.profileImage) {
         <option value="">Seleccionar</option>
         <option value="alumno">Alumno</option>
         <option value="profesor">Profesor</option>
-       
+        <option value="profesor">Admin</option>
       </select>
     </label>
 

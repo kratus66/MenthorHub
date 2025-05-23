@@ -3,21 +3,22 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Class } from './class.entity';
 import { User } from '../users/user.entity';
-import { Category } from '../entities/categorias.entities';
+import { Category } from '../categorias/categorias.entity';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from '../dto/update-class.dto';
 import { cloudinary } from '../config/cloudinary.config';
-
+import { Materias } from '../materias/materias.entity';
 @Injectable()
 export class ClassesService {
   constructor(
     @InjectRepository(Class) private readonly classRepository: Repository<Class>,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
-    @InjectRepository(Category) private readonly categoryRepository: Repository<Category>
+    @InjectRepository(Category) private readonly categoryRepository: Repository<Category>,
+    @InjectRepository(Materias) private readonly materiaRepository: Repository<Materias>
   ) {}
 
   async create(createDto: CreateClassDto, files?: Express.Multer.File[]): Promise<Class> {
-    const { title, description, teacherId, categoryId, materia } = createDto;
+    const { title, description, teacherId, categoryId, materiaId, sector } = createDto;
   
     const teacher = await this.userRepository.findOne({ where: { id: teacherId, role: 'teacher' } });
     if (!teacher) throw new NotFoundException('Profesor no encontrado');
@@ -25,29 +26,33 @@ export class ClassesService {
     const category = await this.categoryRepository.findOne({ where: { id: categoryId } });
     if (!category) throw new NotFoundException('Categoría no encontrada');
   
+    const materia = await this.materiaRepository.findOne({ where: { id: materiaId } });
+    if (!materia) throw new NotFoundException('Materia no encontrada');
+  
     const multimediaUrls = files?.map((file) => file.path) ?? [];
   
-    // Creamos la clase en base de datos
     const newClass = this.classRepository.create({
       title,
       description,
+      sector,
       materia,
       multimedia: multimediaUrls,
       teacher,
       category,
     });
   
-    const savedClass = await this.classRepository.save(newClass); // 👈 Ya tiene ID
+    const savedClass = await this.classRepository.save(newClass);
   
     try {
       await cloudinary.api.create_folder(`classes/${savedClass.title.replace(/ /g, '_')}-${savedClass.id}`);
     } catch (error) {
       if (error instanceof Error) {
-        console.warn(`⚠️ La carpeta ya existe o no se pudo crear: ${savedClass.title.replace(/ /g, '_')}-${savedClass.id}`, error.message);
+        console.warn(`⚠️ No se pudo crear la carpeta: ${savedClass.title}-${savedClass.id}`, error.message);
       } else {
-        console.warn(`⚠️ La carpeta ya existe o no se pudo crear: ${savedClass.title.replace(/ /g, '_')}-${savedClass.id}`, 'Error desconocido');
+        console.warn(`⚠️ No se pudo crear la carpeta (error desconocido)`);
       }
     }
+  
     return savedClass;
   }
 

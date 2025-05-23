@@ -1,18 +1,18 @@
-  [
-    {
-      "id": "e08c1af0-ff11-4242-8d03-2e368131a391",
-      "name": "Salud"
-    },
-    {
-      "id": "6c5746eb-91b8-4f1c-bc40-1fbe2728b7c8",
-      "name": "Tecnología"
-    },
-    {
-      "id": "63381ed7-b292-4173-aa6a-4997094fb376",
-      "name": "Arte"
-    },
-    {
-      "id": "352ef83a-9398-444c-9367-38353e95d111",
-      "name": "Negocios"
-    }
-  ]
+[
+  {
+    "id": "e08c1af0-ff11-4242-8d03-2e368131a391",
+    "name": "Salud"
+  },
+  {
+    "id": "6c5746eb-91b8-4f1c-bc40-1fbe2728b7c8",
+    "name": "Tecnología"
+  },
+  {
+    "id": "63381ed7-b292-4173-aa6a-4997094fb376",
+    "name": "Arte"
+  },
+  {
+    "id": "352ef83a-9398-444c-9367-38353e95d111",
+    "name": "Negocios"
+  }
+]

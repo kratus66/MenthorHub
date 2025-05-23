@@ -13,10 +13,11 @@ export class CreateClassDto {
   @IsNotEmpty()
   description!: string;
 
-  @ApiProperty({ example: 'Programación', type: 'string' })
-  @IsString()
+  @ApiProperty({ example: 'uuid-de-la-materia', type: 'string', format: 'uuid' })
+  @IsUUID()
   @IsNotEmpty()
-  materia!: string;
+  materiaId!: string;
+  
 
   @ApiProperty({ example: 'uuid-del-profesor', type: 'string', format: 'uuid' })
   @IsUUID()

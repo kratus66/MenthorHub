@@ -29,7 +29,7 @@ const AppWrapper = () => {
       role: 'profesor' | 'alumno' | 'otro';
       nombre: string;
    } | null>({
-      role: 'alumno',
+      role: 'profesor',
       nombre: 'Juan Pérez',
    });
 

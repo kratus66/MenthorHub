@@ -4,9 +4,10 @@ import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { IoAdapter } from "@nestjs/platform-socket.io";
 import { Server } from "socket.io";
 import { ClassSerializerInterceptor } from "@nestjs/common";
-
+import { SeederService } from "./seeder/seeder.service";  
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
 
   app.enableCors({
     origin: "*",
