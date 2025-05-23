@@ -20,15 +20,18 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
-  ApiProperty,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { RoleGuard } from '../common/guards/role.guard';
+import { Roles } from '../decorator/role'; // ✅ Asegúrate que apunta al decorador, no al enum
+import { Role } from '../common/constants/roles.enum'; // ✅ Enum con roles
 
 @ApiTags('Usuarios')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  // 👤 Registro abierto (no autenticado)
   @Post()
   @ApiOperation({ summary: 'Crear un nuevo usuario' })
   @ApiBody({ type: CreateUserDto })
@@ -41,6 +44,9 @@ export class UsersController {
     }
   }
 
+  // 🔐 Solo admin
+  /* @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin) */
   @Get()
   @ApiOperation({ summary: 'Obtener todos los usuarios' })
   @ApiResponse({ status: 200, description: 'Lista de usuarios', type: [User] })
@@ -52,26 +58,35 @@ export class UsersController {
     }
   }
 
-  /* @UseGuards(JwtAuthGuard) */
-  @Get("teacher")
-  @ApiOperation({summary:"Obtener todos los usuarios por el rol de teacher"})
-  async getTeachers(){
-    const teachers= await this.usersService.getTeachers();
-    if(!teachers){
-      throw new InternalServerErrorException("No hay profesores registrados");
+  // 🔐 Solo admin
+  /* @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin) */
+  @Get('teacher')
+  @ApiOperation({ summary: 'Obtener todos los usuarios por el rol de teacher' })
+  async getTeachers() {
+    const teachers = await this.usersService.getTeachers();
+    if (!teachers) {
+      throw new InternalServerErrorException('No hay profesores registrados');
     }
     return teachers;
   }
-  @Get("students")
-  @ApiOperation({summary:"Obtener todos los usuarios por el rol de student"})
-  async getStudents(){
-    const students= await this.usersService.getStudents();
-    if(!students){
-      throw new InternalServerErrorException("No hay profesores registrados");
+
+  // 🔐 Solo admin
+  /* @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin) */
+  @Get('students')
+  @ApiOperation({ summary: 'Obtener todos los usuarios por el rol de student' })
+  async getStudents() {
+    const students = await this.usersService.getStudents();
+    if (!students) {
+      throw new InternalServerErrorException('No hay estudiantes registrados');
     }
     return students;
   }
 
+  // 🔐 Solo admin
+  /* @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin) */
   @Get(':id')
   @ApiOperation({ summary: 'Obtener un usuario por ID' })
   @ApiParam({ name: 'id', description: 'UUID del usuario', type: String })
@@ -85,6 +100,9 @@ export class UsersController {
     }
   }
 
+  // 🔐 Solo admin
+  /* @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin) */
   @Put(':id')
   @ApiOperation({ summary: 'Actualizar un usuario' })
   @ApiParam({ name: 'id', description: 'UUID del usuario', type: String })
@@ -101,7 +119,10 @@ export class UsersController {
     }
   }
 
+  // 🔐 Solo admin
   @Delete(':id')
+  /* @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin) */
   @ApiOperation({ summary: 'Eliminar un usuario' })
   @ApiParam({ name: 'id', description: 'UUID del usuario', type: String })
   @ApiResponse({ status: 200, description: 'Usuario eliminado' })
@@ -111,8 +132,6 @@ export class UsersController {
     } catch (error) {
       throw new InternalServerErrorException('Error al eliminar el usuario');
     }
-  }
-
-  
-
+  } 
 }
+

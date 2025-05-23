@@ -10,8 +10,8 @@ import {
 } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Task } from '../task/task.entity';
-import { Category } from '../entities/categorias.entities';
-
+import { Materias } from '../materias/materias.entity';
+import { Category } from '../categorias/categorias.entity';
 
 @Entity()
 export class Class {
@@ -24,11 +24,14 @@ export class Class {
   @Column('text')
   description!: string;
 
-  // ✅ Usa función de tipo para evitar errores de metadatos circulares
+  @Column({ nullable: true }) // 👈 solución rápida
+  sector!: string;
+
+  @Column('text', { array: true, nullable: true })
+  multimedia!: string[];
+
   @ManyToOne(() => User, (user) => user.classesTaught, { nullable: false })
   teacher!: User;
-
-
 
   @ManyToMany(() => User, (user) => user.classesEnrolled)
   @JoinTable()
@@ -37,13 +40,27 @@ export class Class {
   @OneToMany(() => Task, (task) => task.classRef)
   tasks!: Task[];
 
-  @ManyToOne(() => Category, (category) => category.classes, {
+  @ManyToOne(() => Materias, (materia) => materia.clases, {
     eager: false,
     nullable: false,
+  })
+  materia!: Materias;
+
+  @ManyToOne(() => Category, (categoria) => categoria.clases, {
+    eager: false,
+    nullable: false,  
   })
   category!: Category;
 
   @CreateDateColumn()
   createdAt!: Date;
+
+  @Column({ default: true })
+  estado!: boolean;
+
+  @Column({ type: 'timestamp', nullable: true })
+  fechaEliminado?: Date | null;
+
 }
+
 

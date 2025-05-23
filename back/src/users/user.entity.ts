@@ -1,3 +1,4 @@
+// user.entity.ts
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -12,20 +13,22 @@ import { Submission } from '../submission/submission.entity';
 import { Payment } from '../payment/payment.entity';
 import { Task } from '../task/task.entity';
 import { Notification } from '../notifications/notification.entity';
-import { IsEmail } from 'class-validator';  
+import { IsEmail } from 'class-validator';
+import { Exclude } from 'class-transformer';
 
-@Entity()   
+@Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({nullable:false})
+  @Column({ nullable: false })
   name!: string;
 
   @Column({ unique: true })
   email!: string;
 
   @Column()
+  @Exclude()
   password!: string;
 
   @Column({ default: 'student' })
@@ -52,6 +55,12 @@ export class User {
   @Column({ nullable: true })
   localidad?: string;
 
+  @Column({ default: true })
+  estado: boolean;
+
+  @Column({ type: 'timestamp', nullable: true })
+  fechaCambioEstado?: Date;
+
   @OneToMany(() => Class, (cls) => cls.teacher)
   classesTaught!: Class[];
 
@@ -73,5 +82,9 @@ export class User {
 
   @CreateDateColumn()
   createdAt!: Date;
+
+  @Column({ default: false })
+  isEmailConfirmed: boolean;
 }
+
 

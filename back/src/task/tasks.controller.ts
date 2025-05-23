@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Put,
   Get,
   Param,
   Body,
@@ -11,8 +12,7 @@ import {
 import { TasksService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
-import { Roles } from '../common/decorators/roles.decorator';
-import { Role } from '../decorator/roles.enum';
+import { Role } from '../common/constants/roles.enum';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { User } from '../users/user.entity';
 import { RoleGuard } from '../common/guards/role.guard';
@@ -25,6 +25,8 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { Task } from './task.entity';
+import { Roles } from '../decorator/role';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @ApiTags('Tasks')
 @ApiBearerAuth('JWT-auth')
@@ -34,7 +36,7 @@ export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post()
-  @Roles(Role.TEACHER)
+  @Roles(Role.Teacher) // ✅ corregido
   @ApiOperation({ summary: 'Crear una tarea (solo para profesores)' })
   @ApiBody({ type: CreateTaskDto })
   @ApiResponse({ status: 201, description: 'Tarea creada exitosamente', type: Task })
@@ -45,9 +47,20 @@ export class TasksController {
       throw new InternalServerErrorException('Error al crear la tarea');
     }
   }
+  @Get('eliminadas')
+  @Roles(Role.Teacher)
+  @ApiOperation({ summary: 'Ver tareas eliminadas del profesor autenticado' })
+  @ApiResponse({ status: 200, description: 'Listado de tareas eliminadas', type: [Task] })
+  async findEliminadas(@CurrentUser() user: User) {
+  try {
+    return await this.tasksService.findEliminadasByTeacher(user.id);
+  } catch (error) {
+    throw new InternalServerErrorException('Error al obtener tareas eliminadas');
+  }
+}
 
   @Get('teacher')
-  @Roles(Role.TEACHER)
+  @Roles(Role.Teacher) // ✅ corregido
   @ApiOperation({ summary: 'Obtener tareas creadas por el profesor autenticado' })
   @ApiResponse({ status: 200, description: 'Listado de tareas', type: [Task] })
   async findAllTeacher(@CurrentUser() user: User) {
@@ -59,7 +72,7 @@ export class TasksController {
   }
 
   @Get('student')
-  @Roles(Role.STUDENT)
+  @Roles(Role.Student) // ✅ corregido
   @ApiOperation({ summary: 'Obtener tareas asignadas al estudiante autenticado' })
   @ApiResponse({ status: 200, description: 'Listado de tareas', type: [Task] })
   async findAllStudent(@CurrentUser() user: User) {
@@ -71,7 +84,7 @@ export class TasksController {
   }
 
   @Delete(':id')
-  @Roles(Role.TEACHER)
+  @Roles(Role.Teacher) // ✅ corregido
   @ApiOperation({ summary: 'Eliminar una tarea (solo si pertenece al profesor)' })
   @ApiParam({ name: 'id', description: 'UUID de la tarea a eliminar' })
   @ApiResponse({ status: 200, description: 'Tarea eliminada' })
@@ -82,4 +95,40 @@ export class TasksController {
       throw new InternalServerErrorException('Error al eliminar la tarea');
     }
   }
+
+  @Put(':id/restore')
+  @Roles(Role.Teacher)
+  @ApiOperation({ summary: 'Restaurar una tarea eliminada' })
+  @ApiParam({ name: 'id', description: 'UUID de la tarea' })
+  @ApiResponse({ status: 200, description: 'Tarea restaurada exitosamente', type: Task })
+  async restore(@Param('id') id: string) {
+  try {
+    return await this.tasksService.restore(id);
+  } catch (error) {
+    throw new InternalServerErrorException('Error al restaurar la tarea');
+  }
 }
+@Put(':id')
+@Roles(Role.Teacher)
+@ApiOperation({ summary: 'Actualizar una tarea (solo el profesor dueño)' })
+@ApiParam({ name: 'id', description: 'UUID de la tarea' })
+@ApiBody({ type: UpdateTaskDto })
+@ApiResponse({ status: 200, description: 'Tarea actualizada exitosamente', type: Task })
+async update(
+  @Param('id') id: string,
+  @Body() dto: UpdateTaskDto,
+  @CurrentUser() user: User
+) {
+  try {
+    return await this.tasksService.updateByTeacher(user.id, id, dto);
+  } catch (error) {
+    throw new InternalServerErrorException('Error al actualizar la tarea');
+  }
+}
+
+
+
+
+
+}
+

@@ -33,4 +33,11 @@ id!: string;
 
   @Column({ default: false })
   isGraded: boolean;
+
+  @Column({ default: true })
+estado!: boolean;
+
+@Column({ type: 'timestamp', nullable: true })
+fechaEliminado?: Date | null;
+
 }

@@ -1,9 +1,8 @@
-// src/common/guards/role.guard.ts
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
-import { User } from '../../users/user.entity';
 import { JwtPayload } from '../../auth/jwt-payload.interface';
+import { Role } from '../../common/constants/roles.enum'; // ⚠️ Ajusta la ruta
 
 @Injectable()
 export class RoleGuard implements CanActivate {
@@ -12,14 +11,13 @@ export class RoleGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const requiredRoles = this.reflector.get<string[]>('roles', context.getHandler());
-    if (!requiredRoles) {
-      return true;
-    }
+    const requiredRoles = this.reflector.get<Role[]>('roles', context.getHandler());
+    if (!requiredRoles) return true;
 
     const request = context.switchToHttp().getRequest();
     const user: JwtPayload = request.user;
 
-    return requiredRoles.some((role) => user.role.includes(role));
+    return requiredRoles.includes(user.role as Role);
   }
 }
+

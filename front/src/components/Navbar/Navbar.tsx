@@ -78,13 +78,6 @@ const NavBar: React.FC = () => {
           >
             Home
           </Link>
-          <Link
-            to="/usuario"
-            onClick={() => setMenuOpen(false)}
-            className="hover:text-gray-200"
-          >
-            Usuario
-          </Link>
 
         
           {user?.role === 'profesor' && (

@@ -39,4 +39,11 @@ id: string;
 
   @CreateDateColumn()
   createdAt!: Date;
+
+  @Column({ default: true })
+  estado!: boolean;
+
+  @Column({ type: 'timestamp', nullable: true })
+  fechaEliminado?: Date | null;
+
 }

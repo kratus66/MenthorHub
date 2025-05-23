@@ -1,29 +1,52 @@
-import React, { useState, useRef, useEffect } from 'react'
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useRef, useState, useEffect } from 'react'
+import { Check, Camera } from 'lucide-react'
+
 
 interface User {
   name: string
+  phoneNumber: string
   email: string
+  studies: 'Primario' | 'Secundario' | 'Universitario' | ''
+  role: 'Alumno' | 'Profesor'
+  country: string
+  province: string
+  location: string
+  description: string
   subscriptionActive: boolean
 }
 
 const UserProfile: React.FC = () => {
-  const [user] = useState<User>({
-    name: 'Juan Pérez',
-    email: 'juan.perez@example.com',
-    subscriptionActive: true,
-  })
-
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Estado para la foto de perfil, que intenta cargar desde localStorage al iniciar
+  const initialUser: User = {
+    name: 'Juan Pérez',
+    phoneNumber: '123456789',
+    email: 'juan.perez@gmail.com',
+    studies: 'Secundario',
+    role: 'Alumno',
+    country: 'Argentina',
+    province: 'Buenos Aires',
+    location: 'La Plata',
+    description: 'Me encanta aprender y enseñar. Soy fan de la programación.',
+    subscriptionActive: true,
+  }
+
   const [profilePic, setProfilePic] = useState<string>(() => {
     return localStorage.getItem('profilePic') || 'https://i.pravatar.cc/150?img=3'
   })
+  const [user, setUser] = useState<User>(initialUser)
+  const [isModified, setIsModified] = useState(false)
+  const [showSavedMsg, setShowSavedMsg] = useState(false)
 
-  // Cuando cambie la foto, actualizamos localStorage
   useEffect(() => {
     localStorage.setItem('profilePic', profilePic)
   }, [profilePic])
+
+  useEffect(() => {
+    const hasChanged = JSON.stringify(user) !== JSON.stringify(initialUser)
+    setIsModified(hasChanged)
+  }, [user])
 
   const handleChangePhotoClick = () => {
     fileInputRef.current?.click()
@@ -37,57 +60,129 @@ const UserProfile: React.FC = () => {
     }
   }
 
-  return (
-    <div className="p-8 max-w-md mx-auto mt-24 font-sans text-white bg-blue-600 rounded-lg shadow-lg">
-      <h1 className="text-3xl font-bold mb-8 text-center">Perfil de Usuario</h1>
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setUser(prev => ({ ...prev, [name]: value }))
+  }
 
-      <div className="flex flex-col items-center">
-        <div className="relative w-36 h-36">
-          <img
-            src={profilePic}
-            alt="Foto de perfil"
-            className="w-36 h-36 rounded-full object-cover border-4 border-white"
-          />
-          <button
-            onClick={handleChangePhotoClick}
-            className="absolute bottom-2 right-2 bg-white p-2 rounded-full shadow-md hover:bg-gray-200 transition"
-            title="Cambiar foto de perfil"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-blue-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.232 5.232l3.536 3.536M9 13.5v3h3l7.5-7.5-3-3-7.5 7.5z"
+  const handleSave = () => {
+    console.log('Datos guardados:', user)
+    setShowSavedMsg(true)
+    setTimeout(() => setShowSavedMsg(false), 3000)
+  }
+
+
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 to-blue-800 text-white px-6 py-12">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl font-bold mb-10 text-center">
+          Hola, <span className="text-blue-300">{user.name}</span>
+        </h1>
+
+        <div className="flex flex-col md:flex-row gap-8 bg-white/10 backdrop-blur-md rounded-xl p-6 shadow-2xl">
+        
+          <div className="md:w-1/3 space-y-6">
+            <div className="flex justify-center">
+              <div className="relative group">
+                <img
+                  src={profilePic}
+                  className="w-40 h-40 rounded-full border-4 border-white object-cover shadow-lg group-hover:scale-105 transition"
+                  alt="Foto de perfil"
+                />
+                <button
+                  onClick={handleChangePhotoClick}
+                  className="absolute bottom-2 right-2 bg-white text-blue-900 p-2 rounded-full shadow hover:bg-gray-200 transition"
+                  title="Cambiar foto"
+                >
+                  <Camera size={18} />
+                </button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-xl font-semibold mb-2">Descripción Personal</h2>
+              <textarea
+                name="description"
+                value={user.description}
+                onChange={handleChange}
+                rows={5}
+                className="w-full p-3 rounded-md border border-blue-300 text-black focus:ring-2 focus:ring-blue-500 resize-none transition"
+                placeholder="Contanos algo sobre vos"
               />
-            </svg>
-          </button>
-          <input
-            type="file"
-            accept="image/*"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            className="hidden"
-          />
+            </div>
+
+<div className="mt-4">
+  <span className="text-lg font-medium mr-3">Suscripción:</span>
+  <span
+    className={`inline-block px-3 py-1 rounded-full font-semibold text-sm ${
+      user.subscriptionActive ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+    }`}
+  >
+    {user.subscriptionActive ? 'Activa' : 'Inactiva'}
+  </span>
+</div>
+</div>
+    
+          <div className="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[
+              { label: 'Nombre', name: 'name', value: user.name },
+              { label: 'Teléfono', name: 'phoneNumber', value: user.phoneNumber },
+              { label: 'Correo', name: 'email', value: user.email },
+              { label: 'País', name: 'country', value: user.country },
+              { label: 'Provincia', name: 'province', value: user.province },
+              { label: 'Localidad', name: 'location', value: user.location },
+            ].map((field) => (
+              <input
+                key={field.name}
+                name={field.name}
+                value={field.value}
+                onChange={handleChange}
+                placeholder={field.label}
+                className="p-3 rounded border border-blue-300 text-black focus:ring-2 focus:ring-blue-500 transition"
+              />
+            ))}
+
+            <input
+              value={user.role}
+              disabled
+              className="p-3 border border-gray-300 rounded bg-gray-100 text-gray-600 col-span-1"
+            />
+            {user.role === 'Alumno' && (
+              <input
+                value={user.studies}
+                disabled
+                className="p-3 border border-gray-300 rounded bg-gray-100 text-gray-600 col-span-1"
+              />
+            )}
+          </div>
         </div>
 
-        <div className="mt-6 w-full text-center">
-          <h2 className="text-2xl font-semibold">{user.name}</h2>
-          <p className="text-lg mt-2">Correo: {user.email}</p>
-
-          <p
-            className={`mt-6 text-lg font-medium ${
-              user.subscriptionActive ? 'text-green-300' : 'text-red-300'
+        <div className="text-center mt-8">
+          <button
+            onClick={handleSave}
+            disabled={!isModified}
+            className={`px-8 py-3 rounded-md font-semibold transition duration-300 ${
+              isModified
+                ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                : 'bg-gray-400 text-white cursor-not-allowed'
             }`}
           >
-            {user.subscriptionActive ? 'Suscripción activa' : 'Suscripción inactiva'}
-          </p>
+            Guardar Cambios
+          </button>
+
+          {showSavedMsg && (
+            <p className="mt-4 text-green-200 animate-pulse text-sm">
+              <Check className="inline mr-1" /> Cambios guardados correctamente
+            </p>
+          )}
         </div>
       </div>
     </div>

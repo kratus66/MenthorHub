@@ -1,45 +1,41 @@
-import { IsString, IsNotEmpty, IsUUID } from 'class-validator';
+import { IsString, IsNotEmpty, IsUUID, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export class CreateClassDto {
-  @ApiProperty({
-    example: 'Curso de Introducción a NestJS',
-    description: 'Título de la clase',
-  })
+  @ApiProperty({ example: 'Curso de Introducción a NestJS', type: 'string' })
   @IsString()
   @IsNotEmpty()
   title!: string;
 
-  @ApiProperty({
-    example: 'Este curso enseña los fundamentos de NestJS...',
-    description: 'Descripción de la clase',
-  })
+  @ApiProperty({ example: 'Este curso enseña los fundamentos de NestJS...', type: 'string' })
   @IsString()
   @IsNotEmpty()
   description!: string;
 
-  @ApiProperty({
-    example: '5f7c0b64-2f99-4a8c-b547-fca6a2d5a8cb',
-    description: 'ID del profesor (UUID)',
-  })
+  @ApiProperty({ example: 'uuid-de-la-materia', type: 'string', format: 'uuid' })
+  @IsUUID()
+  @IsNotEmpty()
+  materiaId!: string;
+  
+
+  @ApiProperty({ example: 'uuid-del-profesor', type: 'string', format: 'uuid' })
   @IsUUID()
   @IsNotEmpty()
   teacherId!: string;
 
-  @ApiProperty({
-    example: 'a1d0c6e8-2fcf-4b1e-bf41-b0c2460cc071',
-    description: 'ID de la categoría (UUID)',
-  })
+  @ApiProperty({ example: 'uuid-de-la-categoria', type: 'string', format: 'uuid' })
   @IsUUID()
   @IsNotEmpty()
   categoryId!: string;
 
   @ApiProperty({
+    description: 'Información de la categoría',
     example: {
       nombre: 'Programación',
       imagen: 'https://ejemplo.com/categoria.jpg',
     },
-    description: 'Información visual de la categoría (opcional para mostrar)',
+    type: 'object',
   })
   @IsNotEmpty()
   categoryInfo!: {
@@ -47,11 +43,18 @@ export class CreateClassDto {
     imagen: string;
   };
 
-  @ApiProperty({
-    example: 'Tecnología',
-    description: 'Sector al que pertenece la clase',
-  })
+  @ApiProperty({ example: 'Tecnología', type: 'string' })
   @IsString()
   @IsNotEmpty()
   sector!: string;
+
+  @ApiProperty({
+    description: 'Archivos multimedia a subir',
+    type: 'array',
+    items: { type: 'string', format: 'binary' }, // esto le indica a Swagger que son archivos
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Object)
+  multimedia?: any;
 }

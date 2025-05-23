@@ -1,4 +1,3 @@
-// src/common/interceptors/cloudinary.interceptor.ts
 import { FileInterceptor } from '@nestjs/platform-express';
 import { storage } from '../../config/cloudinary.config';
 

@@ -1,6 +1,9 @@
+// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { join } from 'path';
 
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { ChatModule } from './chat/chat.module';
@@ -17,15 +20,32 @@ import { FilterModule } from './filter/filter.module';
 import { TasksModule } from './task/tasks.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { Notification } from './notifications/notification.entity';
-import { Category } from './entities/categorias.entities';
+import { Category } from './categorias/categorias.entity';
 import { CategoriesModule } from './categorias/categoria.module';
 import { SubmissionModule } from './submission/submission.module';
 import { SeederModule } from './seeder/seeder.module';
-import { ChatMessage } from './chat/chat.entity'; // ✅ Añadido
-
+import { ChatMessage } from './chat/chat.entity';
+import { Materias } from './materias/materias.entity';
+import { EmailModule } from './email/email.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.ethereal.email',
+        port: parseInt(process.env.MAIL_PORT || '587'),
+        secure: false, // true para SSL
+        auth: {
+          user: 'celestine.terry@ethereal.email',
+          pass: 'QJBXSzfUT2yVe9y1Pm',
+        },
+      },
+      defaults: {
+        from: '"MentorHub" <no-reply@mentorhub.com>',
+      },
+
+    }),
 
     FilterModule,
     ChatbotModule,
@@ -38,8 +58,8 @@ import { ChatMessage } from './chat/chat.entity'; // ✅ Añadido
     CategoriesModule,
     SubmissionModule,
     SeederModule,
+    EmailModule,
 
- 
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -55,10 +75,11 @@ import { ChatMessage } from './chat/chat.entity'; // ✅ Añadido
         Payment,
         Notification,
         Category,
-        ChatMessage, // ✅ Añadido aquí
+        ChatMessage,
+        Materias,
       ],
       synchronize: true,
-      dropSchema:true,
+      dropSchema: false,
     }),
   ],
 })
