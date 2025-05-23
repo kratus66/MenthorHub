@@ -52,10 +52,11 @@ const isValidPhone = (phone: string): boolean => {
   return phoneRegex.test(cleaned);
 };
 
-const isValidGmail = (email: string): boolean => {
-  const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-  return gmailRegex.test(email);
+const isValidEmail = (email: string): boolean => {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailRegex.test(email);
 };
+
 const validateAcademicFields = (): boolean => {
   const { studies, role, country, province, location } = formData;
   if (!studies || !role || !country || !province || !location) {
@@ -87,7 +88,7 @@ const validatePersonalFields = (): boolean => {
     alert('Por favor, ingresá un número de celular válido con código internacional.');
     return;
   }
-  if (!isValidGmail(formData.email)) {
+  if (!isValidEmail(formData.email)) {
     alert('Por favor, ingresá un correo de Gmail válido (ej: ejemplo@gmail.com)');
     return;
   }
