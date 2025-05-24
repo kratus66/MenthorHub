@@ -34,6 +34,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { Request, Response } from 'express';
 import { GetUser } from '../common/decorators/get-user.decorator';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -138,7 +139,7 @@ export class AuthController {
   async handleOAuthRegister(
     @UploadedFile() file: Express.Multer.File,
     @Body() dto: OAuthCompleteDto,
-    @GetUser() user: { id: string; email: string; role: string },
+    @CurrentUser() user: { id: string; email: string; role: string },
   ) {
     console.log('Usuario extraído del token:', user);
     const imageUrl = file?.path || undefined;
