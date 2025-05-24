@@ -11,10 +11,13 @@ import {
   BadRequestException,
   NotFoundException,
   Query,
+  UnauthorizedException,
+  Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { OAuthCompleteDto } from './dto/OauthRegister.dto';
 import {
   ApiTags,
   ApiOperation,
@@ -28,7 +31,9 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { Request, Response } from 'express';
+import { GetUser } from '../common/decorators/get-user.decorator';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -109,8 +114,17 @@ export class AuthController {
   // 🔹 Callback OAuth
   @Get('google/redirect')
   @UseGuards(AuthGuard('google'))
-  googleRedirect(@Req() req: any) {
-    return this.authService.handleOAuthLogin(req.user, 'google');
+  async googleRedirect(
+    @Req() req: Request & { user: any }, 
+    @Res() res: Response) {
+    const { shouldCompleteProfile, token } = await this.authService.handleOAuthLogin(req.user, 'google');
+  
+    if (shouldCompleteProfile) {
+      return res.redirect(`http://localhost:3001/oauth-complete?token=${token}`);
+
+    }
+  
+    return res.redirect(`http://localhost:3001/home?token=${token}`);
   }
 
   @Get('github/redirect')
@@ -118,4 +132,31 @@ export class AuthController {
   githubRedirect(@Req() req: any) {
     return this.authService.handleOAuthLogin(req.user, 'github');
   }
+  @Post('oauth-complete')
+  @UseGuards(JwtAuthGuard) // Solo usuarios con token válido
+  @UseInterceptors(CloudinaryFileInterceptor('profileImage'))
+  async handleOAuthRegister(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() dto: OAuthCompleteDto,
+    @GetUser() user: { id: string; email: string; role: string },
+  ) {
+    console.log('Usuario extraído del token:', user);
+    const imageUrl = file?.path || undefined;
+    return this.authService.handleOAuthRegister(user.id, dto, imageUrl);
+  }
+
+
+
+@Get('test-oauth-token')
+async testOAuthToken() {
+  // Usuario simulado como si viniera de Google/GitHub
+  const fakeProfile = {
+    email: 'mentorhub.info@gmail.com',
+    displayName: 'MentorHub',
+    photo: 'https://example.com/photo.jpg',
+  };
+  const result = await this.authService.handleOAuthLogin(fakeProfile, 'google');
+  return result; // { token, shouldCompleteProfile }
+}
+
 }

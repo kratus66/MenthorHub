@@ -2,6 +2,7 @@ import {
   Injectable,
   BadRequestException,
   UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,6 +12,7 @@ import { compare, hash } from 'bcrypt';
 import { User } from '../users/user.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { OAuthCompleteDto } from './dto/OauthRegister.dto';
 import { EmailService } from '../email/email.service'; // nuevo servicio resend
 
 @Injectable()
@@ -104,16 +106,53 @@ export class AuthService {
       },
     };
   }
+// auth.service.ts
+async handleOAuthRegister(
+  userId: string,
+  dto: OAuthCompleteDto,
+  profileImagePath?: string
+): Promise<{ message: string; user: any }> {
+  console.log('userId recibido en servicio:', userId);
+  console.log('Datos para completar perfil:', dto);
+  console.log('Imagen subida:', profileImagePath);
 
-  async handleOAuthLogin(
-    profile: { email: string; displayName: string; photo?: string },
-    provider: 'google' | 'github',
-  ): Promise<any> {
-    let user = await this.usersRepository.findOne({
-      where: { email: profile.email },
-    });
+  const user = await this.usersRepository.findOne({ where: { id: userId } });
+  
+  if (!user) {
+    throw new NotFoundException('Usuario no encontrado');
+  }
 
-    if (!user) {
+  // Actualizar campos del usuario con los datos recibidos
+  user.phoneNumber = dto.phoneNumber;
+  user.avatarId = Number(dto.avatarId);
+  user.estudios = dto.estudios;
+  user.role = dto.role as 'student' | 'teacher' | 'admin';
+  user.country = dto.country;
+  user.provincia = dto.provincia;
+  user.localidad = dto.localidad;
+
+  // Si hay imagen, actualizar url
+  if (profileImagePath) {
+    user.profileImage = profileImagePath;
+  }
+
+  // Guardar cambios en la BD
+  const updatedUser = await this.usersRepository.save(user);
+
+  // Retornar mensaje y usuario actualizado
+  return {
+    message: 'Perfil completado correctamente',
+    user: updatedUser,
+  };
+}
+  async handleOAuthLogin(profile: any, provider: 'google' | 'github') {
+    console.log('Email recibido:', profile.email);
+    
+    let user = await this.usersRepository.findOne({ where: { email: profile.email } });
+    if (user) {
+      console.log('Usuario encontrado:', user.email);
+    } else {
+      console.log('No existe usuario con ese email, se creará uno nuevo.');
       user = this.usersRepository.create({
         name: profile.displayName,
         email: profile.email,
@@ -123,23 +162,17 @@ export class AuthService {
         isEmailConfirmed: true,
       });
       await this.usersRepository.save(user);
+      console.log('Usuario creado:', user.email);
     }
-
+  
     const token = this.generateToken(user);
-
+  
+    const shouldCompleteProfile = !user.phoneNumber || !user.country || !user.estudios;
     return {
-      message: `Login exitoso con ${provider}`,
       token,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        profileImage: user.profileImage,
-      },
+      shouldCompleteProfile,
     };
   }
-
   generateToken(user: User): string {
     const payload = {
       email: user.email,
