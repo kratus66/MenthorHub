@@ -67,16 +67,12 @@ export class User {
   @OneToMany(() => Payment, (payment) => payment.user)
   payments!: Payment[];
 
-  @ManyToMany(() => Class, (cls) => cls.students)
-  classesEnrolled!: Class[];
 
   @OneToMany(() => Submission, (submission) => submission.student)
   submissions!: Submission[];
 
-  // Profesor → tareas creadas
-  @OneToMany(() => Task, (task) => task.teacher)
-  createdTasks!: Task[];
-
+  @OneToMany(() => Task, (task) => task.student)
+  tasks!: Task[];
 
   @OneToMany(() => Notification, (n) => n.user)
   notifications: Notification[];
@@ -96,6 +92,12 @@ export class User {
   
   @Column({ default: false })
   isPaid: boolean;
+
+  
+@ManyToMany(() => Class, (cls) => cls.students)
+classesEnrolled!: Class[];
+
+
 }
 
 
