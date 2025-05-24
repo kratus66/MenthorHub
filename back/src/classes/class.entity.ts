@@ -32,10 +32,13 @@ export class Class {
 
   @ManyToOne(() => User, (user) => user.classesTaught, { nullable: false })
   teacher!: User;
+  
+@ManyToMany(() => User, (user) => user.classesEnrolled)
+@JoinTable() 
+students!: User[];
 
-  @ManyToMany(() => User, (user) => user.classesEnrolled)
-  @JoinTable()
-  students!: User[];
+
+
 
   @OneToMany(() => Task, (task) => task.classRef)
   tasks!: Task[];
