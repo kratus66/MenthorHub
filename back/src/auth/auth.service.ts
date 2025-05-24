@@ -24,6 +24,7 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto, profileImagePath: string): Promise<any> {
+    console.log('📷 Imagen recibida:', profileImagePath);
     const existingUser = await this.usersRepository.findOne({
       where: { email: dto.email },
     });

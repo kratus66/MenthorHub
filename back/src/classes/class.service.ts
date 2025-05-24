@@ -157,33 +157,47 @@ export class ClassesService {
       .getMany();
   }
 
-  async enrollStudent(classId: string, studentId: string): Promise<Class> {
+  async enrollStudent(classId: string, studentId: string): Promise<Class | null> {
     console.log('➕ Inscribiendo estudiante ID:', studentId, 'a clase ID:', classId);
+  
+    // Buscar la clase con sus estudiantes (relación)
     const clase = await this.classRepository.findOne({
       where: { id: classId, estado: true },
-      relations: ['students'],
+      relations: ['students', 'teacher'], // cargamos estudiantes y profesor
     });
     if (!clase) throw new NotFoundException('Clase no encontrada o inactiva');
-
+  
+    // Buscar el estudiante
     const student = await this.userRepository.findOne({ where: { id: studentId, role: 'student' } });
     if (!student) throw new NotFoundException('Estudiante no encontrado');
-
+  
+    // Validar si ya está inscrito
     const alreadyEnrolled = clase.students.some((s) => s.id === studentId);
     if (alreadyEnrolled) throw new Error('El estudiante ya está inscrito en esta clase');
-
+  
+    // Contar cuántas clases tiene el estudiante inscrito (para control de límite)
     const enrolledCount = await this.classRepository
       .createQueryBuilder('class')
       .leftJoin('class.students', 'student')
       .where('student.id = :studentId', { studentId })
       .getCount();
-
+  
     if (!student.isPaid && enrolledCount >= 3) {
       console.log('⛔ Estudiante excedió el límite sin plan mensual premium');
       throw new ForbiddenException('Debes pagar la suscripción mensual Premium para unirte a más de 3 clases');
     }
-
+  
+    // Añadir estudiante a la clase
     clase.students.push(student);
-    return this.classRepository.save(clase);
+  
+    // Guardar cambios
+    await this.classRepository.save(clase);
+  
+    // Volver a buscar la clase con las relaciones para retornar datos completos
+    return this.classRepository.findOne({
+      where: { id: classId },
+      relations: ['students', 'teacher'],
+    });
   }
 
   async unenrollStudent(classId: string, studentId: string): Promise<Class> {

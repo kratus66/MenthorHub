@@ -70,7 +70,10 @@ export class AuthController {
   async register(
     @Body() dto: RegisterDto,
     @UploadedFile() file: Express.Multer.File,
+    
   ) {
+    console.log('📨 Body:', dto);
+console.log('📷 Imagen recibida:', file);
     return this.authService.register(dto, file?.path);
   }
 

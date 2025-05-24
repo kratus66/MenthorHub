@@ -35,22 +35,6 @@ import { ReviewsModule } from './review/reviews.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
 
-    MailerModule.forRoot({
-      transport: {
-        host: 'smtp.ethereal.email',
-        port: parseInt(process.env.MAIL_PORT || '587'),
-        secure: false, // true para SSL
-        auth: {
-          user: 'celestine.terry@ethereal.email',
-          pass: 'QJBXSzfUT2yVe9y1Pm',
-        },
-      },
-      defaults: {
-        from: '"MentorHub" <no-reply@mentorhub.com>',
-      },
-
-    }),
-
     FilterModule,
     ChatbotModule,
     ChatModule,
