@@ -15,7 +15,7 @@ import { Task } from '../task/task.entity';
 import { Notification } from '../notifications/notification.entity';
 import { IsEmail } from 'class-validator';
 import { Exclude } from 'class-transformer';
-
+import { Review } from '../review/review.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -85,6 +85,16 @@ export class User {
 
   @Column({ default: false })
   isEmailConfirmed: boolean;
+
+
+    @OneToMany(() => Review, review => review.author)
+  reviewsGiven: Review[];
+  
+  @OneToMany(() => Review, review => review.targetStudent)
+  reviewsReceived: Review[];
+  
+  @Column({ default: false })
+  isPaid: boolean;
 }
 
 
