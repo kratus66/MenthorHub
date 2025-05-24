@@ -26,7 +26,11 @@ import { SubmissionModule } from './submission/submission.module';
 import { SeederModule } from './seeder/seeder.module';
 import { ChatMessage } from './chat/chat.entity';
 import { Materias } from './materias/materias.entity';
+import { MateriasModule } from './materias/materia.module';
 import { EmailModule } from './email/email.module';
+import { Review } from './review/review.entity';
+import { ReviewsModule } from './review/reviews.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -59,6 +63,9 @@ import { EmailModule } from './email/email.module';
     SubmissionModule,
     SeederModule,
     EmailModule,
+    ReviewsModule,
+    MateriasModule,
+    UsersModule,
 
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -77,6 +84,8 @@ import { EmailModule } from './email/email.module';
         Category,
         ChatMessage,
         Materias,
+        Review,
+
       ],
       synchronize: true,
       dropSchema: false,
