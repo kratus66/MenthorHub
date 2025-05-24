@@ -192,6 +192,33 @@ export class ClassesService {
     const alreadyEnrolled = clase.students.some((s) => s.id === studentId);
     if (alreadyEnrolled) throw new Error('El estudiante ya está inscrito en esta clase');
 
+    // 🔐 Validar suscripción mensual del estudiante
+    const latestPayment = await this.paymentRepository.findOne({
+      where: {
+        user: { id: studentId },
+        type: PaymentType.STUDENT_SUBSCRIPTION,
+        status: PaymentStatus.COMPLETED,
+      },
+      order: { createdAt: 'DESC' },
+    });
+
+    if (!latestPayment) {
+      console.log('⛔ Estudiante sin historial de pago mensual');
+      throw new ForbiddenException('Debes pagar la suscripción mensual para unirte a clases.');
+    }
+
+    const paymentDate = new Date(latestPayment.createdAt);
+    const now = new Date();
+    const diffInMs = now.getTime() - paymentDate.getTime();
+    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+    if (diffInDays > 30) {
+      console.log('⛔ Suscripción del estudiante expirada hace', Math.floor(diffInDays), 'días');
+      throw new ForbiddenException('Tu suscripción ha expirado. Debes renovarla para unirte a clases.');
+    }
+
+    console.log('✅ Estudiante tiene suscripción activa. Último pago fue hace', Math.floor(diffInDays), 'días');
+
     const enrolledCount = await this.classRepository
       .createQueryBuilder('class')
       .leftJoin('class.students', 'student')
