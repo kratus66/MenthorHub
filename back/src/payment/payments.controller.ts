@@ -26,7 +26,7 @@ import {
 import { Payment } from './payment.entity';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RoleGuard } from '../common/guards/role.guard';
-import { Roles } from '../decorator/role';
+import { Roles } from '../common/decorators/role';
 import { Role } from '../common/constants/roles.enum';
 
 @ApiTags('Pagos')

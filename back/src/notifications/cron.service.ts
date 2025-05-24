@@ -34,44 +34,45 @@ export class CronService implements OnModuleInit {
   @Cron(CronExpression.EVERY_DAY_AT_7AM)
   async handleDailyNotifications() {
     this.logger.log('⏰ Verificando tareas pendientes...');
-
+  
     const today = new Date();
+  
+    // Traer tareas pendientes con la clase y sus estudiantes
     const pendingTasks = await this.taskRepository.find({
       where: {
-        ...(Object.prototype.hasOwnProperty.call(this.taskRepository.metadata.propertiesMap, 'status') && {
-          status: 'pending',
-        }),
-        ...(Object.prototype.hasOwnProperty.call(this.taskRepository.metadata.propertiesMap, 'dueDate') && {
-          dueDate: LessThanOrEqual(today),
-        }),
+        status: 'pending',
+        dueDate: LessThanOrEqual(today),
+        estado: true,
       },
-      relations: ['student'],
+      relations: ['classRef', 'classRef.students'],
     });
-
+  
     if (pendingTasks.length === 0) {
       this.logger.log('✅ No hay tareas pendientes hoy.');
       return;
     }
-
+  
     for (const task of pendingTasks) {
       const message = `Tienes pendiente: ${task.title} (fecha límite: ${task.dueDate.toDateString()})`;
-
-
-      // Log en consola
-      console.log(`📢 ${task.student?.name} tiene pendiente: ${task.title} (fecha límite: ${task.dueDate})`);
-
-
-      // Guardar en base de datos
-      await this.notificationRepository.save({
-        user: task.student,
-        message,
-      });
-
-      // Emitir por socket en tiempo real
-      this.io.emit(`notifications:${task.student.id}`, {
-        message,
-        date: task.dueDate,
-      });
+  
+      // Asegurarse que la clase y sus estudiantes existan
+      if (!task.classRef || !task.classRef.students) continue;
+  
+      for (const student of task.classRef.students) {
+        this.logger.log(`📢 Notificando a ${student.name} sobre la tarea ${task.title}`);
+  
+        // Guardar la notificación
+        await this.notificationRepository.save({
+          user: student,
+          message,
+        });
+  
+        // Emitir por socket
+        this.io.emit(`notifications:${student.id}`, {
+          message,
+          date: task.dueDate,
+        });
+      }
     }
   }
 }

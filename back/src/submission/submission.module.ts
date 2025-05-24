@@ -6,10 +6,11 @@ import { User } from '../users/user.entity';
 import { SubmissionsService } from './submission.service';
 import { SubmissionsController } from './submission.controller';
 import { UsersModule } from '../users/user.module';
+import { Class } from '../classes/class.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Submission, Task, User]),
+    TypeOrmModule.forFeature([Submission, Task, User,Class]),
     UsersModule,
   ],
   providers: [SubmissionsService],

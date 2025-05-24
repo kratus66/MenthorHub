@@ -7,6 +7,8 @@ import { CreateSubmissionDto } from './dto/CreateSubmissions.dto';
 import { UpdateSubmissionDto } from './dto/updatesubmission.dto';
 import { User } from '../users/user.entity';
 import { Task } from '../task/task.entity';
+import { cloudinary } from '../config/cloudinary.config';
+import { Class } from '../classes/class.entity';
 
 @Injectable()
 export class SubmissionsService {
@@ -19,18 +21,30 @@ export class SubmissionsService {
 
     @InjectRepository(Task)
     private taskRepo: Repository<Task>,
+
+    @InjectRepository(Class)
+    private ClassRepo: Repository<Class>
   ) {}
 
   async create(dto: CreateSubmissionDto, studentId: string) {
     const student = await this.userRepo.findOne({ where: { id: studentId } });
     const task = await this.taskRepo.findOne({ where: { id: dto.taskId.toString() } });
+    const clase = await this.ClassRepo.findOne({where: {id:dto.classId.toString()}})
 
-    if (!student || !task) {
+    if (!student || !task || !clase) {
       throw new NotFoundException('Estudiante o tarea no encontrados');
     }
 
+      
+    // ⏬ Cargar a Cloudinary en la carpeta adecuada
+    const folderName = `classes/${clase.title.replace(/ /g, '_')}-${clase.id}`;
+    const uploaded = await cloudinary.uploader.upload(dto.content, {
+      folder: folderName,
+      resource_type: 'auto',
+    });
+
     const submission = this.submissionsRepo.create({
-      content: dto.content, // viene como file.path desde Cloudinary
+      content: uploaded.secure_url, // viene como file.path desde Cloudinary
       student,
       task,
     });

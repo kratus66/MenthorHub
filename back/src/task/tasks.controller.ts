@@ -25,7 +25,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { Task } from './task.entity';
-import { Roles } from '../decorator/role';
+import { Roles } from '../common/decorators/role';
 import { UpdateTaskDto } from './dto/update-task.dto';
 
 @ApiTags('Tasks')

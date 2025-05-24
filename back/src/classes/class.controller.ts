@@ -28,7 +28,7 @@ import { Class } from './class.entity';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RoleGuard } from '../common/guards/role.guard';
-import { Roles } from '../decorator/role';
+import { Roles } from '../common/decorators/role';
 import { Role } from '../common/constants/roles.enum';
 import { EnrollStudentDto } from './dto/enroll-student.dto';
 

@@ -19,7 +19,7 @@ import { UpdateSubmissionDto } from './dto/updatesubmission.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RoleGuard } from '../common/guards/role.guard';
 import { Role } from '../common/constants/roles.enum';
-import { Roles } from '../decorator/role'; // ✅ asegúrate que apunta al decorador
+import { Roles } from '../common/decorators/role'; // ✅ asegúrate que apunta al decorador
 import { Express } from 'express';
 import {
   ApiTags,
@@ -38,38 +38,43 @@ import { CloudinaryFileInterceptor } from '../common/interceptors/cloudinary.int
 export class SubmissionsController {
   constructor(private submissionsService: SubmissionsService) {}
 
-  @Post()
+
+  @Post(':classId/tasks/:taskId')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Student)
-  @UseInterceptors(CloudinaryFileInterceptor)
+  @UseInterceptors(CloudinaryFileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Crear una entrega con archivo (solo estudiantes)' })
+  @ApiOperation({ summary: 'Crear una entrega para una tarea específica' })
+  @ApiParam({ name: 'classId', description: 'UUID de la clase' })
+  @ApiParam({ name: 'taskId', description: 'UUID de la tarea' })
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
-        taskId: { type: 'integer', example: 1 },
         file: { type: 'string', format: 'binary' },
       },
     },
   })
   @ApiResponse({ status: 201, description: 'Entrega creada exitosamente' })
-  async create(
+  async createSubmission(
+    @Param('classId') classId: string,
+    @Param('taskId') taskId: string,
     @UploadedFile() file: Express.Multer.File,
-    @Body('taskId') taskId: number,
     @Req() req: any,
   ) {
     try {
-      const fileUrl = file?.path;
       return await this.submissionsService.create(
-        { content: fileUrl, taskId: taskId },
+        {
+          content: file?.path,
+          classId,
+          taskId,
+        },
         req.user.userId,
       );
     } catch (error) {
       throw new InternalServerErrorException('Error al crear la entrega');
     }
   }
-
   @Get()
   /* @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Teacher, Role.Admin) */

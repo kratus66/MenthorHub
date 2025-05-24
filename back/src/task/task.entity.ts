@@ -12,9 +12,8 @@ import { User } from '../users/user.entity';
 
 @Entity()
 export class Task {
-@PrimaryGeneratedColumn('uuid')
-id: string;
-
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   title!: string;
@@ -31,8 +30,8 @@ id: string;
   @ManyToOne(() => Class, (cls) => cls.tasks)
   classRef!: Class;
 
-  @ManyToOne(() => User, (user) => user.tasks, { eager: true }) // Aquí agregamos el estudiante
-  student!: User;
+  @ManyToOne(() => User, (user) => user.createdTasks, { eager: true })
+  teacher!: User; // profesor que crea la tarea
 
   @OneToMany(() => Submission, (submission) => submission.task)
   submissions!: Submission[];
@@ -45,5 +44,4 @@ id: string;
 
   @Column({ type: 'timestamp', nullable: true })
   fechaEliminado?: Date | null;
-
 }

@@ -21,7 +21,7 @@ import {
   ApiBody,
   ApiParam,
 } from '@nestjs/swagger';
-import { Roles } from '../decorator/role';
+import { Roles } from '../common/decorators/role';
 import { Role } from '../common/constants/roles.enum';
 import { RoleGuard } from '../common/guards/role.guard';
 
