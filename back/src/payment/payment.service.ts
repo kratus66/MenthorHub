@@ -1,4 +1,3 @@
-// payment.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -17,10 +16,11 @@ export class PaymentsService {
   ) {}
 
   async create(userId: string, dto: CreatePaymentDto): Promise<Payment> {
+     console.log('📥 DTO recibido en payment.create:', dto);
+    console.log('🔑 userId recibido:', userId);
     const user = await this.userRepo.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('Usuario no encontrado');
 
-    // Validar pago mensual duplicado
     const existing = await this.paymentRepo.findOne({
       where: {
         user: { id: userId },
@@ -52,6 +52,9 @@ export class PaymentsService {
       month: dto.month,
       user: user,
     });
+
+    user.isPaid = true;
+    await this.userRepo.save(user);
 
     return await this.paymentRepo.save(payment);
   }
