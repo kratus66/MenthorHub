@@ -6,6 +6,9 @@ type Props = {
    onCategoriaSeleccionada: (categoriaId: string) => void;
    onCategoriaActiva: (categoriaId: string) => void;
    onMateriaSeleccionada: (materiaId: string) => void;
+   onMateriasDeCategoria: (
+      materias: { id: string; descripcion: string }[]
+   ) => void;
    categoriaActiva?: string;
 };
 
@@ -13,12 +16,14 @@ type CategoryType = {
    id: string;
    name: string;
    imageUrl: string;
+   materias: { id: string; descripcion: string }[];
 };
 
 const CategoriaScroll = ({
    onCategoriaSeleccionada,
    onMateriaSeleccionada,
    onCategoriaActiva,
+   onMateriasDeCategoria,
    categoriaActiva,
 }: Props) => {
    const [categorias, setCategorias] = useState<CategoryType[]>([]);
@@ -35,10 +40,11 @@ const CategoriaScroll = ({
          });
    }, []);
 
-   const handleCategoriaClick = (id: string) => {
-      onCategoriaActiva(id);
-      onCategoriaSeleccionada(id);
+   const handleCategoriaClick = (categoria: CategoryType) => {
+      onCategoriaActiva(categoria.id);
+      onCategoriaSeleccionada(categoria.id);
       onMateriaSeleccionada('');
+      onMateriasDeCategoria(categoria.materias);
    };
 
    return (
@@ -49,13 +55,13 @@ const CategoriaScroll = ({
                {categorias.map((categoria, index) => (
                   <button
                      key={index}
-                     onClick={() => handleCategoriaClick(categoria.name)}
+                     onClick={() => handleCategoriaClick(categoria)}
                   >
                      <CategoriaCard
                         id={categoria.id}
                         nombre={categoria.name}
                         imagen={categoria.imageUrl}
-                        seleccionada={categoriaActiva === categoria.name}
+                        seleccionada={categoriaActiva === categoria.id}
                      />
                   </button>
                ))}

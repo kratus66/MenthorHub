@@ -1,21 +1,22 @@
-import materiasPorCategoria from '../../helpers/materias';
 import CategoriaCard from '../CategoriaCard/CategoriaCard';
 
-type SelectedCategoryType = {
-   categoria: string;
-   materiaSeleccionada: string;
-   onMateriaSeleccionada: (MateriaId: string) => void;
+type MateriaType = {
+   id: string;
+   imagen?: string;
+   descripcion: string;
+};
+
+type Props = {
+   materias: MateriaType[]; // Recibo el array de materias filtradas desde afuera
+   materiaSeleccionada: string; // Materia seleccionada para marcarla
+   onMateriaSeleccionada: (materiaId: string) => void; // Callback para seleccionar materia
 };
 
 const MateriasScroll = ({
-   categoria = 'Música',
-   materiaSeleccionada = '',
+   materias,
+   materiaSeleccionada,
    onMateriaSeleccionada,
-}: SelectedCategoryType) => {
-   const categoriaReal =
-      categoria && categoria.trim() !== '' ? categoria : 'Música';
-   const materias = materiasPorCategoria[categoriaReal] || [];
-
+}: Props) => {
    const handleMateriaClick = (nombre: string) => {
       onMateriaSeleccionada(nombre);
    };
@@ -28,13 +29,15 @@ const MateriasScroll = ({
                {materias.map((materia, index) => (
                   <button
                      key={index}
-                     onClick={() => handleMateriaClick(materia.nombre)}
+                     onClick={() => handleMateriaClick(materia.descripcion)}
                   >
                      <CategoriaCard
                         id={materia.id}
-                        nombre={materia.nombre}
+                        nombre={materia.descripcion}
                         imagen={materia.imagen}
-                        seleccionada={materiaSeleccionada === materia.nombre}
+                        seleccionada={
+                           materiaSeleccionada === materia.descripcion
+                        }
                      />
                   </button>
                ))}

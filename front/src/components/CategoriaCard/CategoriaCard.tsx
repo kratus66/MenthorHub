@@ -1,7 +1,7 @@
 type Props = {
    id: string;
    nombre: string;
-   imagen: string;
+   imagen?: string;
    seleccionada?: boolean;
 };
 

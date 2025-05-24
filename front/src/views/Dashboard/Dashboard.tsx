@@ -8,6 +8,9 @@ const Dashboard = () => {
       useState<string>('');
    const [categoriaActiva, setCategoriaActiva] = useState<string | null>(null);
    const [materiaSeleccionada, setMateriaSeleccionada] = useState('');
+   const [materiasVisibles, setMateriasVisibles] = useState<
+      { id: string; descripcion: string }[]
+   >([]);
 
    return (
       <>
@@ -17,10 +20,11 @@ const Dashboard = () => {
                   onCategoriaSeleccionada={setCategoriaSeleccionada}
                   onMateriaSeleccionada={setMateriaSeleccionada}
                   onCategoriaActiva={setCategoriaActiva}
+                  onMateriasDeCategoria={setMateriasVisibles}
                   categoriaActiva={categoriaActiva || undefined}
                />
                <MateriasScroll
-                  categoria={categoriaSeleccionada}
+                  materias={materiasVisibles}
                   onMateriaSeleccionada={setMateriaSeleccionada}
                   materiaSeleccionada={materiaSeleccionada}
                />
