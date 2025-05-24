@@ -1,6 +1,33 @@
-import { FileInterceptor } from '@nestjs/platform-express';
-import { storage } from '../../config/cloudinary.config';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler, mixin } from '@nestjs/common';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import { v2 as cloudinary } from 'cloudinary';
+
+const cloudinaryStorage = new CloudinaryStorage({
+  cloudinary,
+  params: (req, file) => ({
+    folder: 'mentorhub',
+    resource_type: 'auto',
+    allowed_formats: ['jpg', 'png', 'mp4', 'pdf'],
+    public_id: `${Date.now()}-${file.originalname}`,
+  }),
+  
+});
 
 export function CloudinaryFileInterceptor(fieldName: string) {
-  return FileInterceptor(fieldName, { storage });
+  @Injectable()
+  class MixinInterceptor implements NestInterceptor {
+    private interceptor;
+
+    constructor() {
+      const InterceptorClass = FilesInterceptor(fieldName, 10, { storage: cloudinaryStorage });
+      this.interceptor = new InterceptorClass();
+    }
+
+    intercept(context: ExecutionContext, next: CallHandler) {
+      return this.interceptor.intercept(context, next);
+    }
+  }
+
+  return mixin(MixinInterceptor);
 }

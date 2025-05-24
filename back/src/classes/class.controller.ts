@@ -31,6 +31,7 @@ import { RoleGuard } from '../common/guards/role.guard';
 import { Roles } from '../common/decorators/role';
 import { Role } from '../common/constants/roles.enum';
 import { EnrollStudentDto } from './dto/enroll-student.dto';
+import { CloudinaryFileInterceptor } from '../common/interceptors/cloudinary.interceptor';
 
 @ApiTags('Clases')
 @ApiBearerAuth('JWT-auth')
@@ -41,7 +42,8 @@ export class ClassesController {
   @Post()
   /* @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Teacher, Role.Admin) */
-  @UseInterceptors(AnyFilesInterceptor())
+  @UseInterceptors(CloudinaryFileInterceptor('multimedia'))
+
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Crear una nueva clase con multimedia' })
   @ApiBody({
@@ -50,11 +52,12 @@ export class ClassesController {
   })
   @ApiResponse({ status: 201, description: 'Clase creada exitosamente', type: Class })
   async create(
-    @Body() createDto: CreateClassDto,
+    @Body() createClassDto: CreateClassDto,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
+  
     try {
-      return await this.classesService.create(createDto, files);
+      return await this.classesService.create(createClassDto, files);
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException('Error al crear la clase');

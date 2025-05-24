@@ -68,7 +68,6 @@ export class User {
   payments!: Payment[];
 
   @ManyToMany(() => Class, (cls) => cls.students)
-  @JoinTable()
   classesEnrolled!: Class[];
 
   @OneToMany(() => Submission, (submission) => submission.student)
