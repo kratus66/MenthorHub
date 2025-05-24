@@ -27,60 +27,61 @@ import { SeederModule } from './seeder/seeder.module';
 import { ChatMessage } from './chat/chat.entity';
 import { Materias } from './materias/materias.entity';
 import { EmailModule } from './email/email.module';
+import { MateriasModule } from './materias/materia.module';
 @Module({
-  imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+   imports: [
+      ConfigModule.forRoot({ isGlobal: true }),
 
-    MailerModule.forRoot({
-      transport: {
-        host: 'smtp.ethereal.email',
-        port: parseInt(process.env.MAIL_PORT || '587'),
-        secure: false, // true para SSL
-        auth: {
-          user: 'celestine.terry@ethereal.email',
-          pass: 'QJBXSzfUT2yVe9y1Pm',
-        },
-      },
-      defaults: {
-        from: '"MentorHub" <no-reply@mentorhub.com>',
-      },
+      MailerModule.forRoot({
+         transport: {
+            host: 'smtp.ethereal.email',
+            port: parseInt(process.env.MAIL_PORT || '587'),
+            secure: false, // true para SSL
+            auth: {
+               user: 'celestine.terry@ethereal.email',
+               pass: 'QJBXSzfUT2yVe9y1Pm',
+            },
+         },
+         defaults: {
+            from: '"MentorHub" <no-reply@mentorhub.com>',
+         },
+      }),
 
-    }),
+      FilterModule,
+      ChatbotModule,
+      ChatModule,
+      ClassesModule,
+      PaymentsModule,
+      AuthModule,
+      TasksModule,
+      NotificationsModule,
+      CategoriesModule,
+      SubmissionModule,
+      SeederModule,
+      EmailModule,
+      MateriasModule,
 
-    FilterModule,
-    ChatbotModule,
-    ChatModule,
-    ClassesModule,
-    PaymentsModule,
-    AuthModule,
-    TasksModule,
-    NotificationsModule,
-    CategoriesModule,
-    SubmissionModule,
-    SeederModule,
-    EmailModule,
-
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT || '5432'),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      entities: [
-        User,
-        Class,
-        Task,
-        Submission,
-        Payment,
-        Notification,
-        Category,
-        ChatMessage,
-        Materias,
-      ],
-      synchronize: true,
-      dropSchema: false,
-    }),
-  ],
+      TypeOrmModule.forRoot({
+         type: 'postgres',
+         host: process.env.DB_HOST,
+         port: parseInt(process.env.DB_PORT || '5432'),
+         username: process.env.DB_USERNAME,
+         password: process.env.DB_PASSWORD,
+         database: process.env.DB_NAME,
+         entities: [
+            User,
+            Class,
+            Task,
+            Submission,
+            Payment,
+            Notification,
+            Category,
+            ChatMessage,
+            Materias,
+         ],
+         synchronize: true,
+         dropSchema: false,
+      }),
+   ],
 })
 export class AppModule {}
