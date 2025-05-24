@@ -33,7 +33,6 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { Request, Response } from 'express';
-import { GetUser } from '../common/decorators/get-user.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 @ApiTags('Auth')
 @Controller('auth')
@@ -130,9 +129,19 @@ export class AuthController {
 
   @Get('github/redirect')
   @UseGuards(AuthGuard('github'))
-  githubRedirect(@Req() req: any) {
-    return this.authService.handleOAuthLogin(req.user, 'github');
+  async githubRedirect(
+    @Req() req: Request & { user: any }, 
+    @Res() res: Response
+  ) {
+    const { shouldCompleteProfile, token } = await this.authService.handleOAuthLogin(req.user, 'github');
+  
+    if (shouldCompleteProfile) {
+      return res.redirect(`http://localhost:3001/oauth-complete?token=${token}`);
+    }
+  
+    return res.redirect(`http://localhost:3001/home?token=${token}`);
   }
+  
   @Post('oauth-complete')
   @UseGuards(JwtAuthGuard) // Solo usuarios con token válido
   @UseInterceptors(CloudinaryFileInterceptor('profileImage'))
