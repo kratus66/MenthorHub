@@ -12,7 +12,7 @@ import { User } from '../users/user.entity';
 import { Task } from '../task/task.entity';
 import { Materias } from '../materias/materias.entity';
 import { Category } from '../categorias/categorias.entity';
-
+import { Review } from '../review/review.entity';
 @Entity()
 export class Class {
   @PrimaryGeneratedColumn('uuid')
@@ -60,6 +60,9 @@ export class Class {
 
   @Column({ type: 'timestamp', nullable: true })
   fechaEliminado?: Date | null;
+
+  @OneToMany(() => Review, review => review.course)
+reviews: Review[];
 
 }
 
