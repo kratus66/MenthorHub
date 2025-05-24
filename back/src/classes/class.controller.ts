@@ -28,10 +28,9 @@ import { Class } from './class.entity';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RoleGuard } from '../common/guards/role.guard';
-import { Roles } from '../common/decorators/role';
+import { Roles } from '../decorator/role';
 import { Role } from '../common/constants/roles.enum';
 import { EnrollStudentDto } from './dto/enroll-student.dto';
-import { CloudinaryFileInterceptor } from '../common/interceptors/cloudinary.interceptor';
 
 @ApiTags('Clases')
 @ApiBearerAuth('JWT-auth')
@@ -39,30 +38,33 @@ import { CloudinaryFileInterceptor } from '../common/interceptors/cloudinary.int
 export class ClassesController {
   constructor(private readonly classesService: ClassesService) {}
 
-  @Post()
-  /* @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Teacher, Role.Admin) */
-  @UseInterceptors(CloudinaryFileInterceptor('multimedia'))
+@Post()
+/* @UseGuards(JwtAuthGuard, RoleGuard)
+@Roles(Role.Teacher, Role.Admin) */
+@UseInterceptors(AnyFilesInterceptor())
+@ApiConsumes('multipart/form-data')
+@ApiOperation({ summary: 'Crear una nueva clase con multimedia' })
+@ApiBody({
+  description: 'Datos para crear una clase con archivos multimedia',
+  type: CreateClassDto,
+})
+@ApiResponse({ status: 201, description: 'Clase creada exitosamente', type: Class })
+async create(
+  @Body() createDto: CreateClassDto,
+  @UploadedFiles() files: Express.Multer.File[],
+) {
+  // 👇 LOGS TEMPORALES PARA DEPURACIÓN
+  console.log('✅ DTO recibido:', createDto);
+  console.log('📎 Archivos recibidos:', files);
 
-  @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Crear una nueva clase con multimedia' })
-  @ApiBody({
-    description: 'Datos para crear una clase con archivos multimedia',
-    type: CreateClassDto,
-  })
-  @ApiResponse({ status: 201, description: 'Clase creada exitosamente', type: Class })
-  async create(
-    @Body() createClassDto: CreateClassDto,
-    @UploadedFiles() files: Express.Multer.File[],
-  ) {
-  
-    try {
-      return await this.classesService.create(createClassDto, files);
-    } catch (error) {
-      console.error(error);
-      throw new InternalServerErrorException('Error al crear la clase');
-    }
+  try {
+    return await this.classesService.create(createDto, files);
+  } catch (error) {
+    console.error('❌ Error al crear clase:', error);
+    throw new InternalServerErrorException('Error al crear la clase');
   }
+}
+
 
   @Get()
   /* @UseGuards(JwtAuthGuard) // Solo autenticados pueden ver clases */
@@ -124,7 +126,7 @@ async restore(@Param('id', ParseUUIDPipe) id: string) {
       }
     }
     @Delete(':id/unenroll')
-    @UseGuards(JwtAuthGuard)
+    // @UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Desinscribir estudiante de una clase' })
     @ApiParam({ name: 'id', description: 'UUID de la clase' })
     @ApiBody({ type: EnrollStudentDto })
@@ -176,7 +178,7 @@ async remove(@Param('id', ParseUUIDPipe) id: string) {
   
 
   @Post(':id/enroll')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Inscribir estudiante en una clase' })
   @ApiParam({ name: 'id', description: 'UUID de la clase' })
   @ApiBody({ type: EnrollStudentDto })
