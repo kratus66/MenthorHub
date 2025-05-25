@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import imagenUsuario from '../../images/imagenUsuario.png';
+import type { FiltrosType } from '../../types/FiltrosType';
 
 const mockUser = {
    role: 'profesor',
    nombre: 'Juan Pérez',
-};
-
-type FiltrosType = {
-   search?: string;
-   category?: string;
-   teacherId?: string;
-   materia?: string;
 };
 
 type NavBarProps = {

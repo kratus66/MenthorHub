@@ -1,30 +1,26 @@
 import { useEffect, useState } from 'react';
 import CategoriaCard from '../CategoriaCard/CategoriaCard';
 import axiosInstance from '../../services/axiosInstance';
+import type { CategoryType } from '../../types/CategoryType';
 
 type Props = {
    onCategoriaSeleccionada: (categoriaId: string) => void;
    onCategoriaActiva: (categoriaId: string) => void;
    onMateriaSeleccionada: (materiaId: string) => void;
-   onMateriasDeCategoria: (
+   setMateriasVisibles: (
       materias: { id: string; descripcion: string }[]
    ) => void;
    categoriaActiva?: string;
-};
-
-type CategoryType = {
-   id: string;
-   name: string;
-   imageUrl: string;
-   materias: { id: string; descripcion: string }[];
+   setCategoriasIniciales: React.Dispatch<React.SetStateAction<CategoryType[]>>;
 };
 
 const CategoriaScroll = ({
    onCategoriaSeleccionada,
    onMateriaSeleccionada,
    onCategoriaActiva,
-   onMateriasDeCategoria,
+   setMateriasVisibles,
    categoriaActiva,
+   setCategoriasIniciales,
 }: Props) => {
    const [categorias, setCategorias] = useState<CategoryType[]>([]);
 
@@ -33,6 +29,7 @@ const CategoriaScroll = ({
          .get('/categories')
          .then((res) => {
             setCategorias(res.data);
+            setCategoriasIniciales(res.data);
          })
          .catch((err) => {
             console.error('Error al obtener las clases:', err);
@@ -43,7 +40,7 @@ const CategoriaScroll = ({
       onCategoriaActiva(categoria.id);
       onCategoriaSeleccionada(categoria.id);
       onMateriaSeleccionada('');
-      onMateriasDeCategoria(categoria.materias);
+      setMateriasVisibles(categoria.materias);
    };
 
    return (

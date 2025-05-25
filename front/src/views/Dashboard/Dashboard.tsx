@@ -2,6 +2,7 @@ import MateriasScroll from '../../components/MateriasScroll/MateriasScroll';
 import CategoriaScroll from '../../components/CategoriaScroll/CategoriaScroll';
 import CursosLista from '../../components/CursosLista/CursosLista';
 import { useEffect, useState } from 'react';
+import type { CategoryType } from '../../types/CategoryType';
 
 type DashboardProps = {
    filtros: {
@@ -21,6 +22,9 @@ type DashboardProps = {
 };
 
 const Dashboard = ({ filtros, setFiltros }: DashboardProps) => {
+   const [categoriasIniciales, setCategoriasIniciales] = useState<
+      CategoryType[]
+   >([]);
    const [categoriaSeleccionada, setCategoriaSeleccionada] =
       useState<string>('');
    const [categoriaActiva, setCategoriaActiva] = useState<string | null>(null);
@@ -37,6 +41,12 @@ const Dashboard = ({ filtros, setFiltros }: DashboardProps) => {
       }));
    }, [categoriaSeleccionada]);
 
+   useEffect(() => {
+      if (categoriasIniciales.length > 0 && categoriasIniciales[0].materias) {
+         setMateriasVisibles(categoriasIniciales[0].materias);
+      }
+   }, [categoriasIniciales]);
+
    return (
       <>
          <div className="w-screen h-[calc(100vh-68px)] flex bg-[#f9fafb]">
@@ -45,7 +55,8 @@ const Dashboard = ({ filtros, setFiltros }: DashboardProps) => {
                   onCategoriaSeleccionada={setCategoriaSeleccionada}
                   onMateriaSeleccionada={setMateriaSeleccionada}
                   onCategoriaActiva={setCategoriaActiva}
-                  onMateriasDeCategoria={setMateriasVisibles}
+                  setMateriasVisibles={setMateriasVisibles}
+                  setCategoriasIniciales={setCategoriasIniciales}
                   categoriaActiva={categoriaActiva || undefined}
                />
                <MateriasScroll
@@ -58,6 +69,7 @@ const Dashboard = ({ filtros, setFiltros }: DashboardProps) => {
                   onMateriaSeleccionada={setMateriaSeleccionada}
                   onCategoriaActiva={setCategoriaActiva}
                   filtros={filtros}
+                  setFiltros={setFiltros}
                />
             </div>
             <div className="h-[calc(100% - 68px)] w-1/4 m-4 bg-[#f3f4f6] rounded-xl">
