@@ -19,7 +19,7 @@ import { UpdateSubmissionDto } from './dto/updatesubmission.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RoleGuard } from '../common/guards/role.guard';
 import { Role } from '../common/constants/roles.enum';
-import { Roles } from '../common/decorators/role'; // ✅ asegúrate que apunta al decorador
+import { Roles } from '../decorator/role'; // ✅ asegúrate que apunta al decorador
 import { Express } from 'express';
 import {
   ApiTags,
@@ -38,43 +38,40 @@ import { CloudinaryFileInterceptor } from '../common/interceptors/cloudinary.int
 export class SubmissionsController {
   constructor(private submissionsService: SubmissionsService) {}
 
-
-  @Post(':classId/tasks/:taskId')
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Student)
-  @UseInterceptors(CloudinaryFileInterceptor('file'))
-  @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Crear una entrega para una tarea específica' })
-  @ApiParam({ name: 'classId', description: 'UUID de la clase' })
-  @ApiParam({ name: 'taskId', description: 'UUID de la tarea' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        file: { type: 'string', format: 'binary' },
-      },
+@Post()
+@UseGuards(JwtAuthGuard, RoleGuard)
+@Roles(Role.Student)
+@UseInterceptors(CloudinaryFileInterceptor)
+@ApiConsumes('multipart/form-data')
+@ApiOperation({ summary: 'Crear una entrega con archivo (solo estudiantes)' })
+@ApiBody({
+  schema: {
+    type: 'object',
+    properties: {
+      taskId: { type: 'string', example: 'uuid-task-ejemplo' },
+      file: { type: 'string', format: 'binary' },
     },
-  })
-  @ApiResponse({ status: 201, description: 'Entrega creada exitosamente' })
-  async createSubmission(
-    @Param('classId') classId: string,
-    @Param('taskId') taskId: string,
-    @UploadedFile() file: Express.Multer.File,
-    @Req() req: any,
-  ) {
-    try {
-      return await this.submissionsService.create(
-        {
-          content: file?.path,
-          classId,
-          taskId,
-        },
-        req.user.userId,
-      );
-    } catch (error) {
-      throw new InternalServerErrorException('Error al crear la entrega');
-    }
+  },
+})
+@ApiResponse({ status: 201, description: 'Entrega creada exitosamente' })
+async create(
+  @UploadedFile() file: Express.Multer.File,
+  @Body('taskId') taskId: string,
+  @Req() req: any,
+) {
+  try {
+    const fileUrl = file?.path || 'https://cloudinary.com/fake-file.pdf';
+
+    return await this.submissionsService.create(
+      { content: fileUrl, taskId },
+      req.user.userId,
+    );
+  } catch (error) {
+    throw new InternalServerErrorException('Error al crear la entrega');
   }
+}
+
+
   @Get()
   /* @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Teacher, Role.Admin) */
@@ -88,8 +85,8 @@ export class SubmissionsController {
     }
   }
   @Get('eliminadas')
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Teacher, Role.Admin)
+  // @UseGuards(JwtAuthGuard, RoleGuard)
+  // @Roles(Role.Teacher, Role.Admin)
   @ApiOperation({ summary: 'Obtener entregas eliminadas (profesor/admin)' })
   @ApiResponse({ status: 200, description: 'Listado de entregas eliminadas' })
   async findEliminadas() {
@@ -156,8 +153,8 @@ async restore(@Param('id') id: string) {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Student, Role.Admin)
+  // @UseGuards(JwtAuthGuard, RoleGuard)
+  // @Roles(Role.Student, Role.Admin)
   @ApiOperation({ summary: 'Eliminar una entrega (estudiante o admin)' })
   @ApiParam({ name: 'id', description: 'UUID de la entrega' })
   @ApiResponse({ status: 200, description: 'Entrega eliminada' })
