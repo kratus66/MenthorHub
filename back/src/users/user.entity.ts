@@ -71,8 +71,8 @@ export class User {
   @OneToMany(() => Submission, (submission) => submission.student)
   submissions!: Submission[];
 
-  @OneToMany(() => Task, (task) => task.student)
-  tasks!: Task[];
+  // @OneToMany(() => Task, (task) => task.student)
+  // tasks!: Task[];
 
   @OneToMany(() => Notification, (n) => n.user)
   notifications: Notification[];

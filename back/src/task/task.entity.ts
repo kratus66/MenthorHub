@@ -30,8 +30,8 @@ export class Task {
   @ManyToOne(() => Class, (cls) => cls.tasks)
   classRef!: Class;
 
-  @ManyToOne(() => User, (user) => user.createdTasks, { eager: true })
-  teacher!: User; // profesor que crea la tarea
+  // @ManyToOne(() => User, (user) => user.createdTasks, { eager: true })
+  // teacher!: User; // profesor que crea la tarea
 
   @OneToMany(() => Submission, (submission) => submission.task)
   submissions!: Submission[];
