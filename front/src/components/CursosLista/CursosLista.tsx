@@ -3,11 +3,17 @@ import { Link } from 'react-router-dom';
 import axiosInstance from '../../services/axiosInstance';
 
 type CategoriaType = {
-   categoria: string;
-   materiaSeleccionada: string;
    onCategoriaSeleccionada: (categoriaId: string) => void;
    onCategoriaActiva: (categoriaId: string) => void;
    onMateriaSeleccionada: (materiaId: string) => void;
+   filtros: { search?: string; category?: string; teacherId?: string };
+   setFiltros: React.Dispatch<
+      React.SetStateAction<{
+         search?: string;
+         category?: string;
+         teacherId?: string;
+      }>
+   >;
 };
 
 type clasesType = {
@@ -42,60 +48,51 @@ type clasesType = {
 const ITEMS_POR_PAGINA = 10;
 
 const CursosLista = ({
-   categoria,
-   materiaSeleccionada,
    onCategoriaSeleccionada,
    onCategoriaActiva,
    onMateriaSeleccionada,
+   filtros,
+   setFiltros,
 }: CategoriaType) => {
    const [paginaActual, setPaginaActual] = useState(1);
-   const [clases, setClases] = useState<clasesType[]>([]);
+   const [cursosPaginados, setCursosPaginados] = useState<clasesType[]>([]);
+   const [ultimaPagina, setUltimaPagina] = useState(1);
 
    useEffect(() => {
-      console.log('useEffect ejecutado');
+      const query = new URLSearchParams({
+         page: paginaActual.toString(),
+         limit: ITEMS_POR_PAGINA.toString(),
+      }).toString();
+
       axiosInstance
-         .get('/classes')
+         .post(`/filters?${query}`, { ...filtros })
          .then((res) => {
-            console.log('Respuesta del backend:', res.data);
-            setClases(res.data);
+            console.log('Respuesta backend:', res.data);
+            setCursosPaginados(res.data.data);
+            setUltimaPagina(res.data.lastPage);
          })
          .catch((err) => {
-            console.error('Error al obtener las clases:', err);
+            console.log('Error al filtrar!', err);
          });
-   }, []);
-
-   console.log(clases);
-
-   const cursosFiltrados = clases.filter((curso) => {
-      const coincideCategoria = categoria
-         ? curso.category.name === categoria
-         : true;
-      const coincideMateria = materiaSeleccionada
-         ? curso.materia === materiaSeleccionada
-         : true;
-      return coincideCategoria && coincideMateria;
-   });
-
-   const totalPaginas = Math.ceil(cursosFiltrados.length / ITEMS_POR_PAGINA);
-
-   const cursosPaginados = cursosFiltrados.slice(
-      (paginaActual - 1) * ITEMS_POR_PAGINA,
-      paginaActual * ITEMS_POR_PAGINA
-   );
+   }, [filtros, paginaActual]);
 
    const handlePaginaAnterior = () => {
-      if (paginaActual > 1) setPaginaActual(paginaActual - 1);
+      if (paginaActual > 1) {
+         setPaginaActual((prev) => prev - 1);
+      }
    };
 
    const handlePaginaSiguiente = () => {
-      if (paginaActual < totalPaginas) setPaginaActual(paginaActual + 1);
+      if (paginaActual < ultimaPagina) {
+         setPaginaActual((prev) => prev + 1);
+      }
    };
 
    const handleLimpiarFiltros = () => {
-      setPaginaActual(1);
       onCategoriaSeleccionada('');
       onCategoriaActiva('');
       onMateriaSeleccionada('');
+      setFiltros({ search: '', category: '', teacherId: '' });
    };
 
    return (
@@ -112,11 +109,11 @@ const CursosLista = ({
                      ◀
                   </button>
                   <span>
-                     Página {paginaActual} de {totalPaginas}
+                     Página {paginaActual} de {ultimaPagina}
                   </span>
                   <button
                      onClick={handlePaginaSiguiente}
-                     disabled={paginaActual === totalPaginas}
+                     disabled={paginaActual === ultimaPagina}
                      className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
                   >
                      ▶
@@ -149,7 +146,7 @@ const CursosLista = ({
                      </div>
                      <div className="flex flex-col">
                         <h3>Categoría: {curso.category.name}</h3>
-                        {/* <h3>Materia: {curso.materia}</h3> */}
+                        <h3>Materia: {curso.materia}</h3>
                      </div>
                   </div>
                </Link>
@@ -164,11 +161,11 @@ const CursosLista = ({
                      ◀
                   </button>
                   <span>
-                     Página {paginaActual} de {totalPaginas}
+                     Página {paginaActual} de {ultimaPagina}
                   </span>
                   <button
                      onClick={handlePaginaSiguiente}
-                     disabled={paginaActual === totalPaginas}
+                     disabled={paginaActual === ultimaPagina}
                      className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
                   >
                      ▶
