@@ -32,7 +32,6 @@ const CategoriaScroll = ({
       axiosInstance
          .get('/categories')
          .then((res) => {
-            console.log(res.data);
             setCategorias(res.data);
          })
          .catch((err) => {

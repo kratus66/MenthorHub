@@ -13,7 +13,7 @@ const CategoriaCard: React.FC<Props> = ({
 }) => {
    return (
       <div
-         className={`h-[8rem] aspect-square border-2 m-1 rounded-3xl relative overflow-clip ${
+         className={`h-[8rem] aspect-square border-2 m-1 rounded-3xl relative overflow-clip hover:brightness-110 ${
             seleccionada
                ? 'border-4 border-blue-700'
                : 'border-4 border-transparent'

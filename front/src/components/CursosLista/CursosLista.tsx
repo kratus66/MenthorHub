@@ -3,11 +3,10 @@ import { Link } from 'react-router-dom';
 import axiosInstance from '../../services/axiosInstance';
 
 type CategoriaType = {
-   categoria: string;
-   materiaSeleccionada: string;
    onCategoriaSeleccionada: (categoriaId: string) => void;
    onCategoriaActiva: (categoriaId: string) => void;
    onMateriaSeleccionada: (materiaId: string) => void;
+   filtros: { search?: string; category?: string; teacherId?: string };
 };
 
 type clasesType = {
@@ -42,11 +41,10 @@ type clasesType = {
 const ITEMS_POR_PAGINA = 10;
 
 const CursosLista = ({
-   categoria,
-   materiaSeleccionada,
    onCategoriaSeleccionada,
    onCategoriaActiva,
    onMateriaSeleccionada,
+   filtros,
 }: CategoriaType) => {
    const [paginaActual, setPaginaActual] = useState(1);
    const [clases, setClases] = useState<clasesType[]>([]);
@@ -62,19 +60,21 @@ const CursosLista = ({
          });
    }, []);
 
-   const cursosFiltrados = clases.filter((curso) => {
-      const coincideCategoria = categoria
-         ? curso.category.name === categoria
-         : true;
-      const coincideMateria = materiaSeleccionada
-         ? curso.materia === materiaSeleccionada
-         : true;
-      return coincideCategoria && coincideMateria;
-   });
+   useEffect(() => {
+      axiosInstance
+         .post('/filters', filtros)
+         .then((res) => {
+            setClases(res.data.data);
+            setPaginaActual(1);
+         })
+         .catch((err) => {
+            console.log('Error al filtrar!', err);
+         });
+   }, [filtros]);
 
-   const totalPaginas = Math.ceil(cursosFiltrados.length / ITEMS_POR_PAGINA);
+   const totalPaginas = Math.ceil(clases.length / ITEMS_POR_PAGINA);
 
-   const cursosPaginados = cursosFiltrados.slice(
+   const cursosPaginados = clases.slice(
       (paginaActual - 1) * ITEMS_POR_PAGINA,
       paginaActual * ITEMS_POR_PAGINA
    );

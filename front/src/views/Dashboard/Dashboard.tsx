@@ -1,9 +1,26 @@
 import MateriasScroll from '../../components/MateriasScroll/MateriasScroll';
 import CategoriaScroll from '../../components/CategoriaScroll/CategoriaScroll';
 import CursosLista from '../../components/CursosLista/CursosLista';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-const Dashboard = () => {
+type DashboardProps = {
+   filtros: {
+      search?: string;
+      category?: string;
+      teacherId?: string;
+      materia?: string;
+   };
+   setFiltros: React.Dispatch<
+      React.SetStateAction<{
+         search?: string;
+         category?: string;
+         teacherId?: string;
+         materia?: string;
+      }>
+   >;
+};
+
+const Dashboard = ({ filtros, setFiltros }: DashboardProps) => {
    const [categoriaSeleccionada, setCategoriaSeleccionada] =
       useState<string>('');
    const [categoriaActiva, setCategoriaActiva] = useState<string | null>(null);
@@ -11,6 +28,14 @@ const Dashboard = () => {
    const [materiasVisibles, setMateriasVisibles] = useState<
       { id: string; descripcion: string }[]
    >([]);
+
+   useEffect(() => {
+      setFiltros((prev) => ({
+         ...prev,
+         ...(categoriaSeleccionada && { category: categoriaSeleccionada }),
+         search: undefined,
+      }));
+   }, [categoriaSeleccionada]);
 
    return (
       <>
@@ -29,11 +54,10 @@ const Dashboard = () => {
                   materiaSeleccionada={materiaSeleccionada}
                />
                <CursosLista
-                  categoria={categoriaSeleccionada}
-                  materiaSeleccionada={materiaSeleccionada}
                   onCategoriaSeleccionada={setCategoriaSeleccionada}
                   onMateriaSeleccionada={setMateriaSeleccionada}
                   onCategoriaActiva={setCategoriaActiva}
+                  filtros={filtros}
                />
             </div>
             <div className="h-[calc(100% - 68px)] w-1/4 m-4 bg-[#f3f4f6] rounded-xl">
