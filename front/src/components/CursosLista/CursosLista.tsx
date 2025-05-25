@@ -59,6 +59,10 @@ const CursosLista = ({
    const [ultimaPagina, setUltimaPagina] = useState(1);
 
    useEffect(() => {
+      setPaginaActual(1);
+   }, [filtros]);
+
+   useEffect(() => {
       const query = new URLSearchParams({
          page: paginaActual.toString(),
          limit: ITEMS_POR_PAGINA.toString(),
