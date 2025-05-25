@@ -39,8 +39,8 @@ export class SubmissionsController {
   constructor(private submissionsService: SubmissionsService) {}
 
 @Post()
-@UseGuards(JwtAuthGuard, RoleGuard)
-@Roles(Role.Student)
+// @UseGuards(JwtAuthGuard, RoleGuard)
+// @Roles(Role.Student)
 @UseInterceptors(CloudinaryFileInterceptor)
 @ApiConsumes('multipart/form-data')
 @ApiOperation({ summary: 'Crear una entrega con archivo (solo estudiantes)' })
@@ -60,10 +60,12 @@ async create(
   @Req() req: any,
 ) {
   try {
+
     const fileUrl = file?.path || 'https://cloudinary.com/fake-file.pdf';
+    const classId = req.body.classId || req.body['classId']; // Ajusta según cómo recibas classId
 
     return await this.submissionsService.create(
-      { content: fileUrl, taskId },
+      { content: fileUrl, taskId, classId },
       req.user.userId,
     );
   } catch (error) {
