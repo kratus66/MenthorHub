@@ -52,7 +52,7 @@ export class AuthService {
       provincia: dto.province,
       localidad: dto.location,
       isEmailConfirmed: true,
-      isOauth:false,
+      isOauth:dto.isOauth,
     });
   
     await this.usersRepository.save(newUser);

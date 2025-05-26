@@ -11,7 +11,6 @@ import {
   BadRequestException,
   NotFoundException,
   Query,
-  UnauthorizedException,
   Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -34,6 +33,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { Request, Response } from 'express';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -42,17 +42,28 @@ export class AuthController {
     private jwtService: JwtService,
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
-
+  @Post('register')
+  @UseInterceptors(CloudinaryFileInterceptor('profileImage'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: RegisterDto })
   async register(
     @Body() dto: RegisterDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
     console.log('📨 Body:', dto);
     console.log('📷 Imagen recibida:', file);
-    return this.authService.register(dto, file?.path);
+  
+    // Convierte isOauth a boolean (true si viene como 'true' o true)
+    const isOauth = dto.isOauth === true;
+  
+    // Pasa dto con isOauth convertido a booleano
+    const registrationDto = {
+      ...dto,
+      isOauth,
+    };
+  
+    return this.authService.register(registrationDto, file?.path);
   }
-
-  // ⛔ Endpoint de confirmación de email — actualmente deshabilitado
   /*
   @Get('confirm-email')
   async confirmEmail(@Query('token') token: string) {
@@ -74,7 +85,6 @@ export class AuthController {
   }
   */
 
-
   @Post('login')
   @ApiOperation({ summary: 'Iniciar sesión' })
   @ApiBody({ type: LoginDto })
@@ -84,7 +94,6 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
-  // 🔹 Inicio de OAuth
   @Get('google')
   @UseGuards(AuthGuard('google'))
   googleLogin() {}
@@ -93,7 +102,6 @@ export class AuthController {
   @UseGuards(AuthGuard('github'))
   githubLogin() {}
 
-  // 🔹 Callback OAuth
   @Get('google/redirect')
   @UseGuards(AuthGuard('google'))
   async googleRedirect(
@@ -101,18 +109,15 @@ export class AuthController {
     @Res() res: Response
   ) {
     const result = await this.authService.handleOAuthProcess(req.user, 'google');
-  
-    if (result.shouldCompleteProfile) {
-      // Mandas la info OAuth para que el frontend muestre el formulario de registro normal
-      const userInfo = encodeURIComponent(JSON.stringify(result.oauthUserInfo || result.user));
-      return res.redirect(`http://localhost:3001/register?userInfo=${userInfo}`);
-    }
-  
-    // Usuario ya registrado y perfil completo, rediriges a login con su info
-    const userInfo = encodeURIComponent(JSON.stringify(result.user));
-    return res.redirect(`http://localhost:3001/login?userInfo=${userInfo}`);
-  }
+    const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3001';
+    const userInfo = encodeURIComponent(JSON.stringify(result.oauthUserInfo || result.user));
 
+    if (result.shouldCompleteProfile) {
+      return res.redirect(`${FRONTEND_URL}/register?userInfo=${userInfo}`);
+    }
+
+    return res.redirect(`${FRONTEND_URL}/login?userInfo=${userInfo}`);
+  }
 
   @Get('github/redirect')
   @UseGuards(AuthGuard('github'))
@@ -121,18 +126,13 @@ export class AuthController {
     @Res() res: Response
   ) {
     const result = await this.authService.handleOAuthProcess(req.user, 'github');
-  
+    const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3001';
+    const userInfo = encodeURIComponent(JSON.stringify(result.oauthUserInfo || result.user));
+
     if (result.shouldCompleteProfile) {
-      // Mandas la info OAuth para que el frontend muestre el formulario de registro normal
-      const userInfo = encodeURIComponent(JSON.stringify(result.oauthUserInfo || result.user));
-      return res.redirect(`http://localhost:3001/register?userInfo=${userInfo}`);
+      return res.redirect(`${FRONTEND_URL}/register?userInfo=${userInfo}`);
     }
-  
-    // Usuario ya registrado y perfil completo, rediriges a login con su info
-    const userInfo = encodeURIComponent(JSON.stringify(result.user));
-    return res.redirect(`http://localhost:3001/login?userInfo=${userInfo}`);
+
+    return res.redirect(`${FRONTEND_URL}/login?userInfo=${userInfo}`);
   }
-  
-
-
 }

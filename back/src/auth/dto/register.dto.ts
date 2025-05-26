@@ -8,6 +8,7 @@ import {
   IsIn,
   IsOptional,
   MaxLength,
+  IsBoolean,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -73,4 +74,9 @@ export class RegisterDto {
   @ApiProperty()
   @IsString()
   location: string;
+
+  @ApiProperty()
+  @IsBoolean()
+  @IsNotEmpty()
+  isOauth: boolean;
 }
