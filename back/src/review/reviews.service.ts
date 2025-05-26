@@ -22,10 +22,6 @@ export class ReviewsService {
       throw new BadRequestException('Solo los profesores pueden asignar calificaciones.');
     }
 
-    if (dto.type === 'review' && user.role !== 'student') {
-      throw new BadRequestException('Solo los estudiantes pueden dejar reseñas.');
-    }
-
     const review = new Review();
     review.rating = dto.rating;
     review.comment = dto.comment;
