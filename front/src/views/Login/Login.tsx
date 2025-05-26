@@ -53,7 +53,7 @@ export default function Login() {
                       alt="Github Sign In"
                     />
                   </a>
-                  <a
+{/*                   <a
                     href=""
                     className="flex justify-center items-center px-14 py-2 rounded-full border-2 hover:border-[#007AFF]"
                   >
@@ -64,7 +64,7 @@ export default function Login() {
                       src="/facebook-icon.svg"
                       alt="Facebook Sign In"
                     />
-                  </a>
+                  </a> */}
                 </div>
                 <p className="w-fit self-center">
                   ¿Aún no tienes cuenta?{" "}
