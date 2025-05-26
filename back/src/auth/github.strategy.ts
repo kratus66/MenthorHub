@@ -1,7 +1,8 @@
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Strategy } from 'passport-github';
 import { ConfigService } from '@nestjs/config';
+import fetch from 'node-fetch'; // Asegúrate de tener `node-fetch` instalado
 
 @Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
@@ -11,13 +12,26 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
       clientSecret: configService.get<string>('GITHUB_CLIENT_SECRET'),
       callbackURL: configService.get<string>('GITHUB_CALLBACK_URL'),
       scope: ['user:email'],
+      passReqToCallback: false,
     });
   }
 
   async validate(accessToken: string, refreshToken: string, profile: any) {
+    const emails = profile.emails;
+  
+    if (!emails || !Array.isArray(emails)) {
+      throw new UnauthorizedException('No se pudo obtener el correo desde GitHub');
+    }
+  
+    const primaryEmail = emails.find((e: any) => e.primary && e.verified) || emails[0];
+  
+    if (!primaryEmail || !primaryEmail.value) {
+      throw new UnauthorizedException('No se encontró un correo válido en GitHub');
+    }
+  
     return {
-      email: profile.emails[0].value,
-      displayName: profile.username || profile.displayName, // GitHub usa username
+      email: primaryEmail.value,
+      displayName: profile.username || profile.displayName,
       photo: profile.photos?.[0]?.value,
     };
   }

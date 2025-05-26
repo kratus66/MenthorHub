@@ -15,8 +15,14 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  async findAll(): Promise<User[]> {
-    return this.usersRepository.find({ where: { estado: true } });
+  async findAll(page = 1, limit = 10) {
+    const [data, total] = await this.usersRepository.findAndCount({
+      where: { estado: true },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return { data, total, page, limit };
   }
 
   async findById(id: string): Promise<User | null> {
@@ -24,26 +30,19 @@ export class UsersService {
   }
 
   async update(id: string, data: Partial<User>): Promise<User> {
-  const user = await this.usersRepository.findOne({ where: { id } });
-  if (!user) {
-    throw new Error('Usuario no encontrado');
+    const user = await this.usersRepository.findOne({ where: { id } });
+    if (!user) throw new Error('Usuario no encontrado');
+
+    if (data.estado !== undefined && data.estado !== user.estado) {
+      data.fechaCambioEstado = new Date();
+    }
+
+    await this.usersRepository.update(id, data);
+
+    const updated = await this.usersRepository.findOne({ where: { id } });
+    if (!updated) throw new Error('No se pudo recuperar el usuario actualizado');
+    return updated;
   }
-
-  if (data.estado !== undefined && data.estado !== user.estado) {
-    data.fechaCambioEstado = new Date();
-  }
-
-  await this.usersRepository.update(id, data);
-
-  const updated = await this.usersRepository.findOne({ where: { id } });
-  if (!updated) {
-    throw new Error('Error inesperado: no se pudo recuperar el usuario actualizado');
-  }
-
-  return updated;
-}
-
-
 
   async remove(id: string): Promise<void> {
     await this.usersRepository.update(id, {
@@ -51,15 +50,25 @@ export class UsersService {
       fechaCambioEstado: new Date(),
     });
   }
-  async getTeachers(): Promise<User[]> {
-    return this.usersRepository.find({
+
+  async getTeachers(page = 1, limit = 10) {
+    const [data, total] = await this.usersRepository.findAndCount({
       where: { role: 'teacher', estado: true },
+      skip: (page - 1) * limit,
+      take: limit,
     });
+
+    return { data, total, page, limit };
   }
 
-    async getStudents(): Promise<User[]> {
-    return this.usersRepository.find({
+  async getStudents(page = 1, limit = 10) {
+    const [data, total] = await this.usersRepository.findAndCount({
       where: { role: 'student', estado: true },
+      skip: (page - 1) * limit,
+      take: limit,
     });
+
+    return { data, total, page, limit };
   }
 }
+

@@ -1,13 +1,51 @@
 import MateriasScroll from '../../components/MateriasScroll/MateriasScroll';
 import CategoriaScroll from '../../components/CategoriaScroll/CategoriaScroll';
 import CursosLista from '../../components/CursosLista/CursosLista';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import type { CategoryType } from '../../types/CategoryType';
 
-const Dashboard = () => {
+type DashboardProps = {
+   filtros: {
+      search?: string;
+      category?: string;
+      teacherId?: string;
+      materia?: string;
+   };
+   setFiltros: React.Dispatch<
+      React.SetStateAction<{
+         search?: string;
+         category?: string;
+         teacherId?: string;
+         materia?: string;
+      }>
+   >;
+};
+
+const Dashboard = ({ filtros, setFiltros }: DashboardProps) => {
+   const [categoriasIniciales, setCategoriasIniciales] = useState<
+      CategoryType[]
+   >([]);
    const [categoriaSeleccionada, setCategoriaSeleccionada] =
       useState<string>('');
    const [categoriaActiva, setCategoriaActiva] = useState<string | null>(null);
    const [materiaSeleccionada, setMateriaSeleccionada] = useState('');
+   const [materiasVisibles, setMateriasVisibles] = useState<
+      { id: string; descripcion: string }[]
+   >([]);
+
+   useEffect(() => {
+      setFiltros((prev) => ({
+         ...prev,
+         ...(categoriaSeleccionada && { category: categoriaSeleccionada }),
+         search: undefined,
+      }));
+   }, [categoriaSeleccionada]);
+
+   useEffect(() => {
+      if (categoriasIniciales.length > 0 && categoriasIniciales[0].materias) {
+         setMateriasVisibles(categoriasIniciales[0].materias);
+      }
+   }, [categoriasIniciales]);
 
    return (
       <>
@@ -17,19 +55,21 @@ const Dashboard = () => {
                   onCategoriaSeleccionada={setCategoriaSeleccionada}
                   onMateriaSeleccionada={setMateriaSeleccionada}
                   onCategoriaActiva={setCategoriaActiva}
+                  setMateriasVisibles={setMateriasVisibles}
+                  setCategoriasIniciales={setCategoriasIniciales}
                   categoriaActiva={categoriaActiva || undefined}
                />
                <MateriasScroll
-                  categoria={categoriaSeleccionada}
+                  materias={materiasVisibles}
                   onMateriaSeleccionada={setMateriaSeleccionada}
                   materiaSeleccionada={materiaSeleccionada}
                />
                <CursosLista
-                  categoria={categoriaSeleccionada}
-                  materiaSeleccionada={materiaSeleccionada}
                   onCategoriaSeleccionada={setCategoriaSeleccionada}
                   onMateriaSeleccionada={setMateriaSeleccionada}
                   onCategoriaActiva={setCategoriaActiva}
+                  filtros={filtros}
+                  setFiltros={setFiltros}
                />
             </div>
             <div className="h-[calc(100% - 68px)] w-1/4 m-4 bg-[#f3f4f6] rounded-xl">

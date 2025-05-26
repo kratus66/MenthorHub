@@ -11,10 +11,13 @@ import {
   BadRequestException,
   NotFoundException,
   Query,
+  UnauthorizedException,
+  Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { OAuthCompleteDto } from './dto/OauthRegister.dto';
 import {
   ApiTags,
   ApiOperation,
@@ -28,6 +31,9 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { Request, Response } from 'express';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -36,6 +42,7 @@ export class AuthController {
     private jwtService: JwtService,
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
+
   @Post('register')
   @UseInterceptors(CloudinaryFileInterceptor('profileImage'))
   @ApiConsumes('multipart/form-data')
@@ -60,29 +67,34 @@ export class AuthController {
     },
   })
   @ApiResponse({ status: 201, description: 'Usuario registrado exitosamente' })
-  @ApiResponse({ status: 400, description: 'Datos inválidos o usuario ya existe' })
   async register(
     @Body() dto: RegisterDto,
     @UploadedFile() file: Express.Multer.File,
+    
   ) {
+    console.log('📨 Body:', dto);
+console.log('📷 Imagen recibida:', file);
     return this.authService.register(dto, file?.path);
   }
+
   @Get('confirm-email')
-async confirmEmail(@Query('token') token: string) {
-  try {
-    const payload = this.jwtService.verify(token, { secret: process.env.JWT_EMAIL_SECRET });
-    const user = await this.userRepository.findOneBy({ email: payload.email });
+  async confirmEmail(@Query('token') token: string) {
+    try {
+      const payload = this.jwtService.verify(token, {
+        secret: process.env.JWT_EMAIL_SECRET,
+      });
 
-    if (!user) throw new NotFoundException('Usuario no encontrado');
+      const user = await this.userRepository.findOneBy({ email: payload.email });
+      if (!user) throw new NotFoundException('Usuario no encontrado');
 
-    user.isEmailConfirmed = true;
-    await this.userRepository.save(user);
+      user.isEmailConfirmed = true;
+      await this.userRepository.save(user);
 
-    return { message: 'Correo confirmado correctamente' };
-  } catch (err) {
-    throw new BadRequestException('Token inválido o expirado');
+      return { message: 'Correo confirmado correctamente' };
+    } catch (err) {
+      throw new BadRequestException('Token inválido o expirado');
+    }
   }
-}
 
   @Post('login')
   @ApiOperation({ summary: 'Iniciar sesión' })
@@ -93,7 +105,7 @@ async confirmEmail(@Query('token') token: string) {
     return this.authService.login(loginDto);
   }
 
-  // 🔹 INICIO del flujo OAuth
+  // 🔹 Inicio de OAuth
   @Get('google')
   @UseGuards(AuthGuard('google'))
   googleLogin() {}
@@ -102,18 +114,62 @@ async confirmEmail(@Query('token') token: string) {
   @UseGuards(AuthGuard('github'))
   githubLogin() {}
 
-  // 🔹 CALLBACK de los providers
-@Get('google/redirect')
-@UseGuards(AuthGuard('google'))
-googleRedirect(@Req() req: any) {
-  return this.authService.handleOAuthLogin(req.user, 'google');
-}
+  // 🔹 Callback OAuth
+  @Get('google/redirect')
+  @UseGuards(AuthGuard('google'))
+  async googleRedirect(
+    @Req() req: Request & { user: any }, 
+    @Res() res: Response) {
+    const { shouldCompleteProfile, token } = await this.authService.handleOAuthLogin(req.user, 'google');
+  
+    if (shouldCompleteProfile) {
+      return res.redirect(`http://localhost:3001/oauth-complete?token=${token}`);
 
+    }
+  
+    return res.redirect(`http://localhost:3001/home?token=${token}`);
+  }
 
   @Get('github/redirect')
   @UseGuards(AuthGuard('github'))
-  githubRedirect(@Req() req: any) {
-    return this.authService.handleOAuthLogin(req.user, 'github');
+  async githubRedirect(
+    @Req() req: Request & { user: any }, 
+    @Res() res: Response
+  ) {
+    const { shouldCompleteProfile, token } = await this.authService.handleOAuthLogin(req.user, 'github');
+  
+    if (shouldCompleteProfile) {
+      return res.redirect(`http://localhost:3001/oauth-complete?token=${token}`);
+    }
+  
+    return res.redirect(`http://localhost:3001/home?token=${token}`);
   }
+  
+  @Post('oauth-complete')
+  @UseGuards(JwtAuthGuard) // Solo usuarios con token válido
+  @UseInterceptors(CloudinaryFileInterceptor('profileImage'))
+  async handleOAuthRegister(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() dto: OAuthCompleteDto,
+    @CurrentUser() user: { id: string; email: string; role: string },
+  ) {
+    console.log('Usuario extraído del token:', user);
+    const imageUrl = file?.path || undefined;
+    return this.authService.handleOAuthRegister(user.id, dto, imageUrl);
+  }
+
+
+
+@Get('test-oauth-token')
+async testOAuthToken() {
+  // Usuario simulado como si viniera de Google/GitHub
+  const fakeProfile = {
+    email: 'mentorhub.info@gmail.com',
+    displayName: 'MentorHub',
+    photo: 'https://example.com/photo.jpg',
+  };
+  const result = await this.authService.handleOAuthLogin(fakeProfile, 'google');
+  return result; // { token, shouldCompleteProfile }
 }
 
+}

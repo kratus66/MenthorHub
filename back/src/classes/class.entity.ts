@@ -12,7 +12,7 @@ import { User } from '../users/user.entity';
 import { Task } from '../task/task.entity';
 import { Materias } from '../materias/materias.entity';
 import { Category } from '../categorias/categorias.entity';
-
+import { Review } from '../review/review.entity';
 @Entity()
 export class Class {
   @PrimaryGeneratedColumn('uuid')
@@ -25,17 +25,20 @@ export class Class {
   description!: string;
 
   @Column({ nullable: true }) // 👈 solución rápida
-  sector!: string;
+  sector!: string; 
 
   @Column('text', { array: true, nullable: true })
   multimedia!: string[];
 
   @ManyToOne(() => User, (user) => user.classesTaught, { nullable: false })
   teacher!: User;
+  
+@ManyToMany(() => User, (user) => user.classesEnrolled)
+@JoinTable() 
+students!: User[];
 
-  @ManyToMany(() => User, (user) => user.classesEnrolled)
-  @JoinTable()
-  students!: User[];
+
+
 
   @OneToMany(() => Task, (task) => task.classRef)
   tasks!: Task[];
@@ -60,6 +63,9 @@ export class Class {
 
   @Column({ type: 'timestamp', nullable: true })
   fechaEliminado?: Date | null;
+
+  @OneToMany(() => Review, review => review.course)
+reviews: Review[];
 
 }
 

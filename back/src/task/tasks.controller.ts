@@ -8,6 +8,8 @@ import {
   Delete,
   UseGuards,
   InternalServerErrorException,
+  UnauthorizedException,
+  Query,
 } from '@nestjs/common';
 import { TasksService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -23,20 +25,21 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { Task } from './task.entity';
-import { Roles } from '../decorator/role';
+import { Roles } from '../common/decorators/role';
 import { UpdateTaskDto } from './dto/update-task.dto';
 
 @ApiTags('Tasks')
-@ApiBearerAuth('JWT-auth')
-@UseGuards(JwtAuthGuard, RoleGuard)
+// @ApiBearerAuth('JWT-auth')
+// @UseGuards(JwtAuthGuard, RoleGuard)
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post()
-  @Roles(Role.Teacher) // ✅ corregido
+  @Roles(Role.Teacher)
   @ApiOperation({ summary: 'Crear una tarea (solo para profesores)' })
   @ApiBody({ type: CreateTaskDto })
   @ApiResponse({ status: 201, description: 'Tarea creada exitosamente', type: Task })
@@ -47,44 +50,75 @@ export class TasksController {
       throw new InternalServerErrorException('Error al crear la tarea');
     }
   }
+
   @Get('eliminadas')
-  @Roles(Role.Teacher)
+  // @Roles(Role.Teacher)
   @ApiOperation({ summary: 'Ver tareas eliminadas del profesor autenticado' })
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
   @ApiResponse({ status: 200, description: 'Listado de tareas eliminadas', type: [Task] })
-  async findEliminadas(@CurrentUser() user: User) {
-  try {
-    return await this.tasksService.findEliminadasByTeacher(user.id);
-  } catch (error) {
-    throw new InternalServerErrorException('Error al obtener tareas eliminadas');
-  }
+  async findEliminadas(
+    @CurrentUser() user: User,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10
+  ) {
+    try {
+      if (!user) throw new UnauthorizedException('No autenticado');
+      const tasks = await this.tasksService.findEliminadasByTeacher(user.id, Number(page), Number(limit));
+      if (tasks.data.length === 0) {
+      return { message: 'No se encontraron tareas asignadas', ...tasks };
 }
+return tasks;
+
+    } catch (error) {
+      throw new InternalServerErrorException('Error al obtener tareas eliminadas');
+    }
+  }
 
   @Get('teacher')
-  @Roles(Role.Teacher) // ✅ corregido
-  @ApiOperation({ summary: 'Obtener tareas creadas por el profesor autenticado' })
+  // @Roles(Role.Teacher)
+  @ApiOperation({ summary: 'Obtener tareas del profesor con paginación' })
+  @ApiQuery({ name: 'page', required: false, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, example: 10 })
   @ApiResponse({ status: 200, description: 'Listado de tareas', type: [Task] })
-  async findAllTeacher(@CurrentUser() user: User) {
+  async findAllTeacher(
+    @CurrentUser() user: User,
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10',
+  ) {
     try {
-      return await this.tasksService.findByTeacher(user.id);
+      if (!user) throw new UnauthorizedException('No autenticado');
+      const tasks = await this.tasksService.findByTeacher(user.id, parseInt(page), parseInt(limit));
+      if (!tasks.length) return { message: 'No se encontraron tareas' };
+      return tasks;
     } catch (error) {
       throw new InternalServerErrorException('Error al obtener las tareas del profesor');
     }
   }
 
   @Get('student')
-  @Roles(Role.Student) // ✅ corregido
+  // @Roles(Role.Student)
   @ApiOperation({ summary: 'Obtener tareas asignadas al estudiante autenticado' })
+  @ApiQuery({ name: 'page', required: false, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, example: 10 })
   @ApiResponse({ status: 200, description: 'Listado de tareas', type: [Task] })
-  async findAllStudent(@CurrentUser() user: User) {
+  async findAllStudent(
+    @CurrentUser() user: User,
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10',
+  ) {
     try {
-      return await this.tasksService.findByStudent(user.id);
+      if (!user) throw new UnauthorizedException('No autenticado');
+      const tasks = await this.tasksService.findByStudent(user.id, parseInt(page), parseInt(limit));
+      if (!tasks.length) return { message: 'No se encontraron tareas asignadas' };
+      return tasks;
     } catch (error) {
       throw new InternalServerErrorException('Error al obtener las tareas del estudiante');
     }
   }
 
   @Delete(':id')
-  @Roles(Role.Teacher) // ✅ corregido
+  @Roles(Role.Teacher)
   @ApiOperation({ summary: 'Eliminar una tarea (solo si pertenece al profesor)' })
   @ApiParam({ name: 'id', description: 'UUID de la tarea a eliminar' })
   @ApiResponse({ status: 200, description: 'Tarea eliminada' })
@@ -102,33 +136,28 @@ export class TasksController {
   @ApiParam({ name: 'id', description: 'UUID de la tarea' })
   @ApiResponse({ status: 200, description: 'Tarea restaurada exitosamente', type: Task })
   async restore(@Param('id') id: string) {
-  try {
-    return await this.tasksService.restore(id);
-  } catch (error) {
-    throw new InternalServerErrorException('Error al restaurar la tarea');
+    try {
+      return await this.tasksService.restore(id);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al restaurar la tarea');
+    }
+  }
+
+  @Put(':id')
+  @Roles(Role.Teacher)
+  @ApiOperation({ summary: 'Actualizar una tarea (solo el profesor dueño)' })
+  @ApiParam({ name: 'id', description: 'UUID de la tarea' })
+  @ApiBody({ type: UpdateTaskDto })
+  @ApiResponse({ status: 200, description: 'Tarea actualizada exitosamente', type: Task })
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateTaskDto,
+    @CurrentUser() user: User,
+  ) {
+    try {
+      return await this.tasksService.updateByTeacher(user.id, id, dto);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al actualizar la tarea');
+    }
   }
 }
-@Put(':id')
-@Roles(Role.Teacher)
-@ApiOperation({ summary: 'Actualizar una tarea (solo el profesor dueño)' })
-@ApiParam({ name: 'id', description: 'UUID de la tarea' })
-@ApiBody({ type: UpdateTaskDto })
-@ApiResponse({ status: 200, description: 'Tarea actualizada exitosamente', type: Task })
-async update(
-  @Param('id') id: string,
-  @Body() dto: UpdateTaskDto,
-  @CurrentUser() user: User
-) {
-  try {
-    return await this.tasksService.updateByTeacher(user.id, id, dto);
-  } catch (error) {
-    throw new InternalServerErrorException('Error al actualizar la tarea');
-  }
-}
-
-
-
-
-
-}
-

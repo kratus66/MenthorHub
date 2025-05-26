@@ -47,21 +47,30 @@ export class CreateUserDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   estudios?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   provincia?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   localidad?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsNotEmpty()
   avatarId?: number;
 
   @ApiPropertyOptional({ type: 'string', format: 'binary' })
   @IsOptional()
+  @IsString()
+  @IsNotEmpty()
   profileImage?: string;
-}
+} 

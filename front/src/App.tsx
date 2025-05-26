@@ -19,6 +19,7 @@ import Dashboard from './views/Dashboard/Dashboard';
 import Terminos from './views/terminos-condiciones/Terminos';
 import Layout from './components/layout/Layout';
 import ConoceMas from './views/ConoceMas.tsx/ConoceMas';
+import CursoDetalle from './views/CursoDetalles/CursoDetalles';
 // import CursoDetalle from './views/CursoDetalles/CursoDetalles';
 
 const AppWrapper = () => {
@@ -36,10 +37,16 @@ const AppWrapper = () => {
    const location = useLocation();
    const noNavFooter = ['/login', '/register', '/'].includes(location.pathname);
 
+   const [filtros, setFiltros] = useState<{
+      search?: string;
+      category?: string;
+      teacherId?: string;
+   }>({});
+
    return (
       <>
          {/* {!noNavFooter && <NavBar user={user} />} // para evitar "Property 'user' does not exist on type 'IntrinsicAttributes'." */}
-         {!noNavFooter && <NavBar />}
+         {!noNavFooter && <NavBar onSetFiltros={setFiltros} />}
 
          {noNavFooter ? (
             <Routes>
@@ -60,8 +67,13 @@ const AppWrapper = () => {
                      <Route path="/clases/unirme" element={<UnirmeClase />} />
                   )}
 
-                  <Route path="/panel" element={<Dashboard />} />
-                  {/* <Route path="/cursos/:id" element={<CursoDetalle />} /> */}
+                  <Route
+                     path="/panel"
+                     element={
+                        <Dashboard filtros={filtros} setFiltros={setFiltros} />
+                     }
+                  />
+                  <Route path="/cursos/:id" element={<CursoDetalle />} />
                   <Route path="/about-us" element={<AboutUs />} />
                   <Route path="/conoce-mas" element={<ConoceMas />} />
 

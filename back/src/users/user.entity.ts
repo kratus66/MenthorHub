@@ -15,7 +15,7 @@ import { Task } from '../task/task.entity';
 import { Notification } from '../notifications/notification.entity';
 import { IsEmail } from 'class-validator';
 import { Exclude } from 'class-transformer';
-
+import { Review } from '../review/review.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -67,15 +67,12 @@ export class User {
   @OneToMany(() => Payment, (payment) => payment.user)
   payments!: Payment[];
 
-  @ManyToMany(() => Class, (cls) => cls.students)
-  @JoinTable()
-  classesEnrolled!: Class[];
 
   @OneToMany(() => Submission, (submission) => submission.student)
   submissions!: Submission[];
 
-  @OneToMany(() => Task, (task) => task.student)
-  tasks!: Task[];
+  // @OneToMany(() => Task, (task) => task.student)
+  // tasks!: Task[];
 
   @OneToMany(() => Notification, (n) => n.user)
   notifications: Notification[];
@@ -85,6 +82,22 @@ export class User {
 
   @Column({ default: false })
   isEmailConfirmed: boolean;
+
+
+    @OneToMany(() => Review, review => review.author)
+  reviewsGiven: Review[];
+  
+  @OneToMany(() => Review, review => review.targetStudent)
+  reviewsReceived: Review[];
+  
+  @Column({ default: false })
+  isPaid: boolean;
+
+  
+@ManyToMany(() => Class, (cls) => cls.students)
+classesEnrolled!: Class[];
+
+
 }
 
 

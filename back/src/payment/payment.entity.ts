@@ -6,6 +6,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { User } from '../users/user.entity';
+import { CreateDateColumn } from 'typeorm';
 
 export enum PaymentStatus {
   PENDING = 'pending',
@@ -45,4 +46,8 @@ export class Payment {
 
   @ManyToOne(() => User, (user) => user.payments)
   user: User;
+
+  @CreateDateColumn()
+createdAt: Date;
+
 }

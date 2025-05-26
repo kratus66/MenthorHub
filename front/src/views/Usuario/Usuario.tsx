@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useRef, useState, useEffect } from 'react'
 import { Check, Camera } from 'lucide-react'
 
@@ -31,7 +32,6 @@ const UserProfile: React.FC = () => {
     subscriptionActive: true,
   }
 
- 
   const [profilePic, setProfilePic] = useState<string>(() => {
     return localStorage.getItem('profilePic') || 'https://i.pravatar.cc/150?img=3'
   })

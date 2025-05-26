@@ -1,10 +1,11 @@
+// src/submission/dto/CreateSubmissions.dto.ts
 import { IsString, IsUUID } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateSubmissionDto {
   @ApiProperty({
-    example: 'Esta es mi respuesta a la tarea...',
-    description: 'Contenido enviado por el usuario como respuesta a una tarea',
+    example: 'https://res.cloudinary.com/.../entrega123.pdf',
+    description: 'URL del archivo subido como entrega',
   })
   @IsString()
   content: string;
@@ -14,5 +15,12 @@ export class CreateSubmissionDto {
     description: 'UUID de la tarea a la que corresponde la entrega',
   })
   @IsUUID('4', { message: 'taskId debe ser un UUID válido' })
-  taskId: number;
+  taskId: string;
+
+  @ApiProperty({
+    example: 'c1e3fa2e-15d1-402d-bbd6-34e7f3a456f7',
+    description: 'UUID de la clase a la que pertenece la entrega',
+  })
+  @IsUUID('4', { message: 'classId debe ser un UUID válido' })
+  classId: string;
 }

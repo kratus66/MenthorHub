@@ -1,4 +1,3 @@
-// src/submission/submission.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -7,6 +6,8 @@ import { CreateSubmissionDto } from './dto/CreateSubmissions.dto';
 import { UpdateSubmissionDto } from './dto/updatesubmission.dto';
 import { User } from '../users/user.entity';
 import { Task } from '../task/task.entity';
+import { cloudinary } from '../config/cloudinary.config';
+import { Class } from '../classes/class.entity';
 
 @Injectable()
 export class SubmissionsService {
@@ -19,18 +20,30 @@ export class SubmissionsService {
 
     @InjectRepository(Task)
     private taskRepo: Repository<Task>,
+
+    @InjectRepository(Class)
+    private ClassRepo: Repository<Class>
   ) {}
 
   async create(dto: CreateSubmissionDto, studentId: string) {
     const student = await this.userRepo.findOne({ where: { id: studentId } });
     const task = await this.taskRepo.findOne({ where: { id: dto.taskId.toString() } });
+    const clase = await this.ClassRepo.findOne({where: {id:dto.classId.toString()}})
 
-    if (!student || !task) {
+    if (!student || !task || !clase) {
       throw new NotFoundException('Estudiante o tarea no encontrados');
     }
 
+      
+    // ⏬ Cargar a Cloudinary en la carpeta adecuada
+    const folderName = `classes/${clase.title.replace(/ /g, '_')}-${clase.id}`;
+    const uploaded = await cloudinary.uploader.upload(dto.content, {
+      folder: folderName,
+      resource_type: 'auto',
+    });
+
     const submission = this.submissionsRepo.create({
-      content: dto.content, // viene como file.path desde Cloudinary
+      content: uploaded.secure_url, // viene como file.path desde Cloudinary
       student,
       task,
     });
@@ -38,16 +51,31 @@ export class SubmissionsService {
     return this.submissionsRepo.save(submission);
   }
 
-  findAll() {
-  return this.submissionsRepo.find({
-    where: { estado: true },
-    relations: ['student', 'task'],
-  });
-}
+  async findAll(page = 1, limit = 10) {
+    const [data, total] = await this.submissionsRepo.findAndCount({
+      where: { estado: true },
+      relations: ['student', 'task'],
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return { data, total, page, limit };
+  }
 
+  async findEliminadas(page = 1, limit = 10) {
+    const [data, total] = await this.submissionsRepo.findAndCount({
+      where: { estado: false },
+      relations: ['student', 'task'],
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return { data, total, page, limit };
+  }
 
-  findOne(id: string) {
-    return this.submissionsRepo.findOne({ where: { id }, relations: ['student', 'task'] });
+  async findOne(id: string) {
+    return this.submissionsRepo.findOne({
+      where: { id },
+      relations: ['student', 'task'],
+    });
   }
 
   async update(id: string, dto: UpdateSubmissionDto) {
@@ -58,15 +86,12 @@ export class SubmissionsService {
     return this.submissionsRepo.save(submission);
   }
 
-  
-
   async findByStudent(studentId: string) {
-  return this.submissionsRepo.find({
-    where: { student: { id: studentId }, estado: true },
-    relations: ['task'],
-  });
-}
-
+    return this.submissionsRepo.find({
+      where: { student: { id: studentId }, estado: true },
+      relations: ['task'],
+    });
+  }
 
   async findByTask(taskId: string) {
     return this.submissionsRepo.find({
@@ -76,36 +101,29 @@ export class SubmissionsService {
   }
 
   async remove(id: string) {
-  const submission = await this.submissionsRepo.findOne({ where: { id } });
+    const submission = await this.submissionsRepo.findOne({ where: { id } });
 
-  if (!submission) {
-    throw new NotFoundException(`Submission with id ${id} not found`);
+    if (!submission) {
+      throw new NotFoundException(`Submission with id ${id} not found`);
+    }
+
+    submission.estado = false;
+    submission.fechaEliminado = new Date();
+
+    return this.submissionsRepo.save(submission);
   }
 
-  submission.estado = false;
-  submission.fechaEliminado = new Date();
+  async restore(id: string): Promise<Submission> {
+    const submission = await this.submissionsRepo.findOne({ where: { id } });
 
-  return this.submissionsRepo.save(submission);
-}
+    if (!submission) {
+      throw new NotFoundException(`Submission con id ${id} no encontrada`);
+    }
 
-async restore(id: string): Promise<Submission> {
-  const submission = await this.submissionsRepo.findOne({ where: { id } });
+    submission.estado = true;
+    submission.fechaEliminado = null;
 
-  if (!submission) {
-    throw new NotFoundException(`Submission con id ${id} no encontrada`);
+    return this.submissionsRepo.save(submission);
   }
-
-  submission.estado = true;
-  submission.fechaEliminado = null;
-
-  return this.submissionsRepo.save(submission);
 }
 
-  async findEliminadas(): Promise<Submission[]> {
-  return this.submissionsRepo.find({
-    where: { estado: false },
-    relations: ['student', 'task'],
-  });
-}
-
-}

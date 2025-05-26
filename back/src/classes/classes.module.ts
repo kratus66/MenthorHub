@@ -6,8 +6,9 @@ import { Class } from './class.entity';
 import { User } from '../users/user.entity';
 import { Category } from '../categorias/categorias.entity';
 import { Materias } from '../materias/materias.entity';
+import { Payment } from '../payment/payment.entity';
 @Module({
-  imports: [TypeOrmModule.forFeature([Class, User, Category, Materias])], 
+  imports: [TypeOrmModule.forFeature([Class, User, Category, Materias,Payment])], 
   controllers: [ClassesController],
   providers: [ClassesService],
 })

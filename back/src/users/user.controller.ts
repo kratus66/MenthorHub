@@ -6,6 +6,7 @@ import {
   Delete,
   Param,
   Body,
+  Query,
   ParseUUIDPipe,
   InternalServerErrorException,
   UseGuards,
@@ -20,10 +21,11 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RoleGuard } from '../common/guards/role.guard';
-import { Roles } from '../decorator/role'; // ✅ Asegúrate que apunta al decorador, no al enum
+import { Roles } from '../common/decorators/role'; // ✅ Asegúrate que apunta al decorador, no al enum
 import { Role } from '../common/constants/roles.enum'; // ✅ Enum con roles
 
 @ApiTags('Usuarios')
@@ -31,7 +33,6 @@ import { Role } from '../common/constants/roles.enum'; // ✅ Enum con roles
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // 👤 Registro abierto (no autenticado)
   @Post()
   @ApiOperation({ summary: 'Crear un nuevo usuario' })
   @ApiBody({ type: CreateUserDto })
@@ -44,54 +45,61 @@ export class UsersController {
     }
   }
 
-  // 🔐 Solo admin
   /* @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Admin) */
   @Get()
-  @ApiOperation({ summary: 'Obtener todos los usuarios' })
+  @ApiOperation({ summary: 'Obtener todos los usuarios con paginación' })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiResponse({ status: 200, description: 'Lista de usuarios', type: [User] })
-  async findAll(): Promise<User[]> {
+  async findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
     try {
-      return await this.usersService.findAll();
+      const result = await this.usersService.findAll(Number(page), Number(limit));
+      if (result.data.length === 0) return { message: 'No se encontraron usuarios', ...result };
+      return result;
     } catch (error) {
       throw new InternalServerErrorException('Error al obtener los usuarios');
     }
   }
 
-  // 🔐 Solo admin
   /* @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Admin) */
   @Get('teacher')
-  @ApiOperation({ summary: 'Obtener todos los usuarios por el rol de teacher' })
-  async getTeachers() {
-    const teachers = await this.usersService.getTeachers();
-    if (!teachers) {
-      throw new InternalServerErrorException('No hay profesores registrados');
+  @ApiOperation({ summary: 'Obtener usuarios con rol de teacher' })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  async getTeachers(@Query('page') page = 1, @Query('limit') limit = 10) {
+    try {
+      const result = await this.usersService.getTeachers(Number(page), Number(limit));
+      if (result.data.length === 0) return { message: 'No se encontraron profesores', ...result };
+      return result;
+    } catch (error) {
+      throw new InternalServerErrorException('Error al obtener profesores');
     }
-    return teachers;
   }
 
-  // 🔐 Solo admin
   /* @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Admin) */
   @Get('students')
-  @ApiOperation({ summary: 'Obtener todos los usuarios por el rol de student' })
-  async getStudents() {
-    const students = await this.usersService.getStudents();
-    if (!students) {
-      throw new InternalServerErrorException('No hay estudiantes registrados');
+  @ApiOperation({ summary: 'Obtener usuarios con rol de student' })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  async getStudents(@Query('page') page = 1, @Query('limit') limit = 10) {
+    try {
+      const result = await this.usersService.getStudents(Number(page), Number(limit));
+      if (result.data.length === 0) return { message: 'No se encontraron estudiantes', ...result };
+      return result;
+    } catch (error) {
+      throw new InternalServerErrorException('Error al obtener estudiantes');
     }
-    return students;
   }
 
-  // 🔐 Solo admin
   /* @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Admin) */
   @Get(':id')
   @ApiOperation({ summary: 'Obtener un usuario por ID' })
-  @ApiParam({ name: 'id', description: 'UUID del usuario', type: String })
+  @ApiParam({ name: 'id', description: 'UUID del usuario' })
   @ApiResponse({ status: 200, description: 'Usuario encontrado', type: User })
-  @ApiResponse({ status: 404, description: 'Usuario no encontrado' })
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<User | null> {
     try {
       return await this.usersService.findById(id);
@@ -100,12 +108,11 @@ export class UsersController {
     }
   }
 
-  // 🔐 Solo admin
   /* @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Admin) */
   @Put(':id')
   @ApiOperation({ summary: 'Actualizar un usuario' })
-  @ApiParam({ name: 'id', description: 'UUID del usuario', type: String })
+  @ApiParam({ name: 'id', description: 'UUID del usuario' })
   @ApiBody({ type: UpdateUserDto })
   @ApiResponse({ status: 200, description: 'Usuario actualizado', type: User })
   async update(
@@ -119,12 +126,11 @@ export class UsersController {
     }
   }
 
-  // 🔐 Solo admin
   @Delete(':id')
   /* @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Admin) */
   @ApiOperation({ summary: 'Eliminar un usuario' })
-  @ApiParam({ name: 'id', description: 'UUID del usuario', type: String })
+  @ApiParam({ name: 'id', description: 'UUID del usuario' })
   @ApiResponse({ status: 200, description: 'Usuario eliminado' })
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     try {
@@ -132,6 +138,6 @@ export class UsersController {
     } catch (error) {
       throw new InternalServerErrorException('Error al eliminar el usuario');
     }
-  } 
+  }
 }
 

@@ -1,18 +1,52 @@
 [
-  {
-    "id": "e08c1af0-ff11-4242-8d03-2e368131a391",
-    "name": "Salud"
-  },
-  {
-    "id": "6c5746eb-91b8-4f1c-bc40-1fbe2728b7c8",
-    "name": "Tecnología"
-  },
-  {
-    "id": "63381ed7-b292-4173-aa6a-4997094fb376",
-    "name": "Arte"
-  },
-  {
-    "id": "352ef83a-9398-444c-9367-38353e95d111",
-    "name": "Negocios"
-  }
+   {
+      "id": "e08c1af0-ff11-4242-8d03-2e368131a391",
+      "name": "Ciencias Naturales",
+      "imagen": "/categorias/categoria-ciencias-naturales.jpg"
+   },
+   {
+      "id": "6c5746eb-91b8-4f1c-bc40-1fbe2728b7c8",
+      "name": "Matemáticas y Lógica",
+      "imagen": "/categorias/categoria-matematicas.jpg"
+   },
+   {
+      "id": "63381ed7-b292-4173-aa6a-4997094fb376",
+      "name": "Ciencias Sociales",
+      "imagen": "/categorias/categoria-ciencias-sociales.jpg"
+   },
+   {
+      "id": "352ef83a-9398-444c-9367-38353e95d111",
+      "name": "Humanidades",
+      "imagen": "/categorias/categoria-humanidades.jpg"
+   },
+   {
+      "id": "031b9e17-d1d9-4f14-abd8-42701a9e0406",
+      "name": "Tecnología y Computación",
+      "imagen": "/categorias/categoria-tecnologia.jpg"
+   },
+   {
+      "id": "53196c8d-2ff4-4c33-a0bb-4e0405f14034",
+      "name": "Ingeniería y Tecnología Aplicada",
+      "imagen": "/categorias/categoria-ingenieria.jpg"
+   },
+   {
+      "id": "467d2dec-e7f1-4529-b687-c003686b8f3f",
+      "name": "Ciencias de la Salud",
+      "imagen": "/categorias/categoria-ciencias-salud.jpg"
+   },
+   {
+      "id": "a8fa29bc-0a64-4976-badf-fdc5f9faa299",
+      "name": "Educación",
+      "imagen": "/categorias/categoria-educacion.jpg"
+   },
+   {
+      "id": "79c425f7-9db6-4935-9800-239c39b8692e",
+      "name": "Negocios y Derecho",
+      "imagen": "/categorias/categoria-negocios.jpg"
+   },
+   {
+      "id": "c518f692-d307-486d-ae6c-0e8207129eb8",
+      "name": "Arte y Expresión",
+      "imagen": "/categorias/categoria-arte-y-expresion.jpg"
+   }
 ]

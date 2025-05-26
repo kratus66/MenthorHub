@@ -1,7 +1,19 @@
-import { Body, Controller, Get, Post, InternalServerErrorException } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CategoriesService } from './categorias.service';
 import { CreateCategoryDto } from '../dto/create-category.dto';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiQuery,
+} from '@nestjs/swagger';
 
 @ApiTags('Categorías')
 @Controller('categories')
@@ -15,17 +27,36 @@ export class CategoriesController {
     try {
       return await this.categoriesService.create(dto);
     } catch (error) {
-      throw new InternalServerErrorException('Error al crear la categoría');
+      const message =
+        error instanceof Error ? error.message : 'Error al crear la categoría';
+      throw new InternalServerErrorException(message);
     }
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar categorías' })
-  async findAll() {
+  @ApiOperation({ summary: 'Listar categorías paginadas' })
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
+  @ApiResponse({ status: 200, description: 'Listado paginado de categorías' })
+  async findAll(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ) {
     try {
-      return await this.categoriesService.findAll();
+      const result = await this.categoriesService.findAll(Number(page), Number(limit));
+      if (result.data.length === 0) {
+        return {
+          message: 'No se encontraron categorías',
+          ...result,
+        };
+      }
+      return result;
     } catch (error) {
-      throw new InternalServerErrorException('Error al obtener las categorías');
+      const message =
+        error instanceof Error ? error.message : 'Error al obtener las categorías';
+      throw new InternalServerErrorException(message);
     }
   }
 }
+
+

@@ -11,14 +11,6 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET || '0lE1mwsY_S3SLLYQDBbpoj1XFqo',
 });
 
-export const storage = new CloudinaryStorage({
-  cloudinary,
-  params: async (req: Request, file: Express.Multer.File): Promise<Record<string, string | string[]>> => ({
-    folder: 'mentorhub',
-    resource_type: 'auto',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'pdf', 'mp4', 'mov', 'avi', 'webm'],
-  }),
-});
 
 export { cloudinary };
 

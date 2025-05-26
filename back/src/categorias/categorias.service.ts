@@ -6,27 +6,39 @@ import { CreateCategoryDto } from '../dto/create-category.dto';
 
 @Injectable()
 export class CategoriesService {
-  constructor(
-    @InjectRepository(Category)
-    private categoryRepo: Repository<Category>,
-  ) {}
+   constructor(
+      @InjectRepository(Category)
+      private categoryRepo: Repository<Category>
+   ) {}
 
-  async create(dto: CreateCategoryDto) {
-    const category = this.categoryRepo.create({
-      name: dto.name,
-      imageUrl: dto.imageUrl,
-      description: dto.description,
+   async create(dto: CreateCategoryDto) {
+      const category = this.categoryRepo.create({
+         name: dto.name,
+         imageUrl: dto.imageUrl,
+         description: dto.description,
+      });
+      return await this.categoryRepo.save(category);
+   }
+
+  async findAll(page = 1, limit = 10) {
+    const [data, total] = await this.categoryRepo.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
     });
-    return await this.categoryRepo.save(category);
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+    };
   }
 
-  async findAll() {
-    return await this.categoryRepo.find();
-  }
-
-  async createMany(data: CreateCategoryDto[]) {
-    const categories = this.categoryRepo.create(data);
-    return await this.categoryRepo.save(categories);
-  }
+   async createMany(data: CreateCategoryDto[]) {
+      const categories = this.categoryRepo.create(data);
+      return await this.categoryRepo.save(categories);
+   }
 }
+
+
 
