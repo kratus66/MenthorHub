@@ -98,6 +98,7 @@ export class ClassesService {
     console.log('🛠️ Actualizando clase:', id);
     const classToUpdate = await this.classRepository.findOne({ where: { id } });
     if (!classToUpdate) throw new NotFoundException('Clase no encontrada');
+
     Object.assign(classToUpdate, updateDto);
     return this.classRepository.save(classToUpdate);
   }

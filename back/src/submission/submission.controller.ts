@@ -1,4 +1,3 @@
-// src/submission/submissions.controller.ts
 import {
   Controller,
   Get,
@@ -12,6 +11,7 @@ import {
   UploadedFile,
   UseInterceptors,
   InternalServerErrorException,
+  Query,
 } from '@nestjs/common';
 import { SubmissionsService } from './submission.service';
 import { CreateSubmissionDto } from './dto/CreateSubmissions.dto';
@@ -29,6 +29,7 @@ import {
   ApiParam,
   ApiBody,
   ApiConsumes,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { CloudinaryFileInterceptor } from '../common/interceptors/cloudinary.interceptor';
 
@@ -75,17 +76,21 @@ async create(
 
 
   @Get()
-  /* @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Teacher, Role.Admin) */
-  @ApiOperation({ summary: 'Obtener todas las entregas (solo profesores/admin)' })
-  @ApiResponse({ status: 200, description: 'Listado de entregas' })
-  async findAll() {
+  @ApiOperation({ summary: 'Obtener todas las entregas con paginación' })
+  @ApiQuery({ name: 'page', required: false, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, example: 10 })
+  async findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
     try {
-      return await this.submissionsService.findAll();
+      const result = await this.submissionsService.findAll(Number(page), Number(limit));
+      if (result.data.length === 0) {
+        return { message: 'No se encontraron entregas', ...result };
+      }
+      return result;
     } catch (error) {
       throw new InternalServerErrorException('Error al obtener las entregas');
     }
   }
+
   @Get('eliminadas')
   // @UseGuards(JwtAuthGuard, RoleGuard)
   // @Roles(Role.Teacher, Role.Admin)
@@ -100,24 +105,19 @@ async create(
   }
 
   @Get('my-submissions')
-  /* @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Student) */
-  @ApiOperation({ summary: 'Obtener entregas del estudiante autenticado' })
-  @ApiResponse({ status: 200, description: 'Entregas del usuario autenticado' })
   async findMy(@Req() req: any) {
     try {
-      return await this.submissionsService.findByStudent(req.user.userId);
+      const result = await this.submissionsService.findByStudent(req.user.userId);
+      if (result.length === 0) {
+        return { message: 'No tienes entregas registradas', data: result };
+      }
+      return result;
     } catch (error) {
       throw new InternalServerErrorException('Error al obtener tus entregas');
     }
   }
 
   @Get(':id')
-  /* @UseGuards(JwtAuthGuard) */ // ⚠️ acceso general autenticado (sin roles específicos)
-  @ApiOperation({ summary: 'Obtener una entrega por ID' })
-  @ApiParam({ name: 'id', description: 'UUID de la entrega' })
-  @ApiResponse({ status: 200, description: 'Entrega encontrada' })
-  @ApiResponse({ status: 404, description: 'Entrega no encontrada' })
   async findOne(@Param('id') id: string) {
     try {
       return await this.submissionsService.findOne(id);
@@ -125,27 +125,17 @@ async create(
       throw new InternalServerErrorException('Error al buscar la entrega');
     }
   }
+
   @Put(':id/restore')
-/* @UseGuards(JwtAuthGuard, RoleGuard)
-@Roles(Role.Teacher, Role.Admin) */
-@ApiOperation({ summary: 'Restaurar una entrega eliminada' })
-@ApiParam({ name: 'id', description: 'UUID de la entrega' })
-@ApiResponse({ status: 200, description: 'Entrega restaurada correctamente' })
-async restore(@Param('id') id: string) {
-  try {
-    return await this.submissionsService.restore(id);
-  } catch (error) {
-    throw new InternalServerErrorException('Error al restaurar la entrega');
+  async restore(@Param('id') id: string) {
+    try {
+      return await this.submissionsService.restore(id);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al restaurar la entrega');
+    }
   }
-}
 
   @Put(':id')
-  /* @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Teacher, Role.Admin) */
-  @ApiOperation({ summary: 'Actualizar una entrega (solo profesor/admin)' })
-  @ApiParam({ name: 'id', description: 'UUID de la entrega' })
-  @ApiBody({ type: UpdateSubmissionDto })
-  @ApiResponse({ status: 200, description: 'Entrega actualizada' })
   async update(@Param('id') id: string, @Body() dto: UpdateSubmissionDto) {
     try {
       return await this.submissionsService.update(id, dto);
@@ -168,5 +158,6 @@ async restore(@Param('id') id: string) {
     }
   }
 }
+
 
 

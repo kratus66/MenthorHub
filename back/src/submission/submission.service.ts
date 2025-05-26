@@ -1,4 +1,3 @@
-// src/submission/submission.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -52,16 +51,31 @@ export class SubmissionsService {
     return this.submissionsRepo.save(submission);
   }
 
-  findAll() {
-  return this.submissionsRepo.find({
-    where: { estado: true },
-    relations: ['student', 'task'],
-  });
-}
+  async findAll(page = 1, limit = 10) {
+    const [data, total] = await this.submissionsRepo.findAndCount({
+      where: { estado: true },
+      relations: ['student', 'task'],
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return { data, total, page, limit };
+  }
 
+  async findEliminadas(page = 1, limit = 10) {
+    const [data, total] = await this.submissionsRepo.findAndCount({
+      where: { estado: false },
+      relations: ['student', 'task'],
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+    return { data, total, page, limit };
+  }
 
-  findOne(id: string) {
-    return this.submissionsRepo.findOne({ where: { id }, relations: ['student', 'task'] });
+  async findOne(id: string) {
+    return this.submissionsRepo.findOne({
+      where: { id },
+      relations: ['student', 'task'],
+    });
   }
 
   async update(id: string, dto: UpdateSubmissionDto) {
@@ -72,15 +86,12 @@ export class SubmissionsService {
     return this.submissionsRepo.save(submission);
   }
 
-  
-
   async findByStudent(studentId: string) {
-  return this.submissionsRepo.find({
-    where: { student: { id: studentId }, estado: true },
-    relations: ['task'],
-  });
-}
-
+    return this.submissionsRepo.find({
+      where: { student: { id: studentId }, estado: true },
+      relations: ['task'],
+    });
+  }
 
   async findByTask(taskId: string) {
     return this.submissionsRepo.find({
@@ -90,36 +101,29 @@ export class SubmissionsService {
   }
 
   async remove(id: string) {
-  const submission = await this.submissionsRepo.findOne({ where: { id } });
+    const submission = await this.submissionsRepo.findOne({ where: { id } });
 
-  if (!submission) {
-    throw new NotFoundException(`Submission with id ${id} not found`);
+    if (!submission) {
+      throw new NotFoundException(`Submission with id ${id} not found`);
+    }
+
+    submission.estado = false;
+    submission.fechaEliminado = new Date();
+
+    return this.submissionsRepo.save(submission);
   }
 
-  submission.estado = false;
-  submission.fechaEliminado = new Date();
+  async restore(id: string): Promise<Submission> {
+    const submission = await this.submissionsRepo.findOne({ where: { id } });
 
-  return this.submissionsRepo.save(submission);
-}
+    if (!submission) {
+      throw new NotFoundException(`Submission con id ${id} no encontrada`);
+    }
 
-async restore(id: string): Promise<Submission> {
-  const submission = await this.submissionsRepo.findOne({ where: { id } });
+    submission.estado = true;
+    submission.fechaEliminado = null;
 
-  if (!submission) {
-    throw new NotFoundException(`Submission con id ${id} no encontrada`);
+    return this.submissionsRepo.save(submission);
   }
-
-  submission.estado = true;
-  submission.fechaEliminado = null;
-
-  return this.submissionsRepo.save(submission);
 }
 
-  async findEliminadas(): Promise<Submission[]> {
-  return this.submissionsRepo.find({
-    where: { estado: false },
-    relations: ['student', 'task'],
-  });
-}
-
-}

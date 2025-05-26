@@ -20,14 +20,25 @@ export class CategoriesService {
       return await this.categoryRepo.save(category);
    }
 
-   async findAll() {
-      return await this.categoryRepo.find({
-         relations: ['materias'],
-      });
-   }
+  async findAll(page = 1, limit = 10) {
+    const [data, total] = await this.categoryRepo.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+    };
+  }
 
    async createMany(data: CreateCategoryDto[]) {
       const categories = this.categoryRepo.create(data);
       return await this.categoryRepo.save(categories);
    }
 }
+
+
+

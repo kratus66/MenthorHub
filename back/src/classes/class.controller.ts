@@ -10,7 +10,7 @@ import {
   InternalServerErrorException,
   UseInterceptors,
   UploadedFiles,
-  UseGuards,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -19,7 +19,7 @@ import {
   ApiParam,
   ApiBody,
   ApiConsumes,
-  ApiBearerAuth,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { ClassesService } from './class.service';
 import { CreateClassDto } from './dto/create-class.dto';
@@ -33,7 +33,6 @@ import { Role } from '../common/constants/roles.enum';
 import { EnrollStudentDto } from './dto/enroll-student.dto';
 
 @ApiTags('Clases')
-@ApiBearerAuth('JWT-auth')
 @Controller('classes')
 export class ClassesController {
   constructor(private readonly classesService: ClassesService) {}
@@ -67,7 +66,6 @@ async create(
 
 
   @Get()
-  /* @UseGuards(JwtAuthGuard) // Solo autenticados pueden ver clases */
   @ApiOperation({ summary: 'Obtener todas las clases' })
   @ApiResponse({ status: 200, description: 'Lista de clases', type: [Class] })
   async findAll() {
@@ -160,16 +158,24 @@ async remove(@Param('id', ParseUUIDPipe) id: string) {
  /*  @UseGuards(JwtAuthGuard) */
   @ApiOperation({ summary: 'Obtener clases dictadas por un profesor' })
   @ApiParam({ name: 'id', description: 'UUID del profesor' })
-  @ApiResponse({ status: 200, description: 'Clases encontradas', type: [Class] })
-  async findByTeacher(@Param('id', ParseUUIDPipe) id: string) {
-    return this.classesService.findByTeacher(id);
+  @ApiQuery({ name: 'page', required: false })
+  @ApiQuery({ name: 'limit', required: false })
+  async findByTeacher(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query('page') page = '1',
+    @Query('limit') limit = '10',
+  ) {
+    try {
+      const result = await this.classesService.findByTeacher(id, +page, +limit);
+      if (result.data.length === 0) return { message: 'El profesor no tiene clases', ...result };
+      return result;
+    } catch (error) {
+      throw new InternalServerErrorException('Error al obtener clases por profesor');
+    }
   }
 
-  
-
-    @Get('student/:id')
-  /* @UseGuards(JwtAuthGuard) */
-  @ApiOperation({ summary: 'Obtener clases inscritas por un estudiante' })
+  @Get('student/:id')
+  @ApiOperation({ summary: 'Obtener clases por estudiante' })
   @ApiParam({ name: 'id', description: 'UUID del estudiante' })
   @ApiResponse({ status: 200, description: 'Clases encontradas', type: [Class] })
   async findByStudent(@Param('id', ParseUUIDPipe) id: string) {
