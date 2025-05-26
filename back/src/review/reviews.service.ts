@@ -23,9 +23,8 @@ export class ReviewsService {
     }
 
     if (dto.type === 'review' && user.role !== 'student') {
-  throw new BadRequestException('Solo los estudiantes pueden dejar reseñas.');
-}
-
+      throw new BadRequestException('Solo los estudiantes pueden dejar reseñas.');
+    }
 
     const review = new Review();
     review.rating = dto.rating;
@@ -35,9 +34,17 @@ export class ReviewsService {
 
     const course = await this.classRepo.findOneBy({ id: dto.courseId });
     if (!course) throw new BadRequestException('Curso no encontrado');
-
     review.course = course;
     console.log('Review asignada a curso:', course.id);
+
+    // ✅ Nuevo bloque para aceptar studentId o targetStudentId
+    const studentId = dto.targetStudentId || dto.studentId;
+    if (studentId) {
+      const student = await this.userRepo.findOneBy({ id: studentId });
+      if (!student) throw new BadRequestException('Estudiante no encontrado');
+      review.targetStudent = student;
+      console.log('Review asignada a estudiante:', student.id);
+    }
 
     const saved = await this.reviewRepo.save(review);
     console.log('Review guardada con ID:', saved.id);
