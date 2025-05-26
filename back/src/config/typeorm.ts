@@ -13,18 +13,18 @@ import { Notification } from '../notifications/notification.entity';
 dotenv.config();
 
 const AppDataSource = new DataSource({
-  type: 'postgres',
+   type: 'postgres',
 
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5432', 10),
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  synchronize: false,
+   host: process.env.DB_HOST || 'localhost',
+   port: parseInt(process.env.DB_PORT || '5432', 10),
+   username: process.env.DB_USERNAME,
+   password: process.env.DB_PASSWORD,
+   database: process.env.DB_NAME,
+   synchronize: false,
 
-  logging: true,
-  entities: [User, Class, Task, Submission, Payment, Category, Notification],
-  migrations: [__dirname + '/../migrations/*{.ts,.js}'],
+   logging: true,
+   entities: [User, Class, Task, Submission, Payment, Category, Notification],
+   migrations: [__dirname + '/../migrations/*{.ts,.js}'],
 });
 
 export default AppDataSource;
