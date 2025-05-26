@@ -43,40 +43,17 @@ export class AuthController {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-  @Post('register')
-  @UseInterceptors(CloudinaryFileInterceptor('profileImage'))
-  @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Registrar un nuevo usuario con foto' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        name: { type: 'string' },
-        phoneNumber: { type: 'string' },
-        email: { type: 'string', format: 'email' },
-        password: { type: 'string' },
-        confirmPassword: { type: 'string' },
-        avatarId: { type: 'integer' },
-        studies: { type: 'string' },
-        role: { type: 'string', enum: ['student', 'teacher', 'admin'] },
-        country: { type: 'string' },
-        province: { type: 'string' },
-        location: { type: 'string' },
-        profileImage: { type: 'string', format: 'binary' },
-      },
-    },
-  })
-  @ApiResponse({ status: 201, description: 'Usuario registrado exitosamente' })
   async register(
     @Body() dto: RegisterDto,
     @UploadedFile() file: Express.Multer.File,
-    
   ) {
     console.log('📨 Body:', dto);
-console.log('📷 Imagen recibida:', file);
+    console.log('📷 Imagen recibida:', file);
     return this.authService.register(dto, file?.path);
   }
 
+  // ⛔ Endpoint de confirmación de email — actualmente deshabilitado
+  /*
   @Get('confirm-email')
   async confirmEmail(@Query('token') token: string) {
     try {
@@ -95,6 +72,8 @@ console.log('📷 Imagen recibida:', file);
       throw new BadRequestException('Token inválido o expirado');
     }
   }
+  */
+
 
   @Post('login')
   @ApiOperation({ summary: 'Iniciar sesión' })
@@ -119,16 +98,21 @@ console.log('📷 Imagen recibida:', file);
   @UseGuards(AuthGuard('google'))
   async googleRedirect(
     @Req() req: Request & { user: any }, 
-    @Res() res: Response) {
-    const { shouldCompleteProfile, token } = await this.authService.handleOAuthLogin(req.user, 'google');
+    @Res() res: Response
+  ) {
+    const result = await this.authService.handleOAuthProcess(req.user, 'google');
   
-    if (shouldCompleteProfile) {
-      return res.redirect(`http://localhost:3001/oauth-complete?token=${token}`);
-
+    if (result.shouldCompleteProfile) {
+      // Mandas la info OAuth para que el frontend muestre el formulario de registro normal
+      const userInfo = encodeURIComponent(JSON.stringify(result.oauthUserInfo || result.user));
+      return res.redirect(`http://localhost:3001/register?userInfo=${userInfo}`);
     }
   
-    return res.redirect(`http://localhost:3001/home?token=${token}`);
+    // Usuario ya registrado y perfil completo, rediriges a login con su info
+    const userInfo = encodeURIComponent(JSON.stringify(result.user));
+    return res.redirect(`http://localhost:3001/login?userInfo=${userInfo}`);
   }
+
 
   @Get('github/redirect')
   @UseGuards(AuthGuard('github'))
@@ -136,40 +120,19 @@ console.log('📷 Imagen recibida:', file);
     @Req() req: Request & { user: any }, 
     @Res() res: Response
   ) {
-    const { shouldCompleteProfile, token } = await this.authService.handleOAuthLogin(req.user, 'github');
+    const result = await this.authService.handleOAuthProcess(req.user, 'github');
   
-    if (shouldCompleteProfile) {
-      return res.redirect(`http://localhost:3001/oauth-complete?token=${token}`);
+    if (result.shouldCompleteProfile) {
+      // Mandas la info OAuth para que el frontend muestre el formulario de registro normal
+      const userInfo = encodeURIComponent(JSON.stringify(result.oauthUserInfo || result.user));
+      return res.redirect(`http://localhost:3001/register?userInfo=${userInfo}`);
     }
   
-    return res.redirect(`http://localhost:3001/home?token=${token}`);
+    // Usuario ya registrado y perfil completo, rediriges a login con su info
+    const userInfo = encodeURIComponent(JSON.stringify(result.user));
+    return res.redirect(`http://localhost:3001/login?userInfo=${userInfo}`);
   }
   
-  @Post('oauth-complete')
-  @UseGuards(JwtAuthGuard) // Solo usuarios con token válido
-  @UseInterceptors(CloudinaryFileInterceptor('profileImage'))
-  async handleOAuthRegister(
-    @UploadedFile() file: Express.Multer.File,
-    @Body() dto: OAuthCompleteDto,
-    @CurrentUser() user: { id: string; email: string; role: string },
-  ) {
-    console.log('Usuario extraído del token:', user);
-    const imageUrl = file?.path || undefined;
-    return this.authService.handleOAuthRegister(user.id, dto, imageUrl);
-  }
 
-
-
-@Get('test-oauth-token')
-async testOAuthToken() {
-  // Usuario simulado como si viniera de Google/GitHub
-  const fakeProfile = {
-    email: 'mentorhub.info@gmail.com',
-    displayName: 'MentorHub',
-    photo: 'https://example.com/photo.jpg',
-  };
-  const result = await this.authService.handleOAuthLogin(fakeProfile, 'google');
-  return result; // { token, shouldCompleteProfile }
-}
 
 }
