@@ -27,13 +27,13 @@ import { RoleGuard } from '../common/guards/role.guard';
 
 @ApiTags('Reviews')
 @ApiBearerAuth('JWT-auth')
-// @UseGuards(AuthGuard('jwt'), RoleGuard)
+@UseGuards(AuthGuard('jwt'), RoleGuard)
 @Controller('reviews')
 export class ReviewsController {
   constructor(private readonly reviewsService: ReviewsService) {}
 
   @Post()
-  // @Roles(Role.Teacher, Role.Student)
+  @Roles(Role.Teacher, Role.Student)
   @ApiOperation({ summary: 'Crear una reseña (review)' })
   @ApiBody({ type: CreateReviewDto })
   @ApiResponse({ status: 201, description: 'Review creada correctamente' })
@@ -43,7 +43,7 @@ export class ReviewsController {
   }
 
   @Get()
-  // @Roles(Role.Admin, Role.Teacher, Role.Student)
+  @Roles(Role.Admin, Role.Teacher, Role.Student)
   @ApiOperation({ summary: 'Obtener todas las reseñas' })
   @ApiResponse({ status: 200, description: 'Lista de reviews' })
   findAll() {
@@ -51,8 +51,17 @@ export class ReviewsController {
     return this.reviewsService.findAll();
   }
 
+  @Get('grades')
+  @Roles(Role.Teacher, Role.Student, Role.Admin)
+  @ApiOperation({ summary: 'Obtener calificaciones (grade) según el rol del usuario' })
+  @ApiResponse({ status: 200, description: 'Lista de calificaciones' })
+  findGrades(@CurrentUser() user: User) {
+    console.log('GET /reviews/grades -> user:', user.id);
+    return this.reviewsService.findByUser(user);
+  }
+
   @Get(':id')
-  // @Roles(Role.Admin, Role.Teacher, Role.Student)
+  @Roles(Role.Admin, Role.Teacher, Role.Student)
   @ApiOperation({ summary: 'Obtener una review por ID' })
   @ApiParam({ name: 'id', description: 'UUID de la review' })
   @ApiResponse({ status: 200, description: 'Review encontrada' })
@@ -77,7 +86,7 @@ export class ReviewsController {
   }
 
   @Delete(':id')
-  // @Roles(Role.Teacher, Role.Student)
+  @Roles(Role.Teacher, Role.Student)
   @ApiOperation({ summary: 'Eliminar una review' })
   @ApiParam({ name: 'id', description: 'UUID de la review' })
   @ApiResponse({ status: 200, description: 'Review eliminada correctamente' })
