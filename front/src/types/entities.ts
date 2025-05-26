@@ -1,6 +1,6 @@
 // types/entities.ts
 
-import type { Categoria } from './CategoryType';
+import type { CategoryType } from './CategoryType';
 
 export interface Professor {
    id: string;
@@ -26,7 +26,7 @@ export interface Class {
    teacher: Professor;
    students: User[];
    tasks: Task[];
-   category: Categoria;
+   category: CategoryType;
    materia: string;
    createdAt: Date;
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axiosInstance from '../../services/axiosInstance';
+import type { clasesType } from '../../types/ClassType';
 
 type CategoriaType = {
    onCategoriaSeleccionada: (categoriaId: string) => void;
@@ -14,35 +15,6 @@ type CategoriaType = {
          teacherId?: string;
       }>
    >;
-};
-
-type clasesType = {
-   id: string;
-   title: string;
-   description: string;
-   createdAt: string;
-   materia: string;
-   teacher: {
-      id: string;
-      name: string;
-      email: string;
-      password: string;
-      role: string;
-      phoneNumber: string;
-      avatarId: string;
-      profileImage: null;
-      estudios: string;
-      country: string;
-      provincia: string;
-      localidad: string;
-      createdAt: string;
-   };
-   students: [];
-   tasks: [];
-   category: {
-      id: string;
-      name: string;
-   };
 };
 
 const ITEMS_POR_PAGINA = 10;

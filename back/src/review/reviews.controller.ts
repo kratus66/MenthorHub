@@ -51,6 +51,15 @@ export class ReviewsController {
     return this.reviewsService.findAll();
   }
 
+  @Get('grades')
+  // @Roles(Role.Teacher, Role.Student, Role.Admin)
+  @ApiOperation({ summary: 'Obtener calificaciones (grade) según el rol del usuario' })
+  @ApiResponse({ status: 200, description: 'Lista de calificaciones' })
+  findGrades(@CurrentUser() user: User) {
+    console.log('GET /reviews/grades -> user:', user.id);
+    return this.reviewsService.findByUser(user);
+  }
+
   @Get(':id')
   // @Roles(Role.Admin, Role.Teacher, Role.Student)
   @ApiOperation({ summary: 'Obtener una review por ID' })
@@ -62,7 +71,7 @@ export class ReviewsController {
   }
 
   @Patch(':id')
-  @Roles(Role.Teacher, Role.Student)
+  // @Roles(Role.Teacher, Role.Student)
   @ApiOperation({ summary: 'Actualizar una review' })
   @ApiParam({ name: 'id', description: 'UUID de la review' })
   @ApiBody({ type: CreateReviewDto })

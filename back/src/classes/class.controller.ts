@@ -126,9 +126,9 @@ export class ClassesController {
   @ApiQuery({ name: 'limit', required: false })
   async findByTeacher(@Param('id', ParseUUIDPipe) id: string, @Query('page') page = '1', @Query('limit') limit = '10') {
     try {
-      const result = await this.classesService.findByTeacher(id, parseInt(page), parseInt(limit));
-      if (result.data.length === 0) return { message: 'El profesor no tiene clases', ...result };
-      return result;
+      const result = await this.classesService.findByTeacher(id, +page, +limit);
+      if (result.length === 0) return { message: 'El profesor no tiene clases', data: [] };
+      return { data: result };
     } catch (error) {
       throw new InternalServerErrorException('Error al obtener clases por profesor');
     }

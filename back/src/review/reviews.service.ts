@@ -18,16 +18,29 @@ export class ReviewsService {
     console.log('Creando review:', dto);
     console.log('Autor (user):', user.id);
 
+    if (dto.type === 'grade' && user.role !== 'teacher') {
+      throw new BadRequestException('Solo los profesores pueden asignar calificaciones.');
+    }
+
     const review = new Review();
     review.rating = dto.rating;
     review.comment = dto.comment;
     review.author = user;
+    review.type = dto.type ?? 'review';
 
     const course = await this.classRepo.findOneBy({ id: dto.courseId });
     if (!course) throw new BadRequestException('Curso no encontrado');
-
     review.course = course;
     console.log('Review asignada a curso:', course.id);
+
+    // ✅ Nuevo bloque para aceptar studentId o targetStudentId
+    const studentId = dto.targetStudentId || dto.studentId;
+    if (studentId) {
+      const student = await this.userRepo.findOneBy({ id: studentId });
+      if (!student) throw new BadRequestException('Estudiante no encontrado');
+      review.targetStudent = student;
+      console.log('Review asignada a estudiante:', student.id);
+    }
 
     const saved = await this.reviewRepo.save(review);
     console.log('Review guardada con ID:', saved.id);
@@ -50,7 +63,7 @@ export class ReviewsService {
   }
 
   async update(id: string, dto: Partial<CreateReviewDto>, user: User): Promise<Review> {
-      console.log('🔧 PATCH recibido:', { id, dto, user }); // <-- agrega esto
+    console.log('🔧 PATCH recibido:', { id, dto, user });
     console.log('Actualizando review:', id, 'con DTO:', dto);
     const review = await this.reviewRepo.findOne({ where: { id }, relations: ['author'] });
     if (!review) throw new BadRequestException('Review no encontrada');
@@ -81,5 +94,24 @@ export class ReviewsService {
 
     await this.reviewRepo.delete(id);
     console.log('Review eliminada con éxito');
+  }
+
+  // ✅ Nuevo método agregado
+  async findByUser(user: User): Promise<Review[]> {
+    console.log(`Buscando calificaciones según rol: ${user.role}`);
+
+    if (user.role === 'student') {
+      return this.reviewRepo.find({
+        where: { targetStudent: user, type: 'grade' },
+      });
+    }
+
+    if (user.role === 'teacher') {
+      return this.reviewRepo.find({
+        where: { author: user, type: 'grade' },
+      });
+    }
+
+    return this.reviewRepo.find({ where: { type: 'grade' } }); // admin u otros
   }
 }

@@ -1,10 +1,5 @@
+import type { MateriaType } from '../../types/MateriaType';
 import CategoriaCard from '../CategoriaCard/CategoriaCard';
-
-type MateriaType = {
-   id: string;
-   imagen?: string;
-   descripcion: string;
-};
 
 type Props = {
    materias: MateriaType[]; // Recibo el array de materias filtradas desde afuera
@@ -34,7 +29,7 @@ const MateriasScroll = ({
                      <CategoriaCard
                         id={materia.id}
                         nombre={materia.descripcion}
-                        imagen={materia.imagen}
+                        imagen={materia.imagenUrl || '/image-placeholder.jpg'}
                         seleccionada={
                            materiaSeleccionada === materia.descripcion
                         }
