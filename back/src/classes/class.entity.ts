@@ -6,6 +6,7 @@ import {
   ManyToMany,
   OneToMany,
   JoinTable,
+  JoinColumn,
   CreateDateColumn,
 } from 'typeorm';
 import { User } from '../users/user.entity';
@@ -43,11 +44,9 @@ students!: User[];
   @OneToMany(() => Task, (task) => task.classRef)
   tasks!: Task[];
 
-  @ManyToOne(() => Materias, (materia) => materia.clases, {
-    eager: false,
-    nullable: false,
-  })
-  materia!: Materias;
+  @ManyToOne(() => Materias, { eager: true, nullable: true }) // permite temporalmente null
+  @JoinColumn()
+  materia: Materias;
 
   @ManyToOne(() => Category, (categoria) => categoria.clases, {
     eager: false,
