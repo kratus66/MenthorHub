@@ -21,6 +21,13 @@ export class Review {
   @Column({ type: 'text', nullable: true })
   comment?: string;
 
+  @Column({
+    type: 'enum',
+    enum: ['review', 'grade'],
+    default: 'review',
+  })
+  type: 'review' | 'grade';
+
   @ManyToOne(() => User, user => user.reviewsGiven, { eager: true })
   author: User;
 
