@@ -147,7 +147,7 @@ export class ClassesService {
     });
   }
 
-  async findByTeacher(teacherId: string): Promise<Class[]> {
+  async findByTeacher(teacherId: string, page?: number, limit?: number): Promise<Class[]> {
     console.log('👨‍🏫 Buscando clases del profesor ID:', teacherId);
     const teacher = await this.userRepository.findOne({
       where: { id: teacherId, role: 'teacher' },

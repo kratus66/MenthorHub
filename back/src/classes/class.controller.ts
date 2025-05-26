@@ -167,8 +167,8 @@ async remove(@Param('id', ParseUUIDPipe) id: string) {
   ) {
     try {
       const result = await this.classesService.findByTeacher(id, +page, +limit);
-      if (result.data.length === 0) return { message: 'El profesor no tiene clases', ...result };
-      return result;
+      if (result.length === 0) return { message: 'El profesor no tiene clases', data: [] };
+      return { data: result };
     } catch (error) {
       throw new InternalServerErrorException('Error al obtener clases por profesor');
     }
