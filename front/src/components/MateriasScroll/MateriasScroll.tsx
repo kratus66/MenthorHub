@@ -34,7 +34,7 @@ const MateriasScroll = ({
                      <CategoriaCard
                         id={materia.id}
                         nombre={materia.descripcion}
-                        imagen={materia.imagen}
+                        imagen={materia.imagen || '/image-placeholder.jpg'}
                         seleccionada={
                            materiaSeleccionada === materia.descripcion
                         }
