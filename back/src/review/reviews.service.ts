@@ -18,10 +18,20 @@ export class ReviewsService {
     console.log('Creando review:', dto);
     console.log('Autor (user):', user.id);
 
+    if (dto.type === 'grade' && user.role !== 'teacher') {
+      throw new BadRequestException('Solo los profesores pueden asignar calificaciones.');
+    }
+
+    if (dto.type === 'review' && user.role !== 'student') {
+  throw new BadRequestException('Solo los estudiantes pueden dejar reseñas.');
+}
+
+
     const review = new Review();
     review.rating = dto.rating;
     review.comment = dto.comment;
     review.author = user;
+    review.type = dto.type ?? 'review';
 
     const course = await this.classRepo.findOneBy({ id: dto.courseId });
     if (!course) throw new BadRequestException('Curso no encontrado');
@@ -50,7 +60,7 @@ export class ReviewsService {
   }
 
   async update(id: string, dto: Partial<CreateReviewDto>, user: User): Promise<Review> {
-      console.log('🔧 PATCH recibido:', { id, dto, user }); // <-- agrega esto
+    console.log('🔧 PATCH recibido:', { id, dto, user });
     console.log('Actualizando review:', id, 'con DTO:', dto);
     const review = await this.reviewRepo.findOne({ where: { id }, relations: ['author'] });
     if (!review) throw new BadRequestException('Review no encontrada');
@@ -81,5 +91,24 @@ export class ReviewsService {
 
     await this.reviewRepo.delete(id);
     console.log('Review eliminada con éxito');
+  }
+
+  // ✅ Nuevo método agregado
+  async findByUser(user: User): Promise<Review[]> {
+    console.log(`Buscando calificaciones según rol: ${user.role}`);
+
+    if (user.role === 'student') {
+      return this.reviewRepo.find({
+        where: { targetStudent: user, type: 'grade' },
+      });
+    }
+
+    if (user.role === 'teacher') {
+      return this.reviewRepo.find({
+        where: { author: user, type: 'grade' },
+      });
+    }
+
+    return this.reviewRepo.find({ where: { type: 'grade' } }); // admin u otros
   }
 }
