@@ -64,21 +64,6 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
                </form>
             </div>
 
-<<<<<<< HEAD
-      <div
-        className={`fixed top-0 left-0 h-full w-64 md:w-96 bg-blue-700 text-white transform transition-transform duration-300 ease-in-out z-40 ${
-          menuOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        <div className="p-8 mt-16 flex flex-col space-y-6 text-lg md:text-2xl">
-          <Link
-            to="/home"
-            onClick={() => setMenuOpen(false)}
-            className="hover:text-gray-200"
-          >
-            Home
-          </Link>
-=======
             <div className="right-4 top-2 flex items-center space-x-2">
                <div className="w-10 h-10 rounded-full overflow-hidden">
                   <Link to="/usuario">
@@ -96,7 +81,6 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
                </div>
             </div>
          </nav>
->>>>>>> d5180cccb5255828e8d45596e209ab6163212ed6
 
          <div
             className={`fixed top-0 left-0 h-full w-64 md:w-96 bg-blue-700 text-white transform transition-transform duration-300 ease-in-out z-40 ${

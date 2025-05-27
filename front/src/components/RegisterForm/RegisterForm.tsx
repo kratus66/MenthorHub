@@ -343,7 +343,40 @@ if (formData.profileImage) {
 </button>
 
       </div>
+      <div className="flex flex-col items-center mt-6">
+  <p className="text-sm text-gray-600 mb-2">¿Preferís registrarte con Google?</p>
+  <a
+    href="http://localhost:3001/api/auth/google"
+    className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded shadow"
+  >
+    <svg
+      className="w-5 h-5"
+      viewBox="0 0 533.5 544.3"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fill="#4285F4"
+        d="M533.5 278.4c0-18.7-1.6-37.5-4.9-55.7H272.1v105.6h147.4c-6.3 33.4-25.6 61.7-54.8 80.4v66h88.5c51.6-47.5 80.3-117.5 80.3-196.3z"
+      />
+      <path
+        fill="#34A853"
+        d="M272.1 544.3c73.7 0 135.4-24.4 180.5-66.3l-88.5-66c-24.6 16.6-56.2 26.3-92 26.3-70.6 0-130.4-47.8-151.9-112.1h-90v70.3c45.4 89.6 137.2 147.8 242.9 147.8z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M120.2 326.2c-10.6-31.7-10.6-65.8 0-97.5v-70.3h-90C3.8 205.6 0 241.6 0 278.4s3.8 72.8 30.2 120.1l90-70.3z"
+      />
+      <path
+        fill="#EA4335"
+        d="M272.1 109.3c39.9-.6 77.9 14 107.2 41.3l80.1-80.1C407.5 25.3 343.7 0 272.1 0 166.4 0 74.6 58.2 30.2 147.8l90 70.3C141.7 157.1 201.5 109.3 272.1 109.3z"
+      />
+    </svg>
+    Registrarse con Google
+  </a>
+</div>
+
     </form>
+    
   );
 };
 

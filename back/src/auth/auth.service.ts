@@ -13,14 +13,14 @@ import { User } from '../users/user.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { OAuthCompleteDto } from './dto/OauthRegister.dto';
-import { EmailService } from '../email/email.service'; // nuevo servicio resend
+// import { EmailService } from '../email/email.service';  
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
     private jwtService: JwtService,
-    private emailService: EmailService, // ✅ Injectado
+    // private emailService: EmailService, // ✅ Injectado
   ) {}
 
   async register(dto: RegisterDto, profileImagePath: string): Promise<any> {
