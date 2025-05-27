@@ -49,7 +49,7 @@ const Dashboard = ({ filtros, setFiltros }: DashboardProps) => {
 
    return (
       <>
-         <div className="w-screen h-[calc(100vh-68px)] flex bg-[#f9fafb]">
+         <div className="w-full h-[calc(100vh-68px)] flex bg-[#f9fafb]">
             <div className="h-[calc(100% - 68px)] w-3/4 m-4 flex flex-col gap-6 overflow-y-scroll ps-5">
                <CategoriaScroll
                   onCategoriaSeleccionada={setCategoriaSeleccionada}
