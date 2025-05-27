@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import imagenUsuario from '../../images/imagenUsuario.png';
 import type { FiltrosType } from '../../types/FiltrosType';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const mockUser = {
    role: 'profesor',
@@ -17,6 +18,8 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
    const [searchInput, setSearchInput] = useState('');
 
    const user = mockUser;
+   const navigate = useNavigate();
+   const location = useLocation();
 
    return (
       <>
@@ -38,7 +41,12 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
                   className="flex"
                   onSubmit={(e) => {
                      e.preventDefault();
-                     onSetFiltros({ search: searchInput });
+                     onSetFiltros({ search: searchInput, category: '' });
+
+                     if (location.pathname !== '/panel') {
+                        navigate('/panel');
+                     }
+                     setSearchInput('');
                   }}
                >
                   <button
