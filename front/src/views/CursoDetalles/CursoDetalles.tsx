@@ -12,7 +12,7 @@ const CursoDetalle = () => {
          console.log(res.data);
          setCurso(res.data);
       });
-   }, []);
+   }, [id]);
 
    if (!curso) {
       return <div className="p-4">Curso no encontrado</div>;
@@ -45,7 +45,7 @@ const CursoDetalle = () => {
                   <strong>Categoría:</strong> {curso.category.name}
                </p>
                <p className="text-gray-600 mt-2">
-                  <strong>Materia:</strong> {curso.materia}
+                  <strong>Materia:</strong> {curso.materia.descripcion}
                </p>
                <p className="text-gray-700 mt-4">
                   {curso.description ||

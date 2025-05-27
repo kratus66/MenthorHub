@@ -11,7 +11,6 @@ import {
   BadRequestException,
   NotFoundException,
   Query,
-  UnauthorizedException,
   Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -34,6 +33,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { Request, Response } from 'express';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -42,41 +42,29 @@ export class AuthController {
     private jwtService: JwtService,
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
-
   @Post('register')
   @UseInterceptors(CloudinaryFileInterceptor('profileImage'))
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Registrar un nuevo usuario con foto' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        name: { type: 'string' },
-        phoneNumber: { type: 'string' },
-        email: { type: 'string', format: 'email' },
-        password: { type: 'string' },
-        confirmPassword: { type: 'string' },
-        avatarId: { type: 'integer' },
-        studies: { type: 'string' },
-        role: { type: 'string', enum: ['student', 'teacher', 'admin'] },
-        country: { type: 'string' },
-        province: { type: 'string' },
-        location: { type: 'string' },
-        profileImage: { type: 'string', format: 'binary' },
-      },
-    },
-  })
-  @ApiResponse({ status: 201, description: 'Usuario registrado exitosamente' })
+  @ApiBody({ type: RegisterDto })
   async register(
     @Body() dto: RegisterDto,
     @UploadedFile() file: Express.Multer.File,
-    
   ) {
     console.log('📨 Body:', dto);
-console.log('📷 Imagen recibida:', file);
-    return this.authService.register(dto, file?.path);
+    console.log('📷 Imagen recibida:', file);
+  
+    // Convierte isOauth a boolean (true si viene como 'true' o true)
+    const isOauth = dto.isOauth === true;
+  
+    // Pasa dto con isOauth convertido a booleano
+    const registrationDto = {
+      ...dto,
+      isOauth,
+    };
+  
+    return this.authService.register(registrationDto, file?.path);
   }
-
+  /*
   @Get('confirm-email')
   async confirmEmail(@Query('token') token: string) {
     try {
@@ -95,6 +83,7 @@ console.log('📷 Imagen recibida:', file);
       throw new BadRequestException('Token inválido o expirado');
     }
   }
+  */
 
   @Post('login')
   @ApiOperation({ summary: 'Iniciar sesión' })
@@ -105,7 +94,6 @@ console.log('📷 Imagen recibida:', file);
     return this.authService.login(loginDto);
   }
 
-  // 🔹 Inicio de OAuth
   @Get('google')
   @UseGuards(AuthGuard('google'))
   googleLogin() {}
@@ -114,20 +102,21 @@ console.log('📷 Imagen recibida:', file);
   @UseGuards(AuthGuard('github'))
   githubLogin() {}
 
-  // 🔹 Callback OAuth
   @Get('google/redirect')
   @UseGuards(AuthGuard('google'))
   async googleRedirect(
     @Req() req: Request & { user: any }, 
-    @Res() res: Response) {
-    const { shouldCompleteProfile, token } = await this.authService.handleOAuthLogin(req.user, 'google');
-  
-    if (shouldCompleteProfile) {
-      return res.redirect(`http://localhost:3001/oauth-complete?token=${token}`);
+    @Res() res: Response
+  ) {
+    const result = await this.authService.handleOAuthProcess(req.user, 'google');
+    const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const userInfo = encodeURIComponent(JSON.stringify(result.oauthUserInfo || result.user));
 
+    if (result.shouldCompleteProfile) {
+      return res.redirect(`${FRONTEND_URL}/register?userInfo=${userInfo}`);
     }
-  
-    return res.redirect(`http://localhost:3001/home?token=${token}`);
+
+    return res.redirect(`${FRONTEND_URL}/login?userInfo=${userInfo}`);
   }
 
   @Get('github/redirect')
@@ -136,40 +125,14 @@ console.log('📷 Imagen recibida:', file);
     @Req() req: Request & { user: any }, 
     @Res() res: Response
   ) {
-    const { shouldCompleteProfile, token } = await this.authService.handleOAuthLogin(req.user, 'github');
-  
-    if (shouldCompleteProfile) {
-      return res.redirect(`http://localhost:3001/oauth-complete?token=${token}`);
+    const result = await this.authService.handleOAuthProcess(req.user, 'github');
+    const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const userInfo = encodeURIComponent(JSON.stringify(result.oauthUserInfo || result.user));
+
+    if (result.shouldCompleteProfile) {
+      return res.redirect(`${FRONTEND_URL}/register?userInfo=${userInfo}`);
     }
-  
-    return res.redirect(`http://localhost:3001/home?token=${token}`);
+
+    return res.redirect(`${FRONTEND_URL}/login?userInfo=${userInfo}`);
   }
-  
-  @Post('oauth-complete')
-  @UseGuards(JwtAuthGuard) // Solo usuarios con token válido
-  @UseInterceptors(CloudinaryFileInterceptor('profileImage'))
-  async handleOAuthRegister(
-    @UploadedFile() file: Express.Multer.File,
-    @Body() dto: OAuthCompleteDto,
-    @CurrentUser() user: { id: string; email: string; role: string },
-  ) {
-    console.log('Usuario extraído del token:', user);
-    const imageUrl = file?.path || undefined;
-    return this.authService.handleOAuthRegister(user.id, dto, imageUrl);
-  }
-
-
-
-@Get('test-oauth-token')
-async testOAuthToken() {
-  // Usuario simulado como si viniera de Google/GitHub
-  const fakeProfile = {
-    email: 'mentorhub.info@gmail.com',
-    displayName: 'MentorHub',
-    photo: 'https://example.com/photo.jpg',
-  };
-  const result = await this.authService.handleOAuthLogin(fakeProfile, 'google');
-  return result; // { token, shouldCompleteProfile }
-}
-
 }

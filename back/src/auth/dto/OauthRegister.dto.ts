@@ -26,6 +26,11 @@ import {
     @ApiProperty({ type: 'string', format: 'binary' })
     @IsOptional()
     profileImage?: any;
+
+    @ApiProperty()
+    @IsString()
+    @IsNotEmpty()
+    password: string;
   
     @ApiProperty()
     @IsString()
@@ -42,6 +47,8 @@ import {
     @IsString()
     @IsNotEmpty()
     country: string;
+    
+
   
     @ApiProperty()
     @IsString()
@@ -52,5 +59,10 @@ import {
     @IsString()
     @IsNotEmpty()
     localidad: string;
+
+    @ApiProperty()
+    @IsString()
+    @IsNotEmpty()
+    isOauth: string;
   }
   
