@@ -3,6 +3,7 @@ import CategoriaScroll from '../../components/CategoriaScroll/CategoriaScroll';
 import CursosLista from '../../components/CursosLista/CursosLista';
 import { useEffect, useState } from 'react';
 import type { CategoryType } from '../../types/CategoryType';
+import { useNavigate } from 'react-router-dom';
 
 type DashboardProps = {
    filtros: {
@@ -32,6 +33,15 @@ const Dashboard = ({ filtros, setFiltros }: DashboardProps) => {
    const [materiasVisibles, setMateriasVisibles] = useState<
       { id: string; descripcion: string }[]
    >([]);
+
+   const navigate = useNavigate();
+
+   useEffect(() => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+         navigate('/login');
+      }
+   }, [navigate]);
 
    useEffect(() => {
       setFiltros((prev) => ({

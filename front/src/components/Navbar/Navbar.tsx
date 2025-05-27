@@ -4,20 +4,17 @@ import imagenUsuario from '../../images/imagenUsuario.png';
 import type { FiltrosType } from '../../types/FiltrosType';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const mockUser = {
-   role: 'profesor',
-   nombre: 'Juan Pérez',
-};
+import { useUser } from '../../context/UserContext';
 
 type NavBarProps = {
    onSetFiltros: React.Dispatch<React.SetStateAction<FiltrosType>>;
 };
 
 const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
+   const { user } = useUser();
    const [menuOpen, setMenuOpen] = useState(false);
    const [searchInput, setSearchInput] = useState('');
 
-   const user = mockUser;
    const navigate = useNavigate();
    const location = useLocation();
 
@@ -76,7 +73,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
                <div className="w-10 h-10 rounded-full overflow-hidden">
                   <Link to="/usuario">
                      <img
-                        src={imagenUsuario}
+                        src={user?.profileImage ?? imagenUsuario}
                         alt="Usuario"
                         className="w-full h-full object-cover"
                      />
@@ -84,7 +81,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
                </div>
                <div className="hidden sm:block">
                   <p className="text-white text-sm md:text-base">
-                     {user ? user.nombre : 'Nombre Apellido'}
+                     {user ? user.name : 'Nombre Apellido'}
                   </p>
                </div>
             </div>
@@ -104,7 +101,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
                   Home
                </Link>
 
-               {user?.role === 'profesor' && (
+               {user?.role === 'Profesor' && (
                   <Link
                      to="/clases/crear"
                      onClick={() => setMenuOpen(false)}
@@ -113,7 +110,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
                      Crear una clase
                   </Link>
                )}
-               {user?.role === 'alumno' && (
+               {user?.role === 'Alumno' && (
                   <Link
                      to="/clases/unirme"
                      onClick={() => setMenuOpen(false)}
