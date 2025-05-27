@@ -24,7 +24,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
   password: '',
   confirmPassword: '',
   avatarId: 0,
-  profileImage: null as File | null,
+  profileImage: null as File | string | null,
+   profileImageUrl: '',
   studies: '',
   role: '',
   country: '',
@@ -40,12 +41,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
       try {
         const userInfo = JSON.parse(decodeURIComponent(userInfoParam));
         setFormData((prevData) => ({
-          ...prevData,
-          name: userInfo.name || '',
-          email: userInfo.email || '',
-          profileImage: userInfo.profileImage || null,
-          isOauth: true,
-        }));
+  ...prevData,
+  name: userInfo.name || '',
+  email: userInfo.email || '',
+  profileImage: null,
+  profileImageUrl: userInfo.profileImage || '',
+  isOauth: true,
+}));
         console.log('Datos de perfil recibidos:', userInfo);
       } catch (error) {
         console.error('Error al parsear userInfo:', error);
@@ -310,28 +312,44 @@ if (formData.profileImage) {
 
       </div>
 
-      <div className="w-[300px] bg-white bg-opacity-50 rounded-lg p-6 flex flex-col items-center justify-between shadow-md">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-5xl text-gray-600">
-            {formData.profileImage
-              ? <img src={URL.createObjectURL(formData.profileImage)} alt="Profile" className="rounded-full w-20 h-20 object-cover" />
-              : '👤'}
-          </div>
-          <label
-            htmlFor="profileImage"
-            className="bg-blue-600 text-white text-sm px-4 py-1 rounded cursor-pointer hover:bg-blue-700 transition"
-          >
-            Subir imagen
-          </label>
-          <input
-            type="file"
-  id="profileImage"
-  name="profileImage"
-  accept="image/*"
-  onChange={handleChange}
-            className="hidden"
+    <div className="w-[300px] bg-white bg-opacity-50 rounded-lg p-6 flex flex-col items-center justify-between shadow-md">
+  <div className="flex flex-col items-center gap-3">
+    <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-5xl text-gray-600 overflow-hidden">
+      {formData.profileImage ? (
+        typeof formData.profileImage === 'string' ? (
+          <img
+            src={formData.profileImage}
+            alt="Profile"
+            className="rounded-full w-20 h-20 object-cover"
           />
-        </div>
+        ) : (
+          <img
+            src={URL.createObjectURL(formData.profileImage)}
+            alt="Profile"
+            className="rounded-full w-20 h-20 object-cover"
+          />
+        )
+      ) : (
+        '👤'
+      )}
+    </div>
+    <label
+      htmlFor="profileImage"
+      className="bg-blue-600 text-white text-sm px-4 py-1 rounded cursor-pointer hover:bg-blue-700 transition"
+    >
+      Subir imagen
+    </label>
+    <input
+      type="file"
+      id="profileImage"
+      name="profileImage"
+      accept="image/*"
+      onChange={handleChange}
+      className="hidden"
+    />
+  </div>
+
+
 
         <div className="w-full mt-4">
           <p className="text-xs mb-1 font-semibold">Seleccionar Avatar</p>
