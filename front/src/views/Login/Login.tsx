@@ -7,6 +7,9 @@ import MenVir from "../../components/MenVir/MenVir";
 export default function Login() {
   const { user } = useUser();
   const navigate = useNavigate();
+  // Define your API URL here or import it from your config
+    const apiUrl = import.meta.env.VITE_API_URL || "localhost:3001";
+    const baseURL = `${window.location.protocol}//${apiUrl}/api`;
 
   if (user) {
     navigate("/panel");
@@ -30,7 +33,7 @@ export default function Login() {
                 <p className="w-fit self-center">o continúa con</p>
                 <div className="flex justify-center gap-[1.7vh]">
                   <a
-                    href=""
+                    href={`${baseURL}/auth/google`}
                     className="flex justify-center items-center px-14 py-2 rounded-full border-2 hover:border-[#007AFF]"
                   >
                     <img
@@ -42,7 +45,7 @@ export default function Login() {
                     />
                   </a>
                   <a
-                    href=""
+                    href={`${baseURL}/auth/github`}
                     className="flex justify-center items-center px-14 py-2 rounded-full border-2 hover:border-[#007AFF]"
                   >
                     <img
@@ -53,7 +56,7 @@ export default function Login() {
                       alt="Github Sign In"
                     />
                   </a>
-                  <a
+{/*                   <a
                     href=""
                     className="flex justify-center items-center px-14 py-2 rounded-full border-2 hover:border-[#007AFF]"
                   >
@@ -64,7 +67,7 @@ export default function Login() {
                       src="/facebook-icon.svg"
                       alt="Facebook Sign In"
                     />
-                  </a>
+                  </a> */}
                 </div>
                 <p className="w-fit self-center">
                   ¿Aún no tienes cuenta?{" "}

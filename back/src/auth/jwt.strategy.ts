@@ -9,7 +9,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_SECRET') || 'ment0rhUb_2025_superclave',
+      secretOrKey: configService.get<string>('JWT_SECRET'),
     });
     console.log('JwtStrategy initialized, secret loaded');
   }
@@ -17,9 +17,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: any) {
     console.log('JwtStrategy -> payload:', payload);
     return {
-      id: payload.sub,
       email: payload.email,
+      sub: payload.sub,
       role: payload.role,
+      name: payload.name,
+      profileImage: payload.profileImage
     };
   }
 }

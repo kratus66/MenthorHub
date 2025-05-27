@@ -22,7 +22,7 @@ export default function LoginForm() {
   const navigate = useNavigate();
   const handleSubmit = async (
     values: typeof initialValues,
-    { setErrors }: any
+    { setErrors }: { setErrors: (errors: Partial<typeof initialValues>) => void }
   ) => {
     try {
       const response = await axiosInstance.post("/auth/login", values);

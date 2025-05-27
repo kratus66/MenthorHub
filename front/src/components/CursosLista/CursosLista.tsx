@@ -43,7 +43,6 @@ const CursosLista = ({
       axiosInstance
          .post(`/filters?${query}`, { ...filtros })
          .then((res) => {
-            console.log('Respuesta backend:', res.data);
             setCursosPaginados(res.data.data);
             setUltimaPagina(res.data.lastPage);
          })
@@ -122,7 +121,7 @@ const CursosLista = ({
                      </div>
                      <div className="flex flex-col">
                         <h3>Categoría: {curso.category.name}</h3>
-                        <h3>Materia: {curso.materia}</h3>
+                        <h3>Materia: {curso.materia.descripcion}</h3>
                      </div>
                   </div>
                </Link>

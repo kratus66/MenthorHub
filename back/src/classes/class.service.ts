@@ -147,18 +147,33 @@ export class ClassesService {
     });
   }
 
-  async findByTeacher(teacherId: string, page?: number, limit?: number): Promise<Class[]> {
+  async findByTeacher(
+    teacherId: string,
+    page = 1,
+    limit = 10,
+  ): Promise<{
+    data: Class[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
     console.log('👨‍🏫 Buscando clases del profesor ID:', teacherId);
+    
     const teacher = await this.userRepository.findOne({
       where: { id: teacherId, role: 'teacher' },
     });
     if (!teacher) throw new NotFoundException(`Profesor con ID ${teacherId} no encontrado`);
-
-    return this.classRepository.find({
+  
+    const [data, total] = await this.classRepository.findAndCount({
       where: { teacher: { id: teacherId }, estado: true },
       relations: ['category', 'students', 'tasks'],
+      skip: (page - 1) * limit,
+      take: limit,
     });
+  
+    return { data, total, page, limit };
   }
+
 
   async findByStudent(studentId: string): Promise<Class[]> {
     console.log('🎓 Buscando clases del estudiante ID:', studentId);

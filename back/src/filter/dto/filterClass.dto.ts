@@ -1,4 +1,5 @@
-// src/classes/dto/filter-classes.dto.ts
+// src/filter/dto/filterClass.dto.ts
+
 import { IsOptional, IsString, IsUUID, IsIn } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -28,6 +29,14 @@ export class FilterClassesDto {
   teacherId?: string;
 
   @ApiPropertyOptional({
+    description: 'UUID de la materia',
+    example: 'd85e2b5f-7930-4f3a-b9b5-89df10312f11',
+  })
+  @IsOptional()
+  @IsUUID('4', { message: 'El ID de materia debe ser un UUID válido' })
+  materiaId?: string;
+
+  @ApiPropertyOptional({
     description: 'Campo por el cual ordenar (title o createdAt)',
     enum: ['title', 'createdAt'],
     example: 'title'
@@ -49,6 +58,7 @@ export class FilterClassesDto {
   })
   sortOrder?: 'asc' | 'desc';
 }
+
 
 
 

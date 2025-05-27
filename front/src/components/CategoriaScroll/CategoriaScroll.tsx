@@ -28,8 +28,8 @@ const CategoriaScroll = ({
       axiosInstance
          .get('/categories')
          .then((res) => {
-            setCategorias(res.data);
-            setCategoriasIniciales(res.data);
+            setCategorias(res.data.data);
+            setCategoriasIniciales(res.data.data);
          })
          .catch((err) => {
             console.error('Error al obtener las clases:', err);
