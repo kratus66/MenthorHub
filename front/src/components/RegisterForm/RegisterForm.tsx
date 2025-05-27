@@ -24,7 +24,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
   password: '',
   confirmPassword: '',
   avatarId: 0,
-  profileImage: null as File | string | null,
+  profileImageFile: null as File | null,
    profileImageUrl: '',
   studies: '',
   role: '',
@@ -44,7 +44,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
   ...prevData,
   name: userInfo.name || '',
   email: userInfo.email || '',
-  profileImage: null,
+  profileImageFile: null,
   profileImageUrl: userInfo.profileImage || '',
   isOauth: true,
 }));
@@ -59,10 +59,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = e.target;
     if (name === 'profileImage' && files) {
-      setFormData(prev => ({ ...prev, profileImage: files[0] }));
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
+    setFormData(prev => ({ ...prev, profileImageFile: files[0], profileImageUrl: '' }));
+  } else {
+    setFormData(prev => ({ ...prev, [name]: value }));
+  }
   };
 
   const handleAvatarSelect = (id: number) => {
@@ -119,11 +119,13 @@ const validatePersonalFields = (): boolean => {
     alert('Por favor, ingresá un correo de Gmail válido (ej: ejemplo@gmail.com)');
     return;
   }
+  
     if (formData.password !== formData.confirmPassword) {
       alert('Las contraseñas no coinciden');
       return;
     }
    
+
 
 const dataToSend = new FormData(); 
 dataToSend.append('name', formData.name);
@@ -138,10 +140,10 @@ dataToSend.append('country', formData.country);
 dataToSend.append('province', formData.province);
 dataToSend.append('location', formData.location);
 
-if (formData.profileImage) {
-  dataToSend.append('profileImage', formData.profileImage);
-}
 
+if (formData.profileImageFile) {
+  dataToSend.append('profileImage', formData.profileImageFile);
+}
     
 
     onSubmit(dataToSend);
@@ -314,25 +316,25 @@ if (formData.profileImage) {
 
     <div className="w-[300px] bg-white bg-opacity-50 rounded-lg p-6 flex flex-col items-center justify-between shadow-md">
   <div className="flex flex-col items-center gap-3">
-    <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-5xl text-gray-600 overflow-hidden">
-      {formData.profileImage ? (
-        typeof formData.profileImage === 'string' ? (
-          <img
-            src={formData.profileImage}
-            alt="Profile"
-            className="rounded-full w-20 h-20 object-cover"
-          />
-        ) : (
-          <img
-            src={URL.createObjectURL(formData.profileImage)}
-            alt="Profile"
-            className="rounded-full w-20 h-20 object-cover"
-          />
-        )
-      ) : (
-        '👤'
-      )}
-    </div>
+   
+<div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-5xl text-gray-600 overflow-hidden">
+  {formData.profileImageFile ? (
+    <img
+      src={URL.createObjectURL(formData.profileImageFile)}
+      alt="Profile"
+      className="rounded-full w-20 h-20 object-cover"
+    />
+  ) : formData.profileImageUrl ? (
+    <img
+      src={formData.profileImageUrl}
+      alt="Profile"
+      className="rounded-full w-20 h-20 object-cover"
+    />
+  ) : (
+    '👤'
+  )}
+</div>
+
     <label
       htmlFor="profileImage"
       className="bg-blue-600 text-white text-sm px-4 py-1 rounded cursor-pointer hover:bg-blue-700 transition"
