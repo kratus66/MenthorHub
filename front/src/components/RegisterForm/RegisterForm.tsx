@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 interface RegisterFormProps {
@@ -14,6 +14,9 @@ const avatars = [
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
   const [activeTab, setActiveTab] = useState<'personal' | 'academics'>('personal');
+
+   const [searchParams] = useSearchParams();
+  const userInfoParam = searchParams.get("userInfo");
  const [formData, setFormData] = useState({
   name: '',
   phoneNumber: '',
@@ -29,22 +32,27 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
   location: '',
   isOauth: false,
 });
-const [searchParams] = useSearchParams();
-  const userInfoParam = searchParams.get("userInfo");
+
 
   
-  const userInfo = userInfoParam ? JSON.parse(decodeURIComponent(userInfoParam)) : null;
-  
-  if(userInfo) {
-    setFormData({
-      ...formData,
-      name: userInfo.name,
-      email: userInfo.email,    
-      profileImage: userInfo.profileImage,
-      isOauth: true,
-    });
-    console.log('Datos de perfil recibidos:', userInfo);
-  }
+  useEffect(() => {
+    if (userInfoParam) {
+      try {
+        const userInfo = JSON.parse(decodeURIComponent(userInfoParam));
+        setFormData((prevData) => ({
+          ...prevData,
+          name: userInfo.name || '',
+          email: userInfo.email || '',
+          profileImage: userInfo.profileImage || null,
+          isOauth: true,
+        }));
+        console.log('Datos de perfil recibidos:', userInfo);
+      } catch (error) {
+        console.error('Error al parsear userInfo:', error);
+      }
+    }
+  }, [userInfoParam]);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = e.target;
@@ -253,7 +261,7 @@ if (formData.profileImage) {
         <option value="">Seleccionar</option>
         <option value="alumno">Alumno</option>
         <option value="profesor">Profesor</option>
-        <option value="profesor">Admin</option>
+       
       </select>
     </label>
 
