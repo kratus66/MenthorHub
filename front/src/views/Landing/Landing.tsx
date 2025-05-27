@@ -62,16 +62,15 @@ const Landing: React.FC = () => {
   const { user } = useUser();
   const navigate = useNavigate();
 
-  if (user) {
-    navigate("/panel");
-    return null;
-  }
-
   const [current, setCurrent] = useState(0);
   const [progress, setProgress] = useState(0);
   const circumference = 50 * 2 * Math.PI;
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
+    if (user) {
+      navigate("/panel");
+    }
     const interval = setInterval(() => {
       setProgress((prev) => (prev >= transitionTime ? 0 : prev + 1));
     }, 1000);
@@ -85,9 +84,7 @@ const Landing: React.FC = () => {
       clearInterval(interval);
       clearInterval(textInterval);
     };
-  }, []);
-
-  const videoRef = useRef<HTMLVideoElement>(null);
+  }, [user, navigate]);
 
   const handleVideoEnd = () => {
     setTimeout(() => {
@@ -98,6 +95,8 @@ const Landing: React.FC = () => {
       }
     }, 100);
   };
+
+  if (user) return null;
 
   return (
     <div className="w-screen h-screen flex items-center justify-end overflow-hidden">

@@ -25,7 +25,7 @@ const MenVir: React.FC<VideoContainerProps> = ({
       videoElement.playbackRate = playbackRate;
       videoElement.currentTime = startTime;
     }
-  }, [playbackRate]);
+  }, [playbackRate, startTime]);
 
   return (
     <div className="h-full aspect-[630/982] absolute">
