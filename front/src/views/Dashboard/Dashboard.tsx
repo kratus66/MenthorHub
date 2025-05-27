@@ -42,12 +42,7 @@ const Dashboard = ({ filtros, setFiltros }: DashboardProps) => {
    }, [categoriaSeleccionada, setFiltros]);
 
    useEffect(() => {
-         console.log("categoriasIniciales",categoriasIniciales);
-         console.log("categoriasIniciales[0]",categoriasIniciales[0]);
       if (categoriasIniciales.length > 0 && categoriasIniciales[0].materias) {
-         console.log("categoriasIniciales",categoriasIniciales);
-         console.log("categoriasIniciales[0]",categoriasIniciales[0]);
-         console.log("categoriasIniciales[0].materias",categoriasIniciales[0].materias);
          setMateriasVisibles(categoriasIniciales[0].materias);
       }
    }, [categoriasIniciales]);

@@ -109,7 +109,7 @@ export class AuthController {
     @Res() res: Response
   ) {
     const result = await this.authService.handleOAuthProcess(req.user, 'google');
-    const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3001';
+    const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
     const userInfo = encodeURIComponent(JSON.stringify(result.oauthUserInfo || result.user));
 
     if (result.shouldCompleteProfile) {
@@ -126,7 +126,7 @@ export class AuthController {
     @Res() res: Response
   ) {
     const result = await this.authService.handleOAuthProcess(req.user, 'github');
-    const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3001';
+    const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
     const userInfo = encodeURIComponent(JSON.stringify(result.oauthUserInfo || result.user));
 
     if (result.shouldCompleteProfile) {

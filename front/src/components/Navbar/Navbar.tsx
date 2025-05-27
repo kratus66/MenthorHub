@@ -97,7 +97,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
          >
             <div className="p-8 mt-16 flex flex-col space-y-6 text-lg md:text-2xl">
                <Link
-                  to="/home"
+                  to="/panel"
                   onClick={() => setMenuOpen(false)}
                   className="hover:text-gray-200"
                >
