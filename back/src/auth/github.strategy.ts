@@ -2,7 +2,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Strategy } from 'passport-github';
 import { ConfigService } from '@nestjs/config';
-// import fetch from 'node-fetch'; 
+import fetch from 'node-fetch';
 
 @Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
