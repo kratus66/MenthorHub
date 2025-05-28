@@ -1,0 +1,26 @@
+[
+   {
+      "id": "11111111-aaaa-bbbb-cccc-111111111111",
+      "descripcion": "Matemáticas Básicas",
+      "imagenUrl": "/materias/matematica-basica.jpg",
+      "categoryId": "63381ed7-b292-4173-aa6a-4997094fb376"
+   },
+   {
+      "id": "22222222-aaaa-bbbb-cccc-222222222222",
+      "descripcion": "Lengua Española",
+      "imagenUrl": "/materias/lengua-espanola.webp",
+      "categoryId": "6c5746eb-91b8-4f1c-bc40-1fbe2728b7c8"
+   },
+   {
+      "id": "33333333-aaaa-bbbb-cccc-333333333333",
+      "descripcion": "El Cuerpo Humano",
+      "imagenUrl": "/materias/cuerpo-humano.webp",
+      "categoryId": "e08c1af0-ff11-4242-8d03-2e368131a391"
+   },
+   {
+      "id": "44444444-aaaa-bbbb-cccc-444444444444",
+      "descripcion": "Educación Artística",
+      "imagenUrl": "/materias/educacion-artistica.webp",
+      "categoryId": "63381ed7-b292-4173-aa6a-4997094fb376"
+   }
+]

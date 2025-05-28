@@ -1,0 +1,86 @@
+[
+  {
+    "title": "Clase de Salud Básico",
+    "description": "Esta clase trata sobre salud aplicada.",
+    "categoryId": "e08c1af0-ff11-4242-8d03-2e368131a391",
+    "teacherId": "3a8c7b83-e1ee-46b1-91e9-d0ffce941d48",
+    "materiaId": "33333333-aaaa-bbbb-cccc-333333333333"
+  },
+  {
+    "title": "Clase de Salud Avanzado",
+    "description": "Esta clase trata sobre salud aplicada.",
+    "categoryId": "e08c1af0-ff11-4242-8d03-2e368131a391",
+    "teacherId": "91459ab3-69f7-46b3-b4b9-d924202b28cd",
+    "materiaId": "33333333-aaaa-bbbb-cccc-333333333333"
+  },
+  {
+    "title": "Clase de Salud Básico",
+    "description": "Esta clase trata sobre salud aplicada.",
+    "categoryId": "e08c1af0-ff11-4242-8d03-2e368131a391",
+    "teacherId": "4535b0ad-ec91-4c23-a908-72489bf1b475",
+    "materiaId": "33333333-aaaa-bbbb-cccc-333333333333"
+  },
+  {
+    "title": "Clase de Tecnología Básico",
+    "description": "Esta clase trata sobre tecnología aplicada.",
+    "categoryId": "6c5746eb-91b8-4f1c-bc40-1fbe2728b7c8",
+    "teacherId": "3a8c7b83-e1ee-46b1-91e9-d0ffce941d48",
+    "materiaId": "11111111-aaaa-bbbb-cccc-111111111111"
+  },
+  {
+    "title": "Clase de Tecnología Avanzado",
+    "description": "Esta clase trata sobre tecnología aplicada.",
+    "categoryId": "6c5746eb-91b8-4f1c-bc40-1fbe2728b7c8",
+    "teacherId": "91459ab3-69f7-46b3-b4b9-d924202b28cd",
+    "materiaId": "11111111-aaaa-bbbb-cccc-111111111111"
+  },
+  {
+    "title": "Clase de Tecnología Básico",
+    "description": "Esta clase trata sobre tecnología aplicada.",
+    "categoryId": "6c5746eb-91b8-4f1c-bc40-1fbe2728b7c8",
+    "teacherId": "4535b0ad-ec91-4c23-a908-72489bf1b475",
+    "materiaId": "11111111-aaaa-bbbb-cccc-111111111111"
+  },
+  {
+    "title": "Clase de Arte Básico",
+    "description": "Esta clase trata sobre arte aplicada.",
+    "categoryId": "63381ed7-b292-4173-aa6a-4997094fb376",
+    "teacherId": "3a8c7b83-e1ee-46b1-91e9-d0ffce941d48",
+    "materiaId": "44444444-aaaa-bbbb-cccc-444444444444"
+  },
+  {
+    "title": "Clase de Arte Avanzado",
+    "description": "Esta clase trata sobre arte aplicada.",
+    "categoryId": "63381ed7-b292-4173-aa6a-4997094fb376",
+    "teacherId": "91459ab3-69f7-46b3-b4b9-d924202b28cd",
+    "materiaId": "44444444-aaaa-bbbb-cccc-444444444444"
+  },
+  {
+    "title": "Clase de Arte Básico",
+    "description": "Esta clase trata sobre arte aplicada.",
+    "categoryId": "63381ed7-b292-4173-aa6a-4997094fb376",
+    "teacherId": "4535b0ad-ec91-4c23-a908-72489bf1b475",
+    "materiaId": "44444444-aaaa-bbbb-cccc-444444444444"
+  },
+  {
+    "title": "Clase de Negocios Básico",
+    "description": "Esta clase trata sobre negocios aplicada.",
+    "categoryId": "352ef83a-9398-444c-9367-38353e95d111",
+    "teacherId": "3a8c7b83-e1ee-46b1-91e9-d0ffce941d48",
+    "materiaId": "22222222-aaaa-bbbb-cccc-222222222222"
+  },
+  {
+    "title": "Clase de Negocios Avanzado",
+    "description": "Esta clase trata sobre negocios aplicada.",
+    "categoryId": "352ef83a-9398-444c-9367-38353e95d111",
+    "teacherId": "91459ab3-69f7-46b3-b4b9-d924202b28cd",
+    "materiaId": "22222222-aaaa-bbbb-cccc-222222222222"
+  },
+  {
+    "title": "Clase de Negocios Básico",
+    "description": "Esta clase trata sobre negocios aplicada.",
+    "categoryId": "352ef83a-9398-444c-9367-38353e95d111",
+    "teacherId": "4535b0ad-ec91-4c23-a908-72489bf1b475",
+    "materiaId": "22222222-aaaa-bbbb-cccc-222222222222"
+  }
+]
