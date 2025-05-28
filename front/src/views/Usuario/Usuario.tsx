@@ -2,13 +2,29 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Check, Camera } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
+import axiosInstance from '../../services/axiosInstance';
 
 const UserProfile: React.FC = () => {
    const { user, setUser } = useUser();
    const fileInputRef = useRef<HTMLInputElement>(null);
-
    const [isModified, setIsModified] = useState(false);
    const [showSavedMsg, setShowSavedMsg] = useState(false);
+
+   useEffect(() => {
+      const userDataFromStorage = localStorage.getItem('user');
+      let userDataParsed;
+      if (userDataFromStorage) {
+         userDataParsed = JSON.parse(userDataFromStorage);
+      }
+      axiosInstance
+         .get(`/users/${userDataParsed.id}`)
+         .then((res) => {
+            setUser(res.data);
+         })
+         .catch((err) => {
+            console.log(err);
+         });
+   }, []);
 
    useEffect(() => {
       setIsModified(true);
