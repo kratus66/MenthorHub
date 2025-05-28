@@ -7,9 +7,9 @@ import { Request } from 'express';
 dotenv.config();
 
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dbje9gzug',  // Valor predeterminado si no se encuentra la variable de entorno
-  api_key: process.env.CLOUDINARY_API_KEY || '974511327978699',  // Valor predeterminado si no se encuentra la variable de entorno
-  api_secret: process.env.CLOUDINARY_API_SECRET || 'JFNwe3Sd0s3R1dd9rHLIfAfwLIg',  // Valor predeterminado si no se encuentra la variable de entorno
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME ,  // Valor predeterminado si no se encuentra la variable de entorno
+  api_key: process.env.CLOUDINARY_API_KEY ,  // Valor predeterminado si no se encuentra la variable de entorno
+  api_secret: process.env.CLOUDINARY_API_SECRET ,  // Valor predeterminado si no se encuentra la variable de entorno
 });
 
 
