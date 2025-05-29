@@ -27,10 +27,13 @@ import {
 } from '@nestjs/swagger';
 import { Payment, PaymentStatus, PaymentType } from './payment.entity';
 import axios from 'axios';
-
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { User } from '../users/user.entity';
+import { RoleGuard } from '../common/guards/role.guard';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 @ApiTags('Pagos')
 @ApiBearerAuth('JWT-auth')
-// @UseGuards(JwtAuthGuard, RoleGuard)
+@UseGuards(JwtAuthGuard, RoleGuard)
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
@@ -128,7 +131,7 @@ export class PaymentsController {
   @Post('paypal/capture/:orderId')
   @ApiOperation({ summary: 'Capturar orden de PayPal (manual desde backend)' })
   @ApiParam({ name: 'orderId', description: 'ID de la orden PayPal (token)' })
-  async capturePaypalOrder(@Param('orderId') orderId: string) {
+  async capturePaypalOrder(@Param('orderId') orderId: string, @CurrentUser() user: User) {
     try {
       const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString('base64');
 
@@ -154,13 +157,11 @@ export class PaymentsController {
         },
       );
 
-      const payerEmail = captureRes.payer.email_address;
       const amount = parseFloat(captureRes.purchase_units[0].payments.captures[0].amount.value);
       const currency = captureRes.purchase_units[0].payments.captures[0].amount.currency_code;
       const month = new Date().toISOString().slice(0, 7); // 'YYYY-MM'
 
-      const user = await this.paymentsService.getUserByEmail(payerEmail);
-      if (!user) throw new InternalServerErrorException('Usuario no encontrado para el pago PayPal');
+      console.log('🎯 Usuario logueado para asociar pago:', user.email);
 
       await this.paymentsService.savePayment({
         amount,
@@ -176,7 +177,16 @@ export class PaymentsController {
       await this.paymentsService.saveUser(user);
 
       return { message: 'Pago registrado y orden capturada correctamente', captureRes };
-    } catch (error) {
+    } catch (error) { 
+      console.log('❌ Error en capturePaypalOrder:', error);
+
+      if (typeof error === 'object' && error !== null) {
+        const err = error as any;
+        console.log('❌ ERROR al capturar orden PayPal:', err.response?.data || err.message);
+      } else {
+        console.log('❌ ERROR al capturar orden PayPal:', error);
+      }
+
       throw new InternalServerErrorException('Error al capturar la orden de PayPal');
     }
   }
