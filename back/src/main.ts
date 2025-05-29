@@ -5,12 +5,17 @@ import { IoAdapter } from "@nestjs/platform-socket.io";
 import { Server } from "socket.io";
 import { ClassSerializerInterceptor } from "@nestjs/common";
 import { SeederService } from "./seeder/seeder.service";  
+import { AuthService } from "./auth/auth.service";
+import passport, { initialize } from 'passport';
+import cookieParser from 'cookie-parser';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
 
   app.enableCors({
     origin: "*",
+    credentials:true,
   });
 
   app.useWebSocketAdapter(new IoAdapter(app));
@@ -44,6 +49,8 @@ async function bootstrap() {
       'JWT-auth' 
     )
     .build();
+    app.use(cookieParser());
+  app.use(passport.initialize())
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api", app, document);

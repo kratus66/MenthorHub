@@ -1,29 +1,34 @@
-    // src/email/email.service.ts
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Resend } from 'resend';
+// src/email/email.service.ts
+import nodemailer from 'nodemailer';
+import { Injectable } from '@nestjs/common';
+import { Subject } from 'rxjs';
 
 @Injectable()
 export class EmailService {
-  private resend: Resend;
+  private transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
 
-  constructor() {
-    this.resend = new Resend(process.env.RESEND_API_KEY);
-  }
-
-  async sendEmail(to: string, subject: string, html: string) {
-    try {
-      const response = await this.resend.emails.send({
-        from: 'MentorHub <onboarding@resend.dev>', // puedes personalizar el nombre
-        to: ['delivered@resend.dev'], // ✅ usar el valor recibido por parámetro
-        subject,
-        html,
-      });
+  async sendWelcomeEmail(to: string,Subject:string, html:string) {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
   
-      console.log('✅ RESPUESTA DE RESEND:', response);
-    } catch (error: any) {
-      console.error('❌ ERROR DE RESEND:', error.response?.data || error.message);
-      throw new InternalServerErrorException('No se pudo enviar el correo');
-    }
-  }
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to,
+      Subject,
+      html,
+    };
   
+    return transporter.sendMail(mailOptions);
+}
 }

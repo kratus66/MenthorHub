@@ -33,13 +33,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { Request, Response } from 'express';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
-
+import { EmailService } from '../email/email.service';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
     private jwtService: JwtService,
+    private emailService: EmailService,
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
   @Post('register')
@@ -50,6 +51,7 @@ export class AuthController {
     @Body() dto: RegisterDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
+    
     console.log('📨 Body:', dto);
     console.log('📷 Imagen recibida:', file);
   
@@ -63,8 +65,9 @@ export class AuthController {
     };
   
     return this.authService.register(registrationDto, file?.path);
+    
   }
-  /*
+  
   @Get('confirm-email')
   async confirmEmail(@Query('token') token: string) {
     try {
@@ -83,7 +86,7 @@ export class AuthController {
       throw new BadRequestException('Token inválido o expirado');
     }
   }
-  */
+  
 
   @Post('login')
   @ApiOperation({ summary: 'Iniciar sesión' })
@@ -94,6 +97,7 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
+
   @Get('google')
   @UseGuards(AuthGuard('google'))
   googleLogin() {}
@@ -103,36 +107,52 @@ export class AuthController {
   githubLogin() {}
 
   @Get('google/redirect')
-  @UseGuards(AuthGuard('google'))
-  async googleRedirect(
-    @Req() req: Request & { user: any }, 
-    @Res() res: Response
-  ) {
-    const result = await this.authService.handleOAuthProcess(req.user, 'google');
-    const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:4173';
-    const userInfo = encodeURIComponent(JSON.stringify(result.oauthUserInfo || result.user));
+@UseGuards(AuthGuard('google'))
+async googleRedirect(
+  @Req() req: Request & { user: any }, 
+  @Res() res: Response
+) {
+  const result = await this.authService.handleOAuthProcess(req.user, 'google');
+  const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:4173';
 
-    if (result.shouldCompleteProfile) {
-      return res.redirect(`${FRONTEND_URL}/register?userInfo=${userInfo}`);
-    }
+  const user = result.oauthUserInfo || result.user || result.RegisteredUser?.user || {};
+  const userInfo = encodeURIComponent(JSON.stringify(user));
 
-    return res.redirect(`${FRONTEND_URL}/login?userInfo=${userInfo}`);
-  }
-
-  @Get('github/redirect')
-  @UseGuards(AuthGuard('github'))
-  async githubRedirect(
-    @Req() req: Request & { user: any }, 
-    @Res() res: Response
-  ) {
-    const result = await this.authService.handleOAuthProcess(req.user, 'github');
-    const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:4173';
-    const userInfo = encodeURIComponent(JSON.stringify(result.oauthUserInfo || result.user));
-
-    if (result.shouldCompleteProfile) {
-      return res.redirect(`${FRONTEND_URL}/register?userInfo=${userInfo}`);
-    }
-
-    return res.redirect(`${FRONTEND_URL}/login?userInfo=${userInfo}`);
+  if (result.shouldCompleteProfile) {
+    return res.redirect(`${FRONTEND_URL}/register?userInfo=${userInfo}`);
+  } else {
+    const token = result.RegisteredUser?.token || '';
+    const encodedToken = encodeURIComponent(token);
+    console.log('usuario ya registrado',userInfo)
+    return res.redirect(`${FRONTEND_URL}/oauthlogin?token=${encodedToken}&userinfo=${userInfo}`);
   }
 }
+
+
+
+  @Get('github/redirect')
+@UseGuards(AuthGuard('github'))
+async githubRedirect(
+  @Req() req: Request & { user: any }, 
+  @Res() res: Response
+) {
+  const result = await this.authService.handleOAuthProcess(req.user, 'github');
+  const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:4173';
+
+  const user = result.oauthUserInfo || result.user || result.RegisteredUser?.user || {};
+  const userInfo = encodeURIComponent(JSON.stringify(user));
+
+  if (result.shouldCompleteProfile) {
+    return res.redirect(`${FRONTEND_URL}/register?userInfo=${userInfo}`);
+  } else {
+    const token = result.RegisteredUser?.token || '';
+    const encodedToken = encodeURIComponent(token);
+    
+    return res.redirect(`${FRONTEND_URL}/oauthlogin?token=${encodedToken}&userinfo=${userInfo}`);
+  }
+}
+  
+
+    
+  }
+

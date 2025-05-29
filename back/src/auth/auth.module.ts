@@ -11,6 +11,7 @@ import { GoogleStrategy } from './google.strategy';
 import { GithubStrategy } from './github.strategy';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { EmailModule } from '../email/email.module';
+import { EmailService } from '../email/email.service';
 // Log de carga del módulo
 console.log('AuthModule cargado');
 
@@ -24,6 +25,7 @@ console.log('AuthModule cargado');
     EmailModule,
     JwtModule.registerAsync({
       imports: [ConfigModule,
+                EmailModule
         
       ],
       useFactory: async (configService: ConfigService) => {
@@ -40,6 +42,7 @@ console.log('AuthModule cargado');
   controllers: [AuthController],
   providers: [
     AuthService,
+    EmailService,
     JwtStrategy,
     GoogleStrategy,
     GithubStrategy,
