@@ -22,7 +22,7 @@ export class MateriasService {
     if (!category) throw new NotFoundException('Categoría no encontrada');
 
     const materia = this.materiaRepo.create({
-      descripcion: dto.descripcion,
+      name: dto.name,
       imagenUrl: dto.imagenUrl,
     category: category,
     });
@@ -45,7 +45,7 @@ export class MateriasService {
       }
   
       const materia = this.materiaRepo.create({
-        descripcion: dto.descripcion,
+        name: dto.name,
         imagenUrl: dto.imagenUrl,
         category,
       });

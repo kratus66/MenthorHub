@@ -123,7 +123,7 @@ async googleRedirect(
   } else {
     const token = result.RegisteredUser?.token || '';
     const encodedToken = encodeURIComponent(token);
-    console.log('usuario ya registrado',userInfo)
+    console.log('usuario ya registrado, procediendo a logear',userInfo)
     return res.redirect(`${FRONTEND_URL}/oauthlogin?token=${encodedToken}&userinfo=${userInfo}`);
   }
 }

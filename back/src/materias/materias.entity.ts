@@ -12,7 +12,7 @@ export class Materias {
   id: string;
 
   @Column()
-  descripcion: string;
+  name: string;
 
   @Column({ nullable: true })
   imagenUrl?: string;
