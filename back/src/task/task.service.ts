@@ -21,24 +21,36 @@ export class TasksService {
   ) {}
 
   async createByTeacher(teacherId: string, dto: CreateTaskDto): Promise<Task> {
-    const classRef = await this.classRepository.findOne({
-      where: { id: dto.classId },
-      relations: ['teacher'],
-    });
+  console.log('📥 DTO recibido:', dto);
+  console.log('👤 ID del profesor autenticado:', teacherId);
 
-    if (!classRef || classRef.teacher.id !== teacherId) {
-      throw new ForbiddenException('No puedes crear tareas para esta clase');
-    }
+  const classRef = await this.classRepository.findOne({
+    where: { id: dto.classId },
+    relations: ['teacher'],
+  });
 
-    const task = this.taskRepository.create({
-      title: dto.title,
-      instructions: dto.instructions,
-      dueDate: new Date(dto.dueDate),
-      classRef,
-    });
-
-    return this.taskRepository.save(task);
+  if (!classRef) {
+    console.log('❌ Clase no encontrada');
+    throw new NotFoundException('Clase no encontrada');
   }
+
+  console.log('📚 Clase encontrada:', classRef);
+  console.log('👨‍🏫 ID del profesor en la clase:', classRef.teacher?.id);
+
+  if (classRef.teacher.id !== teacherId) {
+    console.log('⛔ No autorizado: la clase no pertenece al profesor');
+    throw new ForbiddenException('No puedes crear tareas para esta clase');
+  }
+
+  const task = this.taskRepository.create({
+    title: dto.title,
+    instructions: dto.instructions,
+    dueDate: new Date(dto.dueDate),
+    classRef,
+  });
+
+  return this.taskRepository.save(task);
+}
 
   async findByTeacher(teacherId: string, page = 1, limit = 10): Promise<Task[]> {
     return this.taskRepository

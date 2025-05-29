@@ -32,8 +32,8 @@ import { Roles } from '../common/decorators/role';
 import { UpdateTaskDto } from './dto/update-task.dto';
 
 @ApiTags('Tasks')
-// @ApiBearerAuth('JWT-auth')
-// @UseGuards(JwtAuthGuard, RoleGuard)
+ @ApiBearerAuth('JWT-auth')
+ @UseGuards(JwtAuthGuard, RoleGuard)
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
