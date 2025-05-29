@@ -14,6 +14,8 @@ import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from '../dto/update-class.dto';
 import { cloudinary } from '../config/cloudinary.config';
 import { Payment, PaymentStatus, PaymentType } from '../payment/payment.entity';
+import { sanitizeName } from '../common/utils/sanitize-name';
+
 
 @Injectable()
 export class ClassesService {
@@ -27,25 +29,30 @@ export class ClassesService {
 
   async create(createDto: CreateClassDto, files?: Express.Multer.File[]): Promise<Class> {
     console.log('📥 Datos recibidos en create:', createDto);
-
+  
     const { title, description, teacherId, categoryId, materiaId, sector } = createDto;
-
+  
     const teacher = await this.userRepository.findOne({
       where: { id: teacherId, role: 'teacher' },
     });
     if (!teacher) throw new NotFoundException('Profesor no encontrado');
-
-    // Lógica de validación mensual
+  
+    const category = await this.categoryRepository.findOne({ where: { id: categoryId } });
+    if (!category) throw new NotFoundException('Categoría no encontrada');
+  
+    const materia = await this.materiaRepository.findOne({ where: { id: materiaId } });
+    if (!materia) throw new NotFoundException('Materia no encontrada');
+    /* // Lógica de validación mensual
     const latestPayment = await this.paymentRepository.findOne({
       where: {
         user: { id: teacherId },
-        type: PaymentType.TEACHER_SUBSCRIPTION,
-        status: PaymentStatus.COMPLETED,
+        //type: PaymentType.TEACHER_SUBSCRIPTION,
+        //status: PaymentStatus.COMPLETED,
       },
       order: { createdAt: 'DESC' },
     });
 
-    if (!latestPayment) {
+     (!latestPayment) {
       console.log('⛔ Profesor sin historial de pago mensual');
       throw new ForbiddenException('Debes pagar la suscripción mensual para crear clases.');
     }
@@ -59,40 +66,59 @@ export class ClassesService {
       console.log('⛔ Suscripción expirada hace', diffInDays, 'días');
       throw new ForbiddenException('Tu suscripción ha expirado. Debes renovarla para seguir creando clases.');
     }
-
-    const category = await this.categoryRepository.findOne({ where: { id: categoryId } });
-    if (!category) throw new NotFoundException('Categoría no encontrada');
-
-    const materia = await this.materiaRepository.findOne({ where: { id: materiaId } });
-    if (!materia) throw new NotFoundException('Materia no encontrada');
-
-    const multimediaUrls = files?.map((file) => file.path) ?? [];
+*/
 
     const newClass = this.classRepository.create({
       title,
       description,
       sector,
       materia,
-      multimedia: multimediaUrls,
       teacher,
       category,
+      multimedia: [],
     });
-
+  
     const savedClass = await this.classRepository.save(newClass);
     console.log('✅ Clase guardada con ID:', savedClass.id);
-
+  
+    // 🧼 Nombres para carpetas
+    const sanitizedCategory = sanitizeName(category.name);
+    const sanitizedMateria = sanitizeName(materia.name);
+    const sanitizedTitle = sanitizeName(savedClass.title);
+  
+    const baseCategoryPath = `categorias/${sanitizedCategory}`;
+    const baseMateriaPath = `${baseCategoryPath}/materias/${sanitizedMateria}`;
+    const classFolderPath = `${baseMateriaPath}/clases/${sanitizedTitle}-${savedClass.id}`;
+  
+    // 🧠 Opción híbrida: aseguramos que existan las carpetas base
     try {
-      await cloudinary.api.create_folder(`classes/${savedClass.title.replace(/ /g, '_')}-${savedClass.id}`);
+      await cloudinary.api.create_folder(baseCategoryPath);
+      await cloudinary.api.create_folder(baseMateriaPath);
+      await cloudinary.api.create_folder(`${baseMateriaPath}/clases`);
+      await cloudinary.api.create_folder(classFolderPath);
     } catch (error) {
-      if (error instanceof Error) {
-        console.warn(`⚠️ No se pudo crear la carpeta: ${savedClass.title}-${savedClass.id}`, error.message);
-      } else {
-        console.warn('⚠️ No se pudo crear la carpeta (error desconocido)');
-      }
+      console.warn('⚠️ Error creando carpetas:', error instanceof Error ? error.message : error);
     }
-
+  
+    // 📤 Subida de archivos multimedia
+    const multimediaUrls: string[] = [];
+  
+    if (files && files.length > 0) {
+      for (const file of files) {
+        const uploadResult = await cloudinary.uploader.upload(file.path, {
+          folder: classFolderPath,
+          resource_type: 'auto',
+        });
+        multimediaUrls.push(uploadResult.secure_url);
+      }
+  
+      savedClass.multimedia = multimediaUrls;
+      await this.classRepository.save(savedClass);
+    }
+  
     return savedClass;
   }
+  
 
   async update(id: string, updateDto: UpdateClassDto): Promise<Class> {
     console.log('🛠️ Actualizando clase:', id);
@@ -271,4 +297,6 @@ export class ClassesService {
     clase.students.splice(studentIndex, 1);
     return this.classRepository.save(clase);
   }
+
+  
 }

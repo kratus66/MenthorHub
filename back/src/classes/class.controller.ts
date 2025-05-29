@@ -27,6 +27,7 @@ import { UpdateClassDto } from '../dto/update-class.dto';
 import { Class } from './class.entity';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { EnrollStudentDto } from './dto/enroll-student.dto';
+import { CloudinaryFileInterceptor, CloudinaryMultipleFilesInterceptor } from '../common/interceptors/cloudinary.interceptor';
 
 @ApiTags('Clases')
 @Controller('classes')
@@ -34,7 +35,7 @@ export class ClassesController {
   constructor(private readonly classesService: ClassesService) {}
 
   @Post()
-  @UseInterceptors(AnyFilesInterceptor())
+  @UseInterceptors(CloudinaryMultipleFilesInterceptor('multimedia'))
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Crear una nueva clase con multimedia' })
   @ApiBody({ description: 'Datos para crear una clase con archivos multimedia', type: CreateClassDto })

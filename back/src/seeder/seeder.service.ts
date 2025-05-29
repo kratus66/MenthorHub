@@ -93,7 +93,7 @@ export class SeederService implements OnApplicationBootstrap {
   }
 
   private async seedMaterias() {
-    const data: { id: string; descripcion: string; imagenUrl?: string; categoryId: string }[] =
+    const data: { id: string; name: string; imagenUrl?: string; categoryId: string }[] =
       this.loadJsonFile('materias-with-uuid.json');
 
     const existing = await this.materiaRepo.count();
@@ -107,13 +107,13 @@ export class SeederService implements OnApplicationBootstrap {
     for (const m of data) {
       const category = await this.categoryRepo.findOne({ where: { id: m.categoryId } });
       if (!category) {
-        console.warn(`⚠️ Categoría no encontrada para materia: ${m.descripcion}`);
+        console.warn(`⚠️ Categoría no encontrada para materia: ${m.name}`);
         continue;
       }
 
       const nuevaMateria = this.materiaRepo.create({
         id: m.id,
-        descripcion: m.descripcion,
+        name: m.name,
         imagenUrl: m.imagenUrl,
         category,
       });
