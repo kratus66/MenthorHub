@@ -22,7 +22,6 @@ export class PaymentsService {
     const user = await this.userRepo.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('Usuario no encontrado');
 
-    // Solo permitir pago si no existe uno para ese mes
     const existing = await this.paymentRepo.findOne({
       where: {
         user: { id: userId },
@@ -100,7 +99,14 @@ export class PaymentsService {
   }
 
   async registerPaypalPayment(payerEmail: string, amount: number, currency: string, month: string) {
-    const user = await this.userRepo.findOne({ where: { email: payerEmail } });
+    const sandboxEmailMap: Record<string, string> = {
+      // Mapea tu correo sandbox al correo real del usuario registrado
+      // Ejemplo:
+      // 'sb-xxxxxxxxxxx@personal.example.com': 'usuario.real@example.com'
+    };
+
+    const realEmail = sandboxEmailMap[payerEmail] || payerEmail;
+    const user = await this.userRepo.findOne({ where: { email: realEmail } });
     if (!user) throw new NotFoundException('Usuario no encontrado para el pago PayPal');
 
     const payment = this.paymentRepo.create({
