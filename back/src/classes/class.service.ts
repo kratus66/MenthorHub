@@ -45,20 +45,20 @@ export class ClassesService {
       order: { createdAt: 'DESC' },
     });
 
-    if (!latestPayment) {
-      console.log('⛔ Profesor sin historial de pago mensual');
-      throw new ForbiddenException('Debes pagar la suscripción mensual para crear clases.');
-    }
+    // if (!latestPayment) {
+    //   console.log('⛔ Profesor sin historial de pago mensual');
+    //   throw new ForbiddenException('Debes pagar la suscripción mensual para crear clases.');
+    // }
 
-    const paymentDate = new Date(latestPayment.createdAt);
-    const now = new Date();
-    const diffInMs = now.getTime() - paymentDate.getTime();
-    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+    // const paymentDate = new Date(latestPayment.createdAt);
+    // const now = new Date();
+    // const diffInMs = now.getTime() - paymentDate.getTime();
+    // const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
 
-    if (diffInDays > 30) {
-      console.log('⛔ Suscripción expirada hace', diffInDays, 'días');
-      throw new ForbiddenException('Tu suscripción ha expirado. Debes renovarla para seguir creando clases.');
-    }
+    // if (diffInDays > 30) {
+    //   console.log('⛔ Suscripción expirada hace', diffInDays, 'días');
+    //   throw new ForbiddenException('Tu suscripción ha expirado. Debes renovarla para seguir creando clases.');
+    // }
 
     const category = await this.categoryRepository.findOne({ where: { id: categoryId } });
     if (!category) throw new NotFoundException('Categoría no encontrada');

@@ -106,9 +106,9 @@ const handleSubmit = async (e: React.FormEvent) => {
   required
 >
   <option value="">Selecciona una categoría</option>
-  {allCategories.map((categoria)=>{
+  {allCategories.map((categoria,index)=>{
     return(
-      <option value={categoria.id}>{categoria.name}</option>
+      <option key={index}  value={categoria.id}>{categoria.name}</option>
     );
   })}
 </select>
@@ -120,9 +120,9 @@ const handleSubmit = async (e: React.FormEvent) => {
   required
 >
   <option value="">Selecciona una materia</option>
-  {allMaterias.map((materia)=>{
+  {allMaterias.map((materia,index)=>{
   return(
-    <option value={materia.id}>{materia.descripcion}</option>
+    <option key={index} value={materia.id}>{materia.descripcion}</option>
   );
   })};
 </select>
