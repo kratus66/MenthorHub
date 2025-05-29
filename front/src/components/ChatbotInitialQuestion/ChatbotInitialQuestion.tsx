@@ -2,10 +2,10 @@ const ChatbotInitialQuestion = () => {
    return (
       <>
          <div className="flex items-start gap-2">
-            <div className="bg-blue-600 p-1 rounded-full">
-               <img src="/chatbot.svg" alt="Chatbot" className="invert" />
+            <div className="bg-blue-600 rounded-full overflow-hidden">
+               <img src="/chatbot.jpg" alt="Chatbot" className="w-[3rem]" />
             </div>
-            <div>
+            <div className="w-3/4">
                <p className="text-blue-600 text-lg">
                   <i> Chatbot:</i>
                </p>
