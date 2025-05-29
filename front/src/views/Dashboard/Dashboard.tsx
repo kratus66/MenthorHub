@@ -4,6 +4,7 @@ import CursosLista from '../../components/CursosLista/CursosLista';
 import { useEffect, useState } from 'react';
 import type { CategoryType } from '../../types/CategoryType';
 import { useNavigate } from 'react-router-dom';
+import Chatbot from '../../components/Chatbot/Chatbot';
 
 type DashboardProps = {
    filtros: {
@@ -59,7 +60,7 @@ const Dashboard = ({ filtros, setFiltros }: DashboardProps) => {
 
    return (
       <>
-         <div className="w-full h-[calc(100vh-68px)] flex bg-[#f9fafb]">
+         <div className="w-full h-[calc(100vh-68px)] flex bg-[#f9fafb] relative">
             <div className="h-[calc(100% - 68px)] w-3/4 m-4 flex flex-col gap-6 overflow-y-scroll ps-5">
                <CategoriaScroll
                   onCategoriaSeleccionada={setCategoriaSeleccionada}
@@ -85,6 +86,7 @@ const Dashboard = ({ filtros, setFiltros }: DashboardProps) => {
             <div className="h-[calc(100% - 68px)] w-1/4 m-4 bg-[#f3f4f6] rounded-xl">
                <h2></h2>
             </div>
+            <Chatbot />
          </div>
       </>
    );
