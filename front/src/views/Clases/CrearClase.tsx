@@ -1,22 +1,43 @@
 import { useEffect, useRef, useState } from "react";
 import { ImageIcon, Video, Paperclip } from "lucide-react";
 import axiosInstance from "../../services/axiosInstance"; 
+import type { CategoryType } from "../../types/CategoryType";
+import type { MateriaType } from "../../types/MateriaType";
 
 export default function CrearClase() {
-
-
-  const [sector, setSector] = useState("");
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [teacherId, setTeacherId] = useState("");
- 
+  const [categoryId, setCategoryId] = useState("");
   const [materia, setMateria] = useState("");
+  const [allCategories, setAllCategories] = useState<CategoryType[]>([]);
+  const[allMaterias, setAllMaterias] = useState<MateriaType[]>([]);
   const [archivos, setArchivos] = useState<File[]>([]);
-
+ 
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);  
+
+useEffect(() => {
+ axiosInstance.get(`/categories`).then((res) => {
+  console.log("categories",res.data.data);
+  setAllCategories(res.data.data);
+}).catch((err) => {
+  console.log("Error al obtener las categorías",err);
+});
+},[]);
+
+
+
+useEffect(() => {
+ axiosInstance.get(`/materias`).then((res) => {
+  console.log("materias",res.data);
+  setAllMaterias(res.data);
+}).catch((err) => {
+  console.log("Error al obtener las materias",err);
+});
+},[]);
+
 
 useEffect(() => {
   const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
@@ -31,83 +52,84 @@ useEffect(() => {
       setArchivos((prev) => [...prev, ...Array.from(selectedFiles)]);
     }
   };
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-   formData.append("title", title);
-formData.append("description", description);
-formData.append("teacherId", teacherId);
-formData.append("materiaId", materia); 
-formData.append("sector", sector);
-archivos.forEach((archivo, index) => {
-  formData.append("archivos", archivo);
-});
-
-
-    
-
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("No estás autenticado. Por favor inicia sesión.");
-        return;
-
-      }
-
-      const response = await axiosInstance.post("/classes", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      const data = response.data;
-      console.log("Clase creada:", data);
-       setTitle(""); 
-  setDescription("");
-  setSector("");
-  setMateria("");
-  setArchivos([]);
-    } catch (err) {
-      console.error("Error al crear la clase:", err);
-    }
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("No estás autenticado. Por favor inicia sesión.");
+    return;
   }
-return (
-  <div className="min-h-screen bg-blue-600 flex gap-4 px-6 py-8">
 
+ 
+  const formData = new FormData();
+  formData.append("id", "");
+  formData.append("title", title);
+  formData.append("description", description);
+  formData.append("categoryId", categoryId);
+  formData.append("materiaId", materia);
+
+  
+  // multimedia.forEach((file: File) => {
+  //   formData.append("multimedia", file);
+  // });
+
+  try {
+    const response = await axiosInstance.post("/classes", formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+       
+      },
+    });
+
+    console.log("Clase creada:", response.data);
+  } catch (err) {
+    console.error("Error al crear la clase:", err);
+  }
+};
+
+ return (
+  <div className="min-h-screen bg-blue-600 flex gap-4 px-6 py-8">
+    
     <form
       onSubmit={handleSubmit}
+      encType="multipart/form-data"
       className="bg-white border-4 border-blue-400 rounded-xl p-6 flex-1 shadow-lg"
     >
-
+  
       <div className="flex items-center gap-2 mb-4">
         <h2 className="text-2xl font-bold text-blue-600">Crear Clase</h2>
+      <select
+  value={categoryId}
+  onChange={(e) => setCategoryId(e.target.value)}
+  className="border rounded px-2 py-1 text-sm"
+  required
+>
+  <option value="">Selecciona una categoría</option>
+  {allCategories.map((categoria)=>{
+    return(
+      <option value={categoria.id}>{categoria.name}</option>
+    );
+  })}
+</select>
 
-        <select
-          value={sector}
-          onChange={(e) => setSector(e.target.value)}
-          className="border rounded px-2 py-1 text-sm"
-          required
-        >
-          <option value="">Selecciona un sector</option>
-          <option value="Tecnología">Tecnología</option>
-          <option value="Educación">Educación</option>
-        </select>
+<select
+  value={materia}
+  onChange={(e) => setMateria(e.target.value)}
+  className="border rounded px-2 py-1 text-sm"
+  required
+>
+  <option value="">Selecciona una materia</option>
+  {allMaterias.map((materia)=>{
+  return(
+    <option value={materia.id}>{materia.descripcion}</option>
+  );
+  })};
+</select>
 
-        <select
-          value={materia}
-          onChange={(e) => setMateria(e.target.value)}
-          className="border rounded px-2 py-1 text-sm"
-          required
-        >
-          <option value="">Selecciona una materia</option>
-          <option value="informática">Informática</option>
-          <option value="biología">Biología</option>
-        </select>
       </div>
 
+    
       <input
         type="text"
         placeholder="Clase/Título"
@@ -117,6 +139,7 @@ return (
         required
       />
 
+   
       <textarea
         placeholder="Descripción de la clase"
         value={description}
@@ -125,10 +148,12 @@ return (
         required
       />
 
-      {/* Campos ocultos para materia y teacherId */}
+      
       <input type="text" value={materia} onChange={(e) => setMateria(e.target.value)} className="hidden" required />
       <input type="text" value={teacherId} onChange={(e) => setTeacherId(e.target.value)} className="hidden" required />
+      <input type="text" value={categoryId} onChange={(e) => setCategoryId(e.target.value)} className="hidden" required />
 
+     
       <div className="flex items-center gap-4 mb-4">
         <button
           type="button"
@@ -158,6 +183,7 @@ return (
         <input type="file" accept=".pdf,.doc,.docx,.zip,.rar" ref={fileInputRef} onChange={handleFileChange} hidden />
       </div>
 
+     
       {archivos.length > 0 && (
         <ul className="text-sm text-gray-600 mb-4">
           {archivos.map((file, i) => (
@@ -166,21 +192,14 @@ return (
         </ul>
       )}
 
+    
       <div className="flex justify-end gap-3 mt-6">
-      <button
-  type="button"
-  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
-  onClick={() => {
-    setTitle("");
-    setDescription("");
-    setSector("");
-    setMateria("");
-    setArchivos([]);
-  }}
->
-  Cancelar
-</button>
-
+        <button
+          type="button"
+          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
+        >
+          Cancelar
+        </button>
         <button
           type="submit"
           className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg"
@@ -190,6 +209,7 @@ return (
       </div>
     </form>
 
+  
     <aside className="w-72 bg-white p-5 rounded-xl shadow-lg border border-gray-200">
       <h3 className="font-semibold mb-3 text-blue-600 text-lg">Sugerencias</h3>
       <ul className="space-y-3 text-sm text-blue-900">
@@ -204,8 +224,6 @@ return (
         </li>
       </ul>
     </aside>
-
   </div>
 );
-
 }

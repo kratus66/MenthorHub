@@ -45,7 +45,7 @@ const CursoDetalle = () => {
                   <strong>Categoría:</strong> {curso.category.name}
                </p>
                <p className="text-gray-600 mt-2">
-                  <strong>Materia:</strong> {curso.materia.descripcion}
+                  <strong>Materia:</strong> {curso.materia.description}
                </p>
                <p className="text-gray-700 mt-4">
                   {curso.description ||
