@@ -134,6 +134,8 @@ export class PaymentsController {
     }
   }
 
+ // ... (toda la parte de imports sin cambios)
+
   @Post('paypal/capture/:orderId')
   @Roles(Role.Teacher, Role.Student)
   @ApiOperation({ summary: 'Capturar orden de PayPal (manual desde backend)' })
