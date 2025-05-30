@@ -25,6 +25,17 @@ const ChatWindow = ({
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
    }, [chatLog, optionsVisible]);
 
+   useEffect(() => {
+      if (!isWindowVisible) {
+         const timeout = setTimeout(() => {
+            setChatLog([]);
+            setOptionsVisible(true);
+         }, 500);
+
+         return () => clearTimeout(timeout);
+      }
+   }, [isWindowVisible]);
+
    const handleUserChoice = async (text: {
       frase: string;
       palabra: string;
