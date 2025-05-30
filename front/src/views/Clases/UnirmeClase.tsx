@@ -1,13 +1,45 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
+import axiosInstance from '../../services/axiosInstance';
 
 const UnirmeClase: React.FC = () => {
   const [codigo, setCodigo] = useState('');
+  const [mensaje, setMensaje] = useState('');
+  const [cargando, setCargando] = useState(false);
 
-  const handleUnirme = (e: React.FormEvent) => {
+  
+  const studentId = localStorage.getItem('studentId');
+
+  const handleUnirme = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Solicitando unirse a la clase con código: ${codigo}`);
-    // Aquí hay que llamar a la API para unirse a la clase
-    setCodigo('');
+    setMensaje('');
+    setCargando(true);
+
+    if (!studentId) {
+      setMensaje('❌ No se encontró tu ID de alumno. Inicia sesión nuevamente.');
+      setCargando(false);
+      return;
+    }
+
+    try {
+      await axiosInstance.post(
+  `/classes/${codigo}/enroll`,
+  { studentId },
+      );
+
+      setMensaje('✅ Te uniste correctamente a la clase.');
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        setMensaje('❌ Clase no encontrada. Verifica el código.');
+      } else if (error.response?.status === 400) {
+        setMensaje('❌ Ya estás unido a esta clase.');
+      } else {
+        setMensaje('❌ Error al intentar unirse a la clase.');
+      }
+    } finally {
+      setCargando(false);
+      setCodigo('');
+    }
   };
 
   return (
@@ -24,10 +56,12 @@ const UnirmeClase: React.FC = () => {
         />
         <button
           type="submit"
-          className="bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
+          disabled={cargando}
+          className="bg-green-600 text-white py-2 rounded hover:bg-green-700 transition disabled:opacity-50"
         >
-          Unirme
+          {cargando ? 'Uniéndote...' : 'Unirme'}
         </button>
+        {mensaje && <p className="text-sm text-center mt-2">{mensaje}</p>}
       </form>
     </div>
   );
