@@ -57,10 +57,10 @@ export class ClassesService {
       throw new ForbiddenException('Debes pagar la suscripción mensual para crear clases.');
     }
 
-    const paymentDate = new Date(latestPayment.createdAt);
-    const now = new Date();
-    const diffInMs = now.getTime() - paymentDate.getTime();
-    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+    // const paymentDate = new Date(latestPayment.createdAt);
+    // const now = new Date();
+    // const diffInMs = now.getTime() - paymentDate.getTime();
+    // const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
 
     if (diffInDays > 30) {
       console.log('⛔ Suscripción expirada hace', diffInDays, 'días');
