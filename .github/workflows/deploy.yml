@@ -24,8 +24,9 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -e
-            echo "Desplegando en la rama: ${GITHUB_REF}"
-            branch=${GITHUB_REF#refs/heads/}
+            echo "Desplegando en la rama: ${{ github.ref }}"
+            branch="${{ github.ref }}"
+            branch=${branch#refs/heads/}
             echo "Branch detectado: $branch"
             
             # Actualizamos el repositorio en el servidor acorde a la rama
