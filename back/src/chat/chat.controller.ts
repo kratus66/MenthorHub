@@ -5,6 +5,7 @@ import {
   Body,
   Param,
   InternalServerErrorException,
+  UseGuards,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import {
@@ -13,15 +14,23 @@ import {
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { CreateChatDto } from './dto/create-chat.dto';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { RoleGuard } from '../common/guards/role.guard';
+import { Roles } from '../common/decorators/role';
+import { Role } from '../common/constants/roles.enum';
 
 @ApiTags('Chat')
+@ApiBearerAuth('JWT-auth')
+@UseGuards(JwtAuthGuard, RoleGuard)
 @Controller('chat')
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Get('class/:classId')
+  @Roles(Role.Teacher, Role.Student)
   @ApiOperation({ summary: 'Obtener mensajes de una clase por ID' })
   @ApiParam({
     name: 'classId',
@@ -48,6 +57,7 @@ export class ChatController {
   }
 
   @Post('send')
+  @Roles(Role.Teacher, Role.Student)
   @ApiOperation({ summary: 'Enviar un mensaje a una clase' })
   @ApiBody({
     description: 'Datos del mensaje',

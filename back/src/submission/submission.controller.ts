@@ -78,6 +78,7 @@ export class SubmissionsController {
   }
 
   @Get()
+  @Roles(Role.Teacher, Role.Admin)
   @ApiOperation({ summary: 'Obtener todas las entregas con paginación' })
   @ApiQuery({ name: 'page', required: false, example: 1 })
   @ApiQuery({ name: 'limit', required: false, example: 10 })
@@ -86,6 +87,7 @@ export class SubmissionsController {
   }
 
   @Get('eliminadas')
+  @Roles(Role.Teacher, Role.Admin)
   @ApiOperation({ summary: 'Obtener entregas eliminadas (profesor/admin)' })
   @ApiResponse({ status: 200, description: 'Listado de entregas eliminadas' })
   async findEliminadas() {
@@ -93,26 +95,35 @@ export class SubmissionsController {
   }
 
   @Get('my-submissions')
+  @Roles(Role.Student)
+  @ApiOperation({ summary: 'Obtener entregas propias del estudiante autenticado' })
   async findMy(@Req() req: any) {
     return this.submissionsService.findByStudent(req.user.sub);
   }
 
   @Get(':id')
+  @Roles(Role.Student, Role.Teacher, Role.Admin)
+  @ApiOperation({ summary: 'Obtener una entrega por ID' })
   async findOne(@Param('id') id: string) {
     return this.submissionsService.findOne(id);
   }
 
   @Put(':id/restore')
+  @Roles(Role.Teacher, Role.Admin)
+  @ApiOperation({ summary: 'Restaurar una entrega eliminada' })
   async restore(@Param('id') id: string) {
     return this.submissionsService.restore(id);
   }
 
   @Put(':id')
+  @Roles(Role.Student)
+  @ApiOperation({ summary: 'Actualizar una entrega (solo estudiante)' })
   async update(@Param('id') id: string, @Body() dto: UpdateSubmissionDto) {
     return this.submissionsService.update(id, dto);
   }
 
   @Delete(':id')
+  @Roles(Role.Student, Role.Admin)
   @ApiOperation({ summary: 'Eliminar una entrega (estudiante o admin)' })
   @ApiParam({ name: 'id', description: 'UUID de la entrega' })
   @ApiResponse({ status: 200, description: 'Entrega eliminada' })
@@ -120,7 +131,3 @@ export class SubmissionsController {
     return this.submissionsService.remove(id);
   }
 }
-
-
-
-
