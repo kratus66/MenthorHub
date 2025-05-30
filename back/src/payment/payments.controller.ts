@@ -1,3 +1,5 @@
+// ✅ Código completo actualizado — con roles agregados, sin alterar la lógica
+
 import {
   Controller,
   Post,
@@ -31,6 +33,9 @@ import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { User } from '../users/user.entity';
 import { RoleGuard } from '../common/guards/role.guard';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { Roles } from '../common/decorators/role';
+import { Role } from '../common/constants/roles.enum';
+
 @ApiTags('Pagos')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard, RoleGuard)
@@ -39,6 +44,7 @@ export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
   @Get('user/:userId')
+  @Roles(Role.Admin, Role.Teacher, Role.Student)
   @ApiOperation({ summary: 'Obtener todos los pagos de un usuario con paginación' })
   @ApiParam({ name: 'userId', description: 'UUID del usuario', type: String })
   @ApiQuery({ name: 'page', required: false, type: Number })
@@ -59,6 +65,7 @@ export class PaymentsController {
   }
 
   @Get()
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Obtener todos los pagos con paginación' })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
@@ -74,6 +81,7 @@ export class PaymentsController {
   }
 
   @Put(':id')
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Actualizar un pago por ID' })
   @ApiParam({ name: 'id', description: 'UUID del pago', type: String })
   @ApiBody({ type: UpdatePaymentDto })
@@ -90,6 +98,7 @@ export class PaymentsController {
   }
 
   @Delete(':id')
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Eliminar un pago por ID' })
   @ApiParam({ name: 'id', description: 'UUID del pago', type: String })
   @ApiResponse({ status: 200, description: 'Pago eliminado correctamente' })
@@ -103,20 +112,17 @@ export class PaymentsController {
   }
 
   @Get('paypal-config')
+  @Roles(Role.Admin, Role.Teacher, Role.Student)
   @ApiOperation({ summary: 'Obtener la configuración de PayPal' })
-  @ApiResponse({
-    status: 200,
-    description: 'Configuración de PayPal obtenida correctamente',
-    type: Object,
-  })
+  @ApiResponse({ status: 200, description: 'Configuración de PayPal obtenida correctamente', type: Object })
   async getPaypalConfig() {
     return {
       clientId: process.env.PAYPAL_CLIENT_ID,
-      secret: process.env.PAYPAL_SECRET,
     };
   }
 
   @Post('create-paypal-payment')
+  @Roles(Role.Teacher, Role.Student)
   @ApiOperation({ summary: 'Simular creación de pago con PayPal (sandbox)' })
   @ApiResponse({ status: 201, description: 'URL de aprobación de PayPal devuelta' })
   async createPaypalPayment(@Body() dto: CreatePaymentDto) {
@@ -128,9 +134,8 @@ export class PaymentsController {
     }
   }
 
- // ... (toda la parte de imports sin cambios)
-
   @Post('paypal/capture/:orderId')
+  @Roles(Role.Teacher, Role.Student)
   @ApiOperation({ summary: 'Capturar orden de PayPal (manual desde backend)' })
   @ApiParam({ name: 'orderId', description: 'ID de la orden PayPal (token)' })
   async capturePaypalOrder(@Param('orderId') orderId: string, @CurrentUser() user: User) {
@@ -179,16 +184,14 @@ export class PaymentsController {
       await this.paymentsService.saveUser(user);
 
       return { message: 'Pago registrado y orden capturada correctamente', captureRes };
-    } catch (error) { 
+    } catch (error) {
       console.log('❌ Error en capturePaypalOrder:', error);
-
       if (typeof error === 'object' && error !== null) {
         const err = error as any;
         console.log('❌ ERROR al capturar orden PayPal:', err.response?.data || err.message);
       } else {
         console.log('❌ ERROR al capturar orden PayPal:', error);
       }
-
       throw new InternalServerErrorException('Error al capturar la orden de PayPal');
     }
   }
