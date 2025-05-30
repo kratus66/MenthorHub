@@ -22,13 +22,13 @@ export default defineConfig(({ mode }): UserConfig => {
   };
 
   if (mode === "production") {
-    config.server = {
+/*     config.server = {
       ...config.server,
       https: {
         key: "/etc/letsencrypt/live/mentorhub.info.gf/privkey.pem",
         cert: "/etc/letsencrypt/live/mentorhub.info.gf/fullchain.pem",
       },
-    };
+    }; */
   }
 
   return config;
