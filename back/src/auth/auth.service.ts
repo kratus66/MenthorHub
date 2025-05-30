@@ -4,10 +4,18 @@ import {
   UnauthorizedException,
   NotFoundException,
 } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  UnauthorizedException,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { compare, hash } from 'bcrypt';
+
 import { compare, hash } from 'bcrypt';
 
 import { User } from '../users/user.entity';
@@ -49,6 +57,8 @@ export class AuthService {
     const newUser = this.usersRepository.create({
       name: dto.name,
       email: dto.email,
+      name: dto.name,
+      email: dto.email,
       password: hashedPassword,
       phoneNumber: dto.phoneNumber,
       avatarId: dto.avatarId,
@@ -61,6 +71,7 @@ export class AuthService {
       isEmailConfirmed: false, // ✅ Hasta que confirme el correo
       isOauth: Boolean(dto.isOauth),
     });
+  
   
     await this.usersRepository.save(newUser);
   
@@ -94,10 +105,13 @@ export class AuthService {
   }
   
   async login(loginDto: LoginDto): Promise<any> {
+  
+  async login(loginDto: LoginDto): Promise<any> {
     const { email, password } = loginDto;
     const user = await this.usersRepository.findOne({ where: { email } });
 
     if (!user || !(await compare(password, user.password))) {
+      throw new BadRequestException('Credenciales incorrectas');
       throw new BadRequestException('Credenciales incorrectas');
     }
 
@@ -108,6 +122,18 @@ export class AuthService {
     }
 
     const token = this.generateToken(user);
+
+    return {
+      message: `Inicio de sesión exitoso. Bienvenido, ${user.name}`,
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        profileImage: user.profileImage,
+      },
+    };
 
     return {
       message: `Inicio de sesión exitoso. Bienvenido, ${user.name}`,
@@ -183,6 +209,13 @@ async handleOAuthProcess(profile: any, provider: 'google' | 'github') {
 
 
   generateToken(user: User): string {
+    const payload = {
+      email: user.email,
+      sub: user.id,
+      role: user.role,
+      name: user.name,
+      profileImage: user.profileImage,
+    };
     const payload = {
       email: user.email,
       sub: user.id,

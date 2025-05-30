@@ -13,6 +13,20 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UploadedFile,
+  UseInterceptors,
+  Get,
+  Req,
+  UseGuards,
+  BadRequestException,
+  NotFoundException,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -89,6 +103,10 @@ export class AuthController {
   
 
   @Post('login')
+  @ApiOperation({ summary: 'Iniciar sesión' })
+  @ApiBody({ type: LoginDto })
+  @ApiResponse({ status: 200, description: 'Inicio de sesión exitoso, retorna el token' })
+  @ApiResponse({ status: 401, description: 'Credenciales inválidas' })
   @ApiOperation({ summary: 'Iniciar sesión' })
   @ApiBody({ type: LoginDto })
   @ApiResponse({ status: 200, description: 'Inicio de sesión exitoso, retorna el token' })

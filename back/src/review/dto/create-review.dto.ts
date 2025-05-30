@@ -1,14 +1,30 @@
+<<<<<<< HEAD
 import { IsOptional, IsString, IsUUID, IsInt, Min, Max, IsEnum } from 'class-validator';
+=======
+import { IsOptional, IsString, IsUUID, IsInt, Min, Max, IsEnum, ValidateIf } from 'class-validator';
+>>>>>>> Paypal
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateReviewDto {
   @ApiProperty({
     example: 5,
+<<<<<<< HEAD
     description: 'Calificación del curso o estudiante (1 a 5)',
     minimum: 1,
     maximum: 5,
   })
   @IsInt()
+=======
+    description: 'Calificación del curso o estudiante (1 a 5) o del 0 al 100 si es "grade"',
+    minimum: 1,
+    maximum: 100,
+  })
+  @IsInt()
+  @ValidateIf((o) => o.type === 'grade')
+  @Min(0)
+  @Max(100)
+  @ValidateIf((o) => o.type !== 'grade')
+>>>>>>> Paypal
   @Min(1)
   @Max(5)
   rating: number;

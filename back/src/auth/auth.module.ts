@@ -23,6 +23,10 @@ console.log('AuthModule cargado');
       isGlobal: true,
     }),
     EmailModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    EmailModule,
     JwtModule.registerAsync({
       imports: [ConfigModule,
                 EmailModule
@@ -50,6 +54,11 @@ console.log('AuthModule cargado');
   ],
   exports: [AuthService],
 })
+export class AuthModule {
+  constructor() {
+    console.log('AuthModule initialization complete');
+  }
+}
 export class AuthModule {
   constructor() {
     console.log('AuthModule initialization complete');
