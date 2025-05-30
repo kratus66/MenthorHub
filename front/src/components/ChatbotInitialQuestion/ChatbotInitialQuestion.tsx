@@ -1,7 +1,7 @@
 const ChatbotInitialQuestion = () => {
    return (
       <>
-         <div className="flex items-start gap-2">
+         <div className="flex items-start gap-2 text-sm">
             <div className="bg-blue-600 rounded-full overflow-hidden">
                <img src="/chatbot.jpg" alt="Chatbot" className="w-[3rem]" />
             </div>

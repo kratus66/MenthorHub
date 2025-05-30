@@ -8,7 +8,10 @@ const Chatbot = () => {
    return (
       <>
          <div className="fixed w-fit min-h-[10rem] bottom-0 right-0 flex justify-end mb-6 p-2 gap-4">
-            <ChatWindow isWindowVisible={isWindowVisible} />
+            <ChatWindow
+               isWindowVisible={isWindowVisible}
+               setIsWindowVisible={setIsWindowVisible}
+            />
             <ChatButton
                isWindowVisible={isWindowVisible}
                setIsWindowVisible={setIsWindowVisible}
