@@ -96,4 +96,8 @@ export class User {
 
   @ManyToMany(() => Class, (cls) => cls.students)
   classesEnrolled!: Class[];
+
+  @Column({ type: 'text', nullable: true })
+  description?: string;
+
 }
