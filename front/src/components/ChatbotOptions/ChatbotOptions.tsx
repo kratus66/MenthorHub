@@ -4,7 +4,7 @@ type ChatbotOptionsProps = {
 
 const ChatbotOptions = ({ onOptionSelect }: ChatbotOptionsProps) => {
    const questionButtonClasses =
-      'bg-orange-500 text-white p-1 px-2 rounded-md hover:brightness-110';
+      'bg-orange-500 text-white p-1 px-2 rounded-md hover:brightness-125 text-sm';
 
    const userData = JSON.parse(localStorage.getItem('user') ?? '{}');
    const options = [
