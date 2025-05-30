@@ -86,13 +86,13 @@ export class PaymentsService {
       },
       {
         headers: {
-          Authorization: `Bearer ${tokenRes.access_token}`,
+          Authorization: `Bearer ${(tokenRes as any).access_token}`,
           'Content-Type': 'application/json',
         },
       },
     );
 
-    const approvalUrl = paymentRes.links.find((link: any) => link.rel === 'approve')?.href;
+    const approvalUrl = (paymentRes as any).links.find((link: any) => link.rel === 'approve')?.href;
     if (!approvalUrl) throw new Error('No se pudo obtener la URL de aprobación');
 
     return approvalUrl;

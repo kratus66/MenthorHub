@@ -128,6 +128,8 @@ export class PaymentsController {
     }
   }
 
+ // ... (toda la parte de imports sin cambios)
+
   @Post('paypal/capture/:orderId')
   @ApiOperation({ summary: 'Capturar orden de PayPal (manual desde backend)' })
   @ApiParam({ name: 'orderId', description: 'ID de la orden PayPal (token)' })
@@ -151,14 +153,14 @@ export class PaymentsController {
         {},
         {
           headers: {
-            Authorization: `Bearer ${tokenRes.access_token}`,
+            Authorization: `Bearer ${(tokenRes as any).access_token}`,
             'Content-Type': 'application/json',
           },
         },
       );
 
-      const amount = parseFloat(captureRes.purchase_units[0].payments.captures[0].amount.value);
-      const currency = captureRes.purchase_units[0].payments.captures[0].amount.currency_code;
+      const amount = parseFloat((captureRes as any).purchase_units[0].payments.captures[0].amount.value);
+      const currency = (captureRes as any).purchase_units[0].payments.captures[0].amount.currency_code;
       const month = new Date().toISOString().slice(0, 7); // 'YYYY-MM'
 
       console.log('🎯 Usuario logueado para asociar pago:', user.email);
