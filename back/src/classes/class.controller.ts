@@ -1,5 +1,3 @@
-// ✅ Código completo actualizado — con roles y guards agregados
-
 import {
   Controller,
   Post,
@@ -35,6 +33,7 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RoleGuard } from '../common/guards/role.guard';
 import { Roles } from '../common/decorators/role';
 import { Role } from '../common/constants/roles.enum';
+import { CurrentUser } from '../common/decorators/current-user.decorator'; // ✅ corregido
 
 @ApiTags('Clases')
 @ApiBearerAuth('JWT-auth')
@@ -50,9 +49,13 @@ export class ClassesController {
   @ApiOperation({ summary: 'Crear una nueva clase con multimedia' })
   @ApiBody({ description: 'Datos para crear una clase con archivos multimedia', type: CreateClassDto })
   @ApiResponse({ status: 201, description: 'Clase creada exitosamente', type: Class })
-  async create(@Body() createDto: CreateClassDto, @UploadedFiles() files: Express.Multer.File[]) {
+  async create(
+    @CurrentUser() user: any, // ✅ agregado; replace 'any' with your User type if available
+    @Body() createDto: CreateClassDto,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
     try {
-      return await this.classesService.create(createDto, files);
+      return await this.classesService.create(createDto, files, user.id); // ✅ se pasa user.id
     } catch (error) {
       console.error('❌ Error al crear clase:', error);
       throw new InternalServerErrorException('Error al crear la clase');
