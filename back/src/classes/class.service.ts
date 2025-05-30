@@ -27,8 +27,14 @@ export class ClassesService {
     private readonly paymentsService: PaymentsService,
   ) {}
 
-  async create(createDto: CreateClassDto, files?: Express.Multer.File[]): Promise<Class> {
+  async create(createDto: CreateClassDto, files?: Express.Multer.File[], userId?: string): Promise<Class> {
     console.log('📥 Datos recibidos en create:', createDto);
+
+    // 🔐 Validación de seguridad para evitar uso de teacherId ajeno
+    if (userId && createDto.teacherId !== userId) {
+      console.log('⛔ Intento de crear clase con teacherId ajeno');
+      throw new ForbiddenException('No puedes crear clases a nombre de otro profesor');
+    }
 
     const { title, description, teacherId, categoryId, materiaId, sector } = createDto;
 
@@ -74,7 +80,6 @@ export class ClassesService {
     return savedClass;
   }
 
-  // Método auxiliar para obtener el mes actual como string (YYYY-MM)
   private getCurrentMonth(): string {
     const now = new Date();
     return `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
