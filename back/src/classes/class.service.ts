@@ -27,7 +27,7 @@ export class ClassesService {
     @InjectRepository(Payment) private readonly paymentRepository: Repository<Payment>,
   ) {}
 
-  async create(createDto: CreateClassDto, files?: Express.Multer.File[]): Promise<Class> {
+  async create(createDto: CreateClassDto, files?: Express.Multer.File[],userId?: string): Promise<Class> {
     console.log('📥 Datos recibidos en create:', createDto);
   
     const { title, description, teacherId, categoryId, materiaId, sector } = createDto;
@@ -37,6 +37,12 @@ export class ClassesService {
     });
     if (!teacher) throw new NotFoundException('Profesor no encontrado');
   
+    // 🔐 Validación de seguridad para evitar uso de teacherId ajeno
+    if (userId && createDto.teacherId !== userId) {
+      console.log('⛔ Intento de crear clase con teacherId ajeno');
+      throw new ForbiddenException('No puedes crear clases a nombre de otro profesor');
+    }
+
     const category = await this.categoryRepository.findOne({ where: { id: categoryId } });
     if (!category) throw new NotFoundException('Categoría no encontrada');
   
