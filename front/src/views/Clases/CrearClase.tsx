@@ -122,7 +122,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   <option value="">Selecciona una materia</option>
   {allMaterias.map((materia, index) => (
     <option key={index} value={materia.id}>
-      {materia.name}
+      {materia.descripcion}
     </option>
   ))}
 </select>
