@@ -28,9 +28,6 @@ import { Class } from './class.entity';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { EnrollStudentDto } from './dto/enroll-student.dto';
 import { CloudinaryFileInterceptor, CloudinaryMultipleFilesInterceptor } from '../common/interceptors/cloudinary.interceptor';
-import { Roles } from '../common/decorators/role';
-import { CurrentUser } from '../common/decorators/current-user.decorator';
-import { Role } from '../common/constants/roles.enum';
 
 @ApiTags('Clases')
 @Controller('classes')
@@ -38,25 +35,20 @@ export class ClassesController {
   constructor(private readonly classesService: ClassesService) {}
 
   @Post()
-  @Roles(Role.Teacher)
   @UseInterceptors(CloudinaryMultipleFilesInterceptor('multimedia'))
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Crear una nueva clase con multimedia' })
   @ApiBody({ description: 'Datos para crear una clase con archivos multimedia', type: CreateClassDto })
   @ApiResponse({ status: 201, description: 'Clase creada exitosamente', type: Class })
-  async create(
-    @CurrentUser() user: any, // ✅ agregado; replace 'any' with your User type if available
-    @Body() createDto: CreateClassDto,
-    @UploadedFiles() files: Express.Multer.File[],
-  ) {
+  async create(@Body() createDto: CreateClassDto, @UploadedFiles() files: Express.Multer.File[]) {
     try {
-      return await this.classesService.create(createDto, files, user.id); // ✅ se pasa user.id
+      return await this.classesService.create(createDto, files);
     } catch (error) {
       console.error('❌ Error al crear clase:', error);
       throw new InternalServerErrorException('Error al crear la clase');
     }
   }
-  
+
   @Get()
   @ApiOperation({ summary: 'Obtener todas las clases' })
   @ApiResponse({ status: 200, description: 'Lista de clases', type: [Class] })
