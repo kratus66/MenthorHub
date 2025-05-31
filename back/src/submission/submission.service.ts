@@ -7,6 +7,7 @@ import { UpdateSubmissionDto } from './dto/updatesubmission.dto';
 import { User } from '../users/user.entity';
 import { Task } from '../task/task.entity';
 import { Class } from '../classes/class.entity';
+import { PaymentsService } from '../payment/payment.service';
 
 @Injectable()
 export class SubmissionsService {
@@ -19,9 +20,13 @@ export class SubmissionsService {
     private taskRepo: Repository<Task>,
     @InjectRepository(Class)
     private classRepo: Repository<Class>,
+    private readonly paymentsService: PaymentsService,
   ) {}
 
   async create(dto: CreateSubmissionDto & { content: string }, studentId: string) {
+    // 🔐 Validar pago activo del estudiante
+    await this.paymentsService.validateUserPaid(studentId, this.getCurrentMonth());
+
     const student = await this.userRepo.findOne({ where: { id: studentId } });
     const task = await this.taskRepo.findOne({ where: { id: dto.taskId } });
     const clase = await this.classRepo.findOne({ where: { id: dto.classId } });
@@ -37,6 +42,11 @@ export class SubmissionsService {
     });
 
     return this.submissionsRepo.save(submission);
+  }
+
+  private getCurrentMonth(): string {
+    const now = new Date();
+    return `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
   }
 
   async findAll(page = 1, limit = 10) {
@@ -107,5 +117,3 @@ export class SubmissionsService {
     return this.submissionsRepo.save(submission);
   }
 }
-
-

@@ -7,11 +7,13 @@ import { SubmissionsService } from './submission.service';
 import { SubmissionsController } from './submission.controller';
 import { UsersModule } from '../users/user.module';
 import { Class } from '../classes/class.entity';
+import { PaymentsModule } from '../payment/payments.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Submission, Task, User,Class]),
+    TypeOrmModule.forFeature([Submission, Task, User, Class]),
     UsersModule,
+    PaymentsModule, // ✅ necesario para validar pagos
   ],
   providers: [SubmissionsService],
   controllers: [SubmissionsController],

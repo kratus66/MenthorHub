@@ -9,6 +9,7 @@ import { Task } from './task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { Class } from '../classes/class.entity';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { PaymentsService } from '../payment/payment.service';
 
 @Injectable()
 export class TasksService {
@@ -18,39 +19,49 @@ export class TasksService {
 
     @InjectRepository(Class)
     private readonly classRepository: Repository<Class>,
+
+    private readonly paymentsService: PaymentsService,
   ) {}
 
   async createByTeacher(teacherId: string, dto: CreateTaskDto): Promise<Task> {
-  console.log('📥 DTO recibido:', dto);
-  console.log('👤 ID del profesor autenticado:', teacherId);
+    console.log('📥 DTO recibido:', dto);
+    console.log('👤 ID del profesor autenticado:', teacherId);
 
-  const classRef = await this.classRepository.findOne({
-    where: { id: dto.classId },
-    relations: ['teacher'],
-  });
+    // 🔐 Validar pago del mes actual
+    await this.paymentsService.validateUserPaid(teacherId, this.getCurrentMonth());
 
-  if (!classRef) {
-    console.log('❌ Clase no encontrada');
-    throw new NotFoundException('Clase no encontrada');
+    const classRef = await this.classRepository.findOne({
+      where: { id: dto.classId },
+      relations: ['teacher'],
+    });
+
+    if (!classRef) {
+      console.log('❌ Clase no encontrada');
+      throw new NotFoundException('Clase no encontrada');
+    }
+
+    console.log('📚 Clase encontrada:', classRef);
+    console.log('👨‍🏫 ID del profesor en la clase:', classRef.teacher?.id);
+
+    if (classRef.teacher.id !== teacherId) {
+      console.log('⛔ No autorizado: la clase no pertenece al profesor');
+      throw new ForbiddenException('No puedes crear tareas para esta clase');
+    }
+
+    const task = this.taskRepository.create({
+      title: dto.title,
+      instructions: dto.instructions,
+      dueDate: new Date(dto.dueDate),
+      classRef,
+    });
+
+    return this.taskRepository.save(task);
   }
 
-  console.log('📚 Clase encontrada:', classRef);
-  console.log('👨‍🏫 ID del profesor en la clase:', classRef.teacher?.id);
-
-  if (classRef.teacher.id !== teacherId) {
-    console.log('⛔ No autorizado: la clase no pertenece al profesor');
-    throw new ForbiddenException('No puedes crear tareas para esta clase');
+  private getCurrentMonth(): string {
+    const now = new Date();
+    return `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
   }
-
-  const task = this.taskRepository.create({
-    title: dto.title,
-    instructions: dto.instructions,
-    dueDate: new Date(dto.dueDate),
-    classRef,
-  });
-
-  return this.taskRepository.save(task);
-}
 
   async findByTeacher(teacherId: string, page = 1, limit = 10): Promise<Task[]> {
     return this.taskRepository
@@ -73,22 +84,21 @@ export class TasksService {
       .getMany();
   }
 
-      async findEliminadasByTeacher(
-      teacherId: string,
-      page = 1,
-      limit = 10
-    ): Promise<{ data: Task[]; total: number; page: number; limit: number }> {
-      const [data, total] = await this.taskRepository
-        .createQueryBuilder('task')
-        .leftJoinAndSelect('task.classRef', 'class')
-        .where('class.teacherId = :teacherId AND task.estado = false', { teacherId })
-        .skip((page - 1) * limit)
-        .take(limit)
-        .getManyAndCount();
+  async findEliminadasByTeacher(
+    teacherId: string,
+    page = 1,
+    limit = 10
+  ): Promise<{ data: Task[]; total: number; page: number; limit: number }> {
+    const [data, total] = await this.taskRepository
+      .createQueryBuilder('task')
+      .leftJoinAndSelect('task.classRef', 'class')
+      .where('class.teacherId = :teacherId AND task.estado = false', { teacherId })
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
 
-      return { data, total, page, limit };
-    }
-
+    return { data, total, page, limit };
+  }
 
   async deleteIfOwnedByTeacher(teacherId: string, taskId: string): Promise<void> {
     const task = await this.taskRepository.findOne({
@@ -128,8 +138,6 @@ export class TasksService {
 
     return this.taskRepository.save(task);
   }
-
-  
 
   async updateByTeacher(
     teacherId: string,
