@@ -27,7 +27,10 @@ import { ClassesService } from './class.service';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from '../dto/update-class.dto';
 import { Class } from './class.entity';
-import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+import { extname } from 'path';
 import { EnrollStudentDto } from './dto/enroll-student.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RoleGuard } from '../common/guards/role.guard';
@@ -181,6 +184,13 @@ export class ClassesController {
   }
 }
 
-function CloudinaryMultipleFilesInterceptor(arg0: string): Function | import("@nestjs/common").NestInterceptor<any, any> {
-  throw new Error('Function not implemented.');
+function CloudinaryMultipleFilesInterceptor(fieldName: string) {
+  return FilesInterceptor(fieldName, 10, {
+    storage: diskStorage({
+      filename: (req, file, callback) => {
+        const uniqueSuffix = `${uuidv4()}${extname(file.originalname)}`;
+        callback(null, uniqueSuffix);
+      },
+    }),
+  });
 }
