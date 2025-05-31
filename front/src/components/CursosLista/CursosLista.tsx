@@ -43,7 +43,6 @@ const CursosLista = ({
       axiosInstance
          .post(`/filters?${query}`, { ...filtros })
          .then((res) => {
-            console.log("respuesta del backend:",res.data);
             setCursosPaginados(res.data.data);
             setUltimaPagina(res.data.lastPage);
          })
@@ -51,7 +50,6 @@ const CursosLista = ({
             console.log('Error al filtrar!', err);
          });
    }, [filtros, paginaActual]);
-
 
    const handlePaginaAnterior = () => {
       if (paginaActual > 1) {

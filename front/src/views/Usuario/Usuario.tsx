@@ -3,26 +3,27 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Check, Camera } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
 import axiosInstance from '../../services/axiosInstance';
+import type { User } from '../../interfaces/User';
 
 const UserProfile: React.FC = () => {
    const { user, setUser } = useUser();
    const fileInputRef = useRef<HTMLInputElement>(null);
    const [isModified, setIsModified] = useState(false);
    const [showSavedMsg, setShowSavedMsg] = useState(false);
+   const userDataFromStorage = localStorage.getItem('user');
+   let userDataParsed: User;
+   if (userDataFromStorage) {
+      userDataParsed = JSON.parse(userDataFromStorage);
+   }
 
    useEffect(() => {
-      const userDataFromStorage = localStorage.getItem('user');
-      let userDataParsed;
-      if (userDataFromStorage) {
-         userDataParsed = JSON.parse(userDataFromStorage);
-      }
       axiosInstance
          .get(`/users/${userDataParsed.id}`)
          .then((res) => {
             setUser(res.data);
          })
          .catch((err) => {
-            console.log(err);
+            console.log('Error al traer la data del usuario:', err);
          });
    }, []);
 
@@ -50,9 +51,19 @@ const UserProfile: React.FC = () => {
    };
 
    const handleSave = () => {
-      console.log('Datos guardados:', user);
-      setShowSavedMsg(true);
-      setTimeout(() => setShowSavedMsg(false), 3000);
+      if (!user) return; // seguridad adicional
+
+      axiosInstance
+         .put(`/users/${user.id}`, user)
+         .then(() => {
+            setShowSavedMsg(true);
+            setTimeout(() => setShowSavedMsg(false), 3000);
+            setIsModified(false); // marcamos que ya se guardó
+         })
+         .catch((err) => {
+            console.error('Error al guardar cambios:', err);
+            // Podés mostrar un mensaje de error si querés
+         });
    };
 
    if (!user) {
@@ -103,7 +114,7 @@ const UserProfile: React.FC = () => {
                      </h2>
                      <textarea
                         name="description"
-                        value={user.role}
+                        value={user.description}
                         onChange={handleChange}
                         rows={5}
                         className="w-full p-3 rounded-md border border-blue-300 text-black focus:ring-2 focus:ring-blue-500 resize-none transition"
@@ -115,15 +126,15 @@ const UserProfile: React.FC = () => {
                      <span className="text-lg font-medium mr-3">
                         Suscripción:
                      </span>
-                     {/* <span
+                     <span
                         className={`inline-block px-3 py-1 rounded-full font-semibold text-sm ${
-                           user.subscriptionActive
+                           user.isPaid
                               ? 'bg-green-500 text-white'
                               : 'bg-red-500 text-white'
                         }`}
                      >
-                        {user.subscriptionActive ? 'Activa' : 'Inactiva'}
-                     </span> */}
+                        {user.isPaid ? 'Activa' : 'Inactiva'}
+                     </span>
                   </div>
                </div>
 
