@@ -4,11 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateMateriaDto {
   @ApiProperty({ example: 'Matemáticas', description: 'Nombre de la materia' })
   @IsString()
-<<<<<<< HEAD
   name: string;
-=======
-  descripcion: string;
->>>>>>> Paypal
 
   @ApiProperty({ example: 'https://ejemplo.com/materia.jpg', description: 'URL de la imagen de la materia' })
   @IsString()

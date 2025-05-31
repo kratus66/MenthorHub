@@ -25,13 +25,8 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RoleGuard } from '../common/guards/role.guard';
-<<<<<<< HEAD
 import { Roles } from '../common/decorators/role'; // ✅ Asegúrate que apunta al decorador, no al enum
 import { Role } from '../common/constants/roles.enum'; // ✅ Enum con roles
-=======
-import { Roles } from '../common/decorators/role';
-import { Role } from '../common/constants/roles.enum';
->>>>>>> Paypal
 
 @ApiTags('Usuarios')
 @Controller('users')
@@ -50,13 +45,8 @@ export class UsersController {
     }
   }
 
-<<<<<<< HEAD
   /* @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Admin) */
-=======
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin)
->>>>>>> Paypal
   @Get()
   @ApiOperation({ summary: 'Obtener todos los usuarios con paginación' })
   @ApiQuery({ name: 'page', required: false, type: Number })
@@ -72,13 +62,8 @@ export class UsersController {
     }
   }
 
-<<<<<<< HEAD
   /* @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Admin) */
-=======
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin)
->>>>>>> Paypal
   @Get('teacher')
   @ApiOperation({ summary: 'Obtener usuarios con rol de teacher' })
   @ApiQuery({ name: 'page', required: false, type: Number })
@@ -93,13 +78,8 @@ export class UsersController {
     }
   }
 
-<<<<<<< HEAD
   /* @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Admin) */
-=======
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin)
->>>>>>> Paypal
   @Get('students')
   @ApiOperation({ summary: 'Obtener usuarios con rol de student' })
   @ApiQuery({ name: 'page', required: false, type: Number })
@@ -114,13 +94,8 @@ export class UsersController {
     }
   }
 
-<<<<<<< HEAD
   /* @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Admin) */
-=======
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin)
->>>>>>> Paypal
   @Get(':id')
   @ApiOperation({ summary: 'Obtener un usuario por ID' })
   @ApiParam({ name: 'id', description: 'UUID del usuario' })
@@ -133,13 +108,8 @@ export class UsersController {
     }
   }
 
-<<<<<<< HEAD
   /* @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Admin) */
-=======
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin)
->>>>>>> Paypal
   @Put(':id')
   @ApiOperation({ summary: 'Actualizar un usuario' })
   @ApiParam({ name: 'id', description: 'UUID del usuario' })
@@ -159,11 +129,8 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Admin)
   @Delete(':id')
-<<<<<<< HEAD
   /* @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Admin) */
-=======
->>>>>>> Paypal
   @ApiOperation({ summary: 'Eliminar un usuario' })
   @ApiParam({ name: 'id', description: 'UUID del usuario' })
   @ApiResponse({ status: 200, description: 'Usuario eliminado' })

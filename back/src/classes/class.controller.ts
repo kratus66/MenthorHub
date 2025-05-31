@@ -44,7 +44,7 @@ export class ClassesController {
 
   @Post()
   @Roles(Role.Teacher)
-  @UseInterceptors(AnyFilesInterceptor())
+  @UseInterceptors(CloudinaryMultipleFilesInterceptor('multimedia'))
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Crear una nueva clase con multimedia' })
   @ApiBody({ description: 'Datos para crear una clase con archivos multimedia', type: CreateClassDto })
@@ -179,4 +179,8 @@ export class ClassesController {
       throw new InternalServerErrorException('Error al obtener clases por profesor');
     }
   }
+}
+
+function CloudinaryMultipleFilesInterceptor(arg0: string): Function | import("@nestjs/common").NestInterceptor<any, any> {
+  throw new Error('Function not implemented.');
 }

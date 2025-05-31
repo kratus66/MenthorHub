@@ -15,15 +15,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       secretOrKey: configService.get<string>('JWT_SECRET'),
     });
     console.log('JwtStrategy initialized, secret loaded');
-    console.log('JwtStrategy initialized, secret loaded');
   }
 
   async validate(payload: any) {
     console.log('JwtStrategy -> payload:', payload);
-    console.log('JwtStrategy -> payload:', payload);
     return {
       email: payload.email,
-      sub: payload.sub,
       sub: payload.sub,
       role: payload.role,
       name: payload.name,

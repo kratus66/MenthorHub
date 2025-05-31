@@ -77,7 +77,6 @@ export class UpdateUserDto {
   @IsOptional()
   @IsBoolean()
   estado?: boolean;
-<<<<<<< HEAD
 
   @ApiPropertyOptional({
   example: 'Alumno apasionado por la tecnología',
@@ -87,7 +86,5 @@ export class UpdateUserDto {
 @IsString()
 description?: string;
 
-=======
->>>>>>> Paypal
 }
 

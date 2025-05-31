@@ -9,8 +9,12 @@ import {
   IsOptional,
   MaxLength,
   IsBoolean,
+  ValidateIf,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
+import { Type } from 'class-transformer';
 
 export class RegisterDto {
   @ApiProperty({ example: 'Ana Martínez' })
@@ -31,8 +35,8 @@ export class RegisterDto {
   })
   phoneNumber: string;
 
-  @ApiProperty({ example: 'ana@example.com' })
-  @IsEmail()
+  @IsEmail({}, { message: 'Correo electrónico inválido' })
+  @IsNotEmpty({ message: 'El correo electrónico es obligatorio' })
   email: string;
 
   @ApiProperty()
@@ -44,16 +48,23 @@ export class RegisterDto {
   password: string;
 
   @ApiProperty()
+  @IsString()
   @MinLength(8)
   confirmPassword: string;
 
   @ApiProperty()
+  @Type(() => Number)
   @IsNumber()
   avatarId: number;
 
   @ApiProperty({ type: 'string', format: 'binary' })
   @IsOptional()
   profileImage?: any;
+
+  @ApiPropertyOptional({ description: 'URL de imagen de perfil (opcional si se sube archivo)' })
+  @IsOptional()
+  @IsString()
+  profileImageUrl?: string;
 
   @ApiProperty()
   @IsString()
@@ -76,7 +87,14 @@ export class RegisterDto {
   location: string;
 
   @ApiProperty()
+  @Type(() => Boolean)
   @IsBoolean()
   @IsNotEmpty()
   isOauth: boolean;
+
+  @ApiPropertyOptional({ enum: ['google', 'github', 'no-provider'] })
+  @IsOptional()
+  @ValidateIf(o => o.isOauth === true)
+  @IsIn(['google', 'github', 'no-provider'])
+  oauthProvider?: 'google' | 'github' | 'no-provider';
 }
