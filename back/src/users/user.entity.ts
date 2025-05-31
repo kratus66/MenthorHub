@@ -85,6 +85,15 @@ export class User {
   @Column({ default: false })
   isOauth: boolean;
 
+  @Column({ 
+    type: 'enum', 
+    enum: ['google', 'github', 'no-provider'], 
+    nullable: true, 
+    default: 'no-provider'
+  })
+  oauthProvider?: 'google' | 'github' | 'no-provider';
+
+
   @Column({ default: false })
   isPaid: boolean;
 

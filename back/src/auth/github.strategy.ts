@@ -1,6 +1,6 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { Strategy } from 'passport-github';
+import { Strategy } from 'passport-github2';
 import { ConfigService } from '@nestjs/config';
 import fetch from 'node-fetch';
 
