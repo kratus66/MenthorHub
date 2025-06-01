@@ -5,8 +5,9 @@ export type clasesType = {
    createdAt: string;
    materia: {
       id: string;
+      name?: string;
       imagenUrl?: string;
-      descripcion: string;
+      descripcion?: string;
    };
    teacher: {
       id: string;
