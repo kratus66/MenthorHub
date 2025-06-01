@@ -1,7 +1,6 @@
 // src/email/email.service.ts
 import nodemailer from 'nodemailer';
 import { Injectable } from '@nestjs/common';
-import { Subject } from 'rxjs';
 
 @Injectable()
 export class EmailService {
@@ -13,7 +12,7 @@ export class EmailService {
     },
   });
 
-  async sendWelcomeEmail(to: string,Subject:string, html:string) {
+  async sendEmail(to: string,Subject:string, html:string) {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -25,7 +24,7 @@ export class EmailService {
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to,
-      Subject,
+      subject: Subject,
       html,
     };
   

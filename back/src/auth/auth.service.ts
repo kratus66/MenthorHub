@@ -114,12 +114,34 @@ export class AuthService {
     const emailToken = this.generateEmailVerificationToken(newUser);
     const confirmUrl = `http://localhost:3001/api/auth/confirm-email?token=${emailToken}`;
   
-    await this.emailService.sendWelcomeEmail(
+    await this.emailService.sendEmail(
       newUser.email,
       'Confirma tu correo',
-      `<p>Hola ${newUser.name}, haz clic aquí para confirmar tu correo:</p><a href="${confirmUrl}">Confirmar correo</a>`
+      `
+        <div style="font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f4f9ff; color: #333; padding: 30px; border-radius: 10px; max-width: 600px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
+          <div style="text-align: center;">
+            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712107.png" alt="Robot Bienvenida" width="100" style="margin-bottom: 20px;" />
+          </div>
+          <h2 style="color: #2a70c9; text-align: center;">¡Bienvenido a MentorHub, ${newUser.name}!</h2>
+          <p style="font-size: 16px; line-height: 1.6;">
+            Nos alegra mucho tenerte con nosotros. Para comenzar a explorar la plataforma y acceder a todos nuestros recursos, por favor confirma tu correo electrónico haciendo clic en el siguiente botón:
+          </p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${confirmUrl}" style="background-color: #2a70c9; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;">
+              Confirmar correo
+            </a>
+          </div>
+          <p style="font-size: 14px; color: #555;">
+            Si tú no creaste esta cuenta, simplemente ignora este mensaje.
+          </p>
+          <p style="font-size: 14px; color: #555; margin-top: 30px;">
+            Saludos,<br>
+            <strong>El equipo de MentorHub</strong>
+          </p>
+        </div>
+      `
     );
-  
+    
     const accessToken = this.generateToken(newUser);
   
     return {
