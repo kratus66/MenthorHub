@@ -52,7 +52,7 @@ export class TasksController {
   }
 
   @Get('eliminadas')
-  // @Roles(Role.Teacher)
+   @Roles(Role.Teacher)
   @ApiOperation({ summary: 'Ver tareas eliminadas del profesor autenticado' })
   @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
   @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
@@ -76,7 +76,7 @@ return tasks;
   }
 
   @Get('teacher')
-  // @Roles(Role.Teacher)
+   @Roles(Role.Teacher)
   @ApiOperation({ summary: 'Obtener tareas del profesor con paginación' })
   @ApiQuery({ name: 'page', required: false, example: 1 })
   @ApiQuery({ name: 'limit', required: false, example: 10 })
@@ -97,7 +97,7 @@ return tasks;
   }
 
   @Get('student')
-  // @Roles(Role.Student)
+   @Roles(Role.Student)
   @ApiOperation({ summary: 'Obtener tareas asignadas al estudiante autenticado' })
   @ApiQuery({ name: 'page', required: false, example: 1 })
   @ApiQuery({ name: 'limit', required: false, example: 10 })

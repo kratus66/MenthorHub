@@ -6,6 +6,7 @@ import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { User } from '../users/user.entity';
 
+
 @Injectable()
 export class PaymentsService {
   constructor(
@@ -79,5 +80,31 @@ export class PaymentsService {
     const result = await this.paymentRepo.delete(id);
     if (result.affected === 0) throw new NotFoundException('Pago no encontrado');
   }
+
+  
+
+async getStats() {
+  const [completed, pending, failed, totalAmountByMonth] = await Promise.all([
+    this.paymentRepo.count({ where: { status: PaymentStatus.COMPLETED } }),
+    this.paymentRepo.count({ where: { status: PaymentStatus.PENDING } }),
+    this.paymentRepo.count({ where: { status: PaymentStatus.FAILED } }),
+    this.paymentRepo
+      .createQueryBuilder('payment')
+      .select('payment.month', 'month') // usamos el campo string tal como está
+      .addSelect('SUM(payment.amount)', 'total')
+      .groupBy('payment.month')
+      .orderBy('payment.month', 'ASC')
+      .getRawMany()
+  ]);
+
+  return {
+    completed,
+    pending,
+    failed,
+    totalAmountByMonth
+  };
+}
+
+
 }
  

@@ -30,10 +30,15 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RoleGuard } from '../common/guards/role.guard';
 import { Roles } from '../common/decorators/role';
 import { Role } from '../common/constants/roles.enum';
+import { ChartJSNodeCanvas } from 'chartjs-node-canvas';
+import { Response } from 'express';
+import { Header, Res } from '@nestjs/common';
+
+
 
 @ApiTags('Pagos')
 @ApiBearerAuth('JWT-auth')
-// @UseGuards(JwtAuthGuard, RoleGuard)
+@UseGuards(JwtAuthGuard, RoleGuard)
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
@@ -59,8 +64,115 @@ export class PaymentsController {
 
   }
 
+  
+
+@Get('stats/income-chart')
+@ApiOperation({ summary: 'Gráfico de ingresos mensuales' })
+@ApiResponse({ status: 200, description: 'Devuelve una imagen PNG con los ingresos mensuales' })
+@Header('Content-Type', 'image/png')
+async getMonthlyIncomeChart(@Res() res: Response) {
+  try {
+    const stats = await this.paymentsService.getStats();
+
+    const labels = stats.totalAmountByMonth.map((item) => item.month);
+    const data = stats.totalAmountByMonth.map((item) => parseFloat(item.total));
+
+    const canvas = new ChartJSNodeCanvas({ width: 800, height: 400 });
+    const image = await canvas.renderToBuffer({
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Ingresos por mes',
+          data,
+          backgroundColor: '#4CAF50',
+        }],
+      },
+      options: {
+        responsive: false,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Ingresos mensuales de pagos',
+          },
+          legend: {
+            display: false,
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Monto ($)',
+            },
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Mes',
+            },
+          },
+        },
+      },
+    });
+
+    res.end(image);
+  } catch (error) {
+    throw new InternalServerErrorException('Error al generar el gráfico de ingresos');
+  }
+}
+
+
+
+
+   @Get('stats')
+@Roles(Role.Admin)
+@ApiOperation({ summary: 'Estadísticas de pagos en texto' })
+@ApiResponse({ status: 200, description: 'Datos numéricos de pagos' })
+async getStats() {
+  try {
+    return await this.paymentsService.getStats();
+  } catch (error) {
+    throw new InternalServerErrorException('Error al obtener estadísticas de pagos');
+  }
+}
+
+@Get('stats/image')
+@Roles(Role.Admin)
+@Header('Content-Type', 'image/png')
+@ApiOperation({ summary: 'Gráfico con estadísticas de pagos' })
+@ApiResponse({ status: 200, description: 'Imagen con gráfico de pagos' })
+async getStatsImage(@Res() res: Response) {
+  const stats = await this.paymentsService.getStats();
+
+  const canvas = new ChartJSNodeCanvas({ width: 800, height: 400 });
+  const image = await canvas.renderToBuffer({
+    type: 'bar',
+    data: {
+      labels: ['Completados', 'Pendientes', 'Fallidos'],
+      datasets: [{
+        label: 'Cantidad de Pagos',
+        data: [stats.completed, stats.pending, stats.failed],
+        backgroundColor: ['#36A2EB', '#FFCE56', '#FF6384']
+      }]
+    },
+    options: {
+      responsive: false,
+      plugins: {
+        title: {
+          display: true,
+          text: 'Estadísticas de Pagos'
+        }
+      }
+    }
+  });
+
+  res.end(image);
+}
+
   @Get('user/:userId')
-  // @Roles(Role.Admin)
+   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Obtener todos los pagos de un usuario con paginación' })
   @ApiParam({ name: 'userId', description: 'UUID del usuario', type: String })
   @ApiQuery({ name: 'page', required: false, type: Number })
@@ -79,9 +191,10 @@ export class PaymentsController {
       throw new InternalServerErrorException('Error al obtener los pagos del usuario');
     }
   }
+ 
 
   @Get()
-  // @Roles(Role.Admin)
+   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Obtener todos los pagos con paginación' })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
@@ -97,7 +210,7 @@ export class PaymentsController {
   }
 
   @Put(':id')
-  // @Roles(Role.Admin)
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Actualizar un pago por ID' })
   @ApiParam({ name: 'id', description: 'UUID del pago', type: String })
   @ApiBody({ type: UpdatePaymentDto })
@@ -114,7 +227,7 @@ export class PaymentsController {
   }
 
   @Delete(':id')
-  // @Roles(Role.Admin)
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Eliminar un pago por ID' })
   @ApiParam({ name: 'id', description: 'UUID del pago', type: String })
   @ApiResponse({ status: 200, description: 'Pago eliminado correctamente' })
@@ -126,4 +239,9 @@ export class PaymentsController {
       throw new InternalServerErrorException('Error al eliminar el pago');
     }
   }
+
+  
+
+
+
 }

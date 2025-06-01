@@ -70,5 +70,19 @@ export class UsersService {
 
     return { data, total, page, limit };
   }
+
+  // src/users/user.service.ts
+    async getStats() {
+    const total = await this.usersRepository.count();
+    const activos = await this.usersRepository.count({ where: { estado: true } });
+    const eliminados = total - activos;
+
+    return {
+      total,
+      activos,
+      eliminados,
+    };
+  }
+
 }
 

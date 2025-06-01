@@ -10,6 +10,8 @@ import {
   ParseUUIDPipe,
   InternalServerErrorException,
   UseGuards,
+  Header,
+  Res,
 } from '@nestjs/common';
 import { UsersService } from './user.service';
 import { User } from './user.entity';
@@ -25,8 +27,10 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RoleGuard } from '../common/guards/role.guard';
-import { Roles } from '../common/decorators/role'; // ✅ Asegúrate que apunta al decorador, no al enum
-import { Role } from '../common/constants/roles.enum'; // ✅ Enum con roles
+import { Roles } from '../common/decorators/role';
+import { Role } from '../common/constants/roles.enum';
+import { ChartJSNodeCanvas } from 'chartjs-node-canvas';
+import { Response } from 'express';
 
 @ApiTags('Usuarios')
 @Controller('users')
@@ -45,9 +49,9 @@ export class UsersController {
     }
   }
 
-  /* @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin) */
   @Get()
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Obtener todos los usuarios con paginación' })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
@@ -62,9 +66,9 @@ export class UsersController {
     }
   }
 
-  /* @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin) */
   @Get('teacher')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Obtener usuarios con rol de teacher' })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
@@ -78,9 +82,9 @@ export class UsersController {
     }
   }
 
-  /* @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin) */
   @Get('students')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Obtener usuarios con rol de student' })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
@@ -94,9 +98,53 @@ export class UsersController {
     }
   }
 
-  /* @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin) */
+  @Get('stats')
+  @ApiOperation({ summary: 'Obtener estadísticas de usuarios (texto)' })
+  @ApiResponse({ status: 200, description: 'Estadísticas de usuarios' })
+  async getStats() {
+    try {
+      const stats = await this.usersService.getStats();
+      return stats;
+    } catch (error) {
+      throw new InternalServerErrorException('Error al obtener estadísticas');
+    }
+  }
+
+  @Get('stats/image')
+  @ApiOperation({ summary: 'Gráfico con estadísticas de usuarios' })
+  @ApiResponse({ status: 200, description: 'Devuelve una imagen PNG' })
+  @Header('Content-Type', 'image/png')
+  async getStatsImage(@Res() res: Response) {
+    const stats = await this.usersService.getStats();
+
+    const canvas = new ChartJSNodeCanvas({ width: 600, height: 400 });
+    const image = await canvas.renderToBuffer({
+      type: 'bar',
+      data: {
+        labels: ['Activos', 'Eliminados'],
+        datasets: [{
+          label: 'Usuarios',
+          data: [stats.activos, stats.eliminados],
+          backgroundColor: ['#36A2EB', '#FF6384'],
+        }],
+      },
+      options: {
+        responsive: false,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Estadísticas de Usuarios',
+          },
+        },
+      },
+    });
+
+    res.end(image);
+  }
+
   @Get(':id')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Obtener un usuario por ID' })
   @ApiParam({ name: 'id', description: 'UUID del usuario' })
   @ApiResponse({ status: 200, description: 'Usuario encontrado', type: User })
@@ -108,13 +156,13 @@ export class UsersController {
     }
   }
 
-  /* @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin) */
   @Put(':id')
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Actualizar un usuario' })
   @ApiParam({ name: 'id', description: 'UUID del usuario' })
   @ApiBody({ type: UpdateUserDto })
-  @ApiResponse({ status: 200, description: 'Usuario actualizado', type: User })
+  @ApiResponse({ status: 200, description: 'U suario actualizado', type: User })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -127,8 +175,8 @@ export class UsersController {
   }
 
   @Delete(':id')
-  /* @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin) */
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Eliminar un usuario' })
   @ApiParam({ name: 'id', description: 'UUID del usuario' })
   @ApiResponse({ status: 200, description: 'Usuario eliminado' })
@@ -139,5 +187,8 @@ export class UsersController {
       throw new InternalServerErrorException('Error al eliminar el usuario');
     }
   }
+
+  
 }
+
 

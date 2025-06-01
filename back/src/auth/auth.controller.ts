@@ -34,6 +34,8 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { Request, Response } from 'express';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { EmailService } from '../email/email.service';
+
+
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -43,6 +45,8 @@ export class AuthController {
     private emailService: EmailService,
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
+
+
   @Post('register')
   @UseInterceptors(CloudinaryFileInterceptor('profileImage'))
   @ApiConsumes('multipart/form-data')
@@ -96,8 +100,6 @@ export class AuthController {
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
-
-
   @Get('google')
   @UseGuards(AuthGuard('google'))
   googleLogin() {}

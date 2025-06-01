@@ -5,6 +5,7 @@ import {
   Post,
   Query,
   InternalServerErrorException,
+  UseGuards,
 } from '@nestjs/common';
 import { CategoriesService } from './categorias.service';
 import { CreateCategoryDto } from '../dto/create-category.dto';
@@ -14,6 +15,10 @@ import {
   ApiResponse,
   ApiQuery,
 } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { RoleGuard } from '../common/guards/role.guard';
+import { Roles } from '../common/decorators/role';
+import { Role } from '../common/constants/roles.enum';
 
 @ApiTags('Categorías')
 @Controller('categories')
@@ -21,6 +26,8 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Crear categoría' })
   @ApiResponse({ status: 201, description: 'Categoría creada' })
   async create(@Body() dto: CreateCategoryDto) {
@@ -43,7 +50,7 @@ export class CategoriesController {
     @Query('limit') limit = 10,
   ) {
     try {
-      const result = await this.categoriesService.findAll(Number(page), Number(limit));
+      const result = await this.categoriesService.findAll(page, limit);
       if (result.data.length === 0) {
         return {
           message: 'No se encontraron categorías',
@@ -58,5 +65,6 @@ export class CategoriesController {
     }
   }
 }
+
 
 

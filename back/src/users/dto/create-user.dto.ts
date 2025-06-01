@@ -72,4 +72,13 @@ export class CreateUserDto {
   @ApiProperty()
   @IsBoolean()
   isOauth: boolean;
+
+  @ApiPropertyOptional({
+  example: 'Alumno apasionado por la tecnología',
+  description: 'Descripción personal del usuario',
+})
+@IsOptional()
+@IsString()
+description?: string;
+
 }
