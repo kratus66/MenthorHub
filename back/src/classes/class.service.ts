@@ -14,8 +14,7 @@ import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from '../dto/update-class.dto';
 import { cloudinary } from '../config/cloudinary.config';
 import { Payment, PaymentStatus, PaymentType } from '../payment/payment.entity';
-import { sanitizeName } from '../common/utils/sanitize-name';
-
+import { PaymentsService } from '../payment/payment.service';
 
 @Injectable()
 export class ClassesService {
@@ -25,100 +24,66 @@ export class ClassesService {
     @InjectRepository(Category) private readonly categoryRepository: Repository<Category>,
     @InjectRepository(Materias) private readonly materiaRepository: Repository<Materias>,
     @InjectRepository(Payment) private readonly paymentRepository: Repository<Payment>,
+    private readonly paymentsService: PaymentsService,
   ) {}
 
-  async create(createDto: CreateClassDto, files?: Express.Multer.File[]): Promise<Class> {
+  async create(createDto: CreateClassDto, files?: Express.Multer.File[], userId?: string): Promise<Class> {
     console.log('📥 Datos recibidos en create:', createDto);
-  
+
+    // 🔐 Validación de seguridad para evitar uso de teacherId ajeno
+    if (userId && createDto.teacherId !== userId) {
+      console.log('⛔ Intento de crear clase con teacherId ajeno');
+      throw new ForbiddenException('No puedes crear clases a nombre de otro profesor');
+    }
+
     const { title, description, teacherId, categoryId, materiaId, sector } = createDto;
-  
+
     const teacher = await this.userRepository.findOne({
       where: { id: teacherId, role: 'teacher' },
     });
     if (!teacher) throw new NotFoundException('Profesor no encontrado');
-  
+
+    // 🔐 Validación con validateUserPaid del PaymentsService
+    await this.paymentsService.validateUserPaid(teacherId, this.getCurrentMonth());
+
     const category = await this.categoryRepository.findOne({ where: { id: categoryId } });
     if (!category) throw new NotFoundException('Categoría no encontrada');
-  
+
     const materia = await this.materiaRepository.findOne({ where: { id: materiaId } });
     if (!materia) throw new NotFoundException('Materia no encontrada');
-    /* // Lógica de validación mensual
-    const latestPayment = await this.paymentRepository.findOne({
-      where: {
-        user: { id: teacherId },
-        //type: PaymentType.TEACHER_SUBSCRIPTION,
-        //status: PaymentStatus.COMPLETED,
-      },
-      order: { createdAt: 'DESC' },
-    });
 
-     (!latestPayment) {
-      console.log('⛔ Profesor sin historial de pago mensual');
-      throw new ForbiddenException('Debes pagar la suscripción mensual para crear clases.');
-    }
-
-    // const paymentDate = new Date(latestPayment.createdAt);
-    // const now = new Date();
-    // const diffInMs = now.getTime() - paymentDate.getTime();
-    // const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-
-    if (diffInDays > 30) {
-      console.log('⛔ Suscripción expirada hace', diffInDays, 'días');
-      throw new ForbiddenException('Tu suscripción ha expirado. Debes renovarla para seguir creando clases.');
-    }
-*/
+    const multimediaUrls = files?.map((file) => file.path) ?? [];
 
     const newClass = this.classRepository.create({
       title,
       description,
       sector,
       materia,
+      multimedia: multimediaUrls,
       teacher,
       category,
-      multimedia: [],
     });
-  
+
     const savedClass = await this.classRepository.save(newClass);
     console.log('✅ Clase guardada con ID:', savedClass.id);
-  
-    // 🧼 Nombres para carpetas
-    const sanitizedCategory = sanitizeName(category.name);
-    const sanitizedMateria = sanitizeName(materia.name);
-    const sanitizedTitle = sanitizeName(savedClass.title);
-  
-    const baseCategoryPath = `categorias/${sanitizedCategory}`;
-    const baseMateriaPath = `${baseCategoryPath}/materias/${sanitizedMateria}`;
-    const classFolderPath = `${baseMateriaPath}/clases/${sanitizedTitle}-${savedClass.id}`;
-  
-    // 🧠 Opción híbrida: aseguramos que existan las carpetas base
+
     try {
-      await cloudinary.api.create_folder(baseCategoryPath);
-      await cloudinary.api.create_folder(baseMateriaPath);
-      await cloudinary.api.create_folder(`${baseMateriaPath}/clases`);
-      await cloudinary.api.create_folder(classFolderPath);
+      await cloudinary.api.create_folder(`classes/${savedClass.title.replace(/ /g, '_')}-${savedClass.id}`);
     } catch (error) {
-      console.warn('⚠️ Error creando carpetas:', error instanceof Error ? error.message : error);
-    }
-  
-    // 📤 Subida de archivos multimedia
-    const multimediaUrls: string[] = [];
-  
-    if (files && files.length > 0) {
-      for (const file of files) {
-        const uploadResult = await cloudinary.uploader.upload(file.path, {
-          folder: classFolderPath,
-          resource_type: 'auto',
-        });
-        multimediaUrls.push(uploadResult.secure_url);
+      if (error instanceof Error) {
+        console.warn(`⚠️ No se pudo crear la carpeta: ${savedClass.title}-${savedClass.id}`, error.message);
+      } else {
+        console.warn('⚠️ No se pudo crear la carpeta (error desconocido)');
       }
-  
-      savedClass.multimedia = multimediaUrls;
-      await this.classRepository.save(savedClass);
     }
-  
+
     return savedClass;
   }
-  
+
+  private getCurrentMonth(): string {
+    const now = new Date();
+    return `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+  }
 
   async update(id: string, updateDto: UpdateClassDto): Promise<Class> {
     console.log('🛠️ Actualizando clase:', id);
@@ -184,22 +149,21 @@ export class ClassesService {
     limit: number;
   }> {
     console.log('👨‍🏫 Buscando clases del profesor ID:', teacherId);
-    
+
     const teacher = await this.userRepository.findOne({
       where: { id: teacherId, role: 'teacher' },
     });
     if (!teacher) throw new NotFoundException(`Profesor con ID ${teacherId} no encontrado`);
-  
+
     const [data, total] = await this.classRepository.findAndCount({
       where: { teacher: { id: teacherId }, estado: true },
       relations: ['category', 'students', 'tasks'],
       skip: (page - 1) * limit,
       take: limit,
     });
-  
+
     return { data, total, page, limit };
   }
-
 
   async findByStudent(studentId: string): Promise<Class[]> {
     console.log('🎓 Buscando clases del estudiante ID:', studentId);
@@ -234,7 +198,6 @@ export class ClassesService {
     const alreadyEnrolled = clase.students.some((s) => s.id === studentId);
     if (alreadyEnrolled) throw new Error('El estudiante ya está inscrito en esta clase');
 
-    // 🔐 Validar suscripción mensual del estudiante
     const latestPayment = await this.paymentRepository.findOne({
       where: {
         user: { id: studentId },
@@ -297,6 +260,4 @@ export class ClassesService {
     clase.students.splice(studentIndex, 1);
     return this.classRepository.save(clase);
   }
-
-  
 }

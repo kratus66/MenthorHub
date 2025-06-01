@@ -32,8 +32,8 @@ import { Roles } from '../common/decorators/role';
 import { UpdateTaskDto } from './dto/update-task.dto';
 
 @ApiTags('Tasks')
- @ApiBearerAuth('JWT-auth')
- @UseGuards(JwtAuthGuard, RoleGuard)
+@ApiBearerAuth('JWT-auth')
+@UseGuards(JwtAuthGuard, RoleGuard)
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
@@ -66,10 +66,9 @@ export class TasksController {
       if (!user) throw new UnauthorizedException('No autenticado');
       const tasks = await this.tasksService.findEliminadasByTeacher(user.id, Number(page), Number(limit));
       if (tasks.data.length === 0) {
-      return { message: 'No se encontraron tareas asignadas', ...tasks };
-}
-return tasks;
-
+        return { message: 'No se encontraron tareas asignadas', ...tasks };
+      }
+      return tasks;
     } catch (error) {
       throw new InternalServerErrorException('Error al obtener tareas eliminadas');
     }

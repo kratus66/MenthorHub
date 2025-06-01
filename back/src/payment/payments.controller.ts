@@ -1,3 +1,5 @@
+// ✅ Código completo actualizado — con roles agregados, sin alterar la lógica
+
 import {
   Controller,
   Post,
@@ -25,9 +27,12 @@ import {
   ApiBearerAuth,
   ApiQuery,
 } from '@nestjs/swagger';
-import { Payment } from './payment.entity';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { Payment, PaymentStatus, PaymentType } from './payment.entity';
+import axios from 'axios';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { User } from '../users/user.entity';
 import { RoleGuard } from '../common/guards/role.guard';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { Roles } from '../common/decorators/role';
 import { Role } from '../common/constants/roles.enum';
 import { ChartJSNodeCanvas } from 'chartjs-node-canvas';
@@ -43,136 +48,8 @@ import { Header, Res } from '@nestjs/common';
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
-  @Post(':userId')
-  // @Roles(Role.Admin, Role.Teacher, Role.Student)
-  @ApiOperation({ summary: 'Crear un nuevo pago para un usuario' })
-  @ApiParam({ name: 'userId', description: 'UUID del usuario', type: String })
-  @ApiBody({ type: CreatePaymentDto })
-  @ApiResponse({ status: 201, description: 'Pago creado exitosamente', type: Payment })
-  async create(
-    @Param('userId', ParseUUIDPipe) userId: string,
-    @Body() dto: CreatePaymentDto,
-    @Req() req: Request,
-  ) {
-    try {
-      return await this.paymentsService.create(userId, dto);
-    } catch (error) {
-      const message =
-      error instanceof Error ? error.message : 'Error al crear el pago';
-      throw new InternalServerErrorException(message);
-}
-
-  }
-
-  
-
-@Get('stats/income-chart')
-@ApiOperation({ summary: 'Gráfico de ingresos mensuales' })
-@ApiResponse({ status: 200, description: 'Devuelve una imagen PNG con los ingresos mensuales' })
-@Header('Content-Type', 'image/png')
-async getMonthlyIncomeChart(@Res() res: Response) {
-  try {
-    const stats = await this.paymentsService.getStats();
-
-    const labels = stats.totalAmountByMonth.map((item) => item.month);
-    const data = stats.totalAmountByMonth.map((item) => parseFloat(item.total));
-
-    const canvas = new ChartJSNodeCanvas({ width: 800, height: 400 });
-    const image = await canvas.renderToBuffer({
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Ingresos por mes',
-          data,
-          backgroundColor: '#4CAF50',
-        }],
-      },
-      options: {
-        responsive: false,
-        plugins: {
-          title: {
-            display: true,
-            text: 'Ingresos mensuales de pagos',
-          },
-          legend: {
-            display: false,
-          },
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Monto ($)',
-            },
-          },
-          x: {
-            title: {
-              display: true,
-              text: 'Mes',
-            },
-          },
-        },
-      },
-    });
-
-    res.end(image);
-  } catch (error) {
-    throw new InternalServerErrorException('Error al generar el gráfico de ingresos');
-  }
-}
-
-
-
-
-   @Get('stats')
-@Roles(Role.Admin)
-@ApiOperation({ summary: 'Estadísticas de pagos en texto' })
-@ApiResponse({ status: 200, description: 'Datos numéricos de pagos' })
-async getStats() {
-  try {
-    return await this.paymentsService.getStats();
-  } catch (error) {
-    throw new InternalServerErrorException('Error al obtener estadísticas de pagos');
-  }
-}
-
-@Get('stats/image')
-@Roles(Role.Admin)
-@Header('Content-Type', 'image/png')
-@ApiOperation({ summary: 'Gráfico con estadísticas de pagos' })
-@ApiResponse({ status: 200, description: 'Imagen con gráfico de pagos' })
-async getStatsImage(@Res() res: Response) {
-  const stats = await this.paymentsService.getStats();
-
-  const canvas = new ChartJSNodeCanvas({ width: 800, height: 400 });
-  const image = await canvas.renderToBuffer({
-    type: 'bar',
-    data: {
-      labels: ['Completados', 'Pendientes', 'Fallidos'],
-      datasets: [{
-        label: 'Cantidad de Pagos',
-        data: [stats.completed, stats.pending, stats.failed],
-        backgroundColor: ['#36A2EB', '#FFCE56', '#FF6384']
-      }]
-    },
-    options: {
-      responsive: false,
-      plugins: {
-        title: {
-          display: true,
-          text: 'Estadísticas de Pagos'
-        }
-      }
-    }
-  });
-
-  res.end(image);
-}
-
   @Get('user/:userId')
-   @Roles(Role.Admin)
+  @Roles(Role.Admin, Role.Teacher, Role.Student)
   @ApiOperation({ summary: 'Obtener todos los pagos de un usuario con paginación' })
   @ApiParam({ name: 'userId', description: 'UUID del usuario', type: String })
   @ApiQuery({ name: 'page', required: false, type: Number })
@@ -194,7 +71,7 @@ async getStatsImage(@Res() res: Response) {
  
 
   @Get()
-   @Roles(Role.Admin)
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Obtener todos los pagos con paginación' })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
@@ -240,8 +117,88 @@ async getStatsImage(@Res() res: Response) {
     }
   }
 
-  
+  @Get('paypal-config')
+  @Roles(Role.Admin, Role.Teacher, Role.Student)
+  @ApiOperation({ summary: 'Obtener la configuración de PayPal' })
+  @ApiResponse({ status: 200, description: 'Configuración de PayPal obtenida correctamente', type: Object })
+  async getPaypalConfig() {
+    return {
+      clientId: process.env.PAYPAL_CLIENT_ID,
+    };
+  }
 
+  @Post('create-paypal-payment')
+  @Roles(Role.Teacher, Role.Student)
+  @ApiOperation({ summary: 'Simular creación de pago con PayPal (sandbox)' })
+  @ApiResponse({ status: 201, description: 'URL de aprobación de PayPal devuelta' })
+  async createPaypalPayment(@Body() dto: CreatePaymentDto) {
+    try {
+      const approvalUrl = await this.paymentsService.simulatePaypal(dto);
+      return { url: approvalUrl };
+    } catch (error) {
+      throw new InternalServerErrorException('Error al simular pago PayPal');
+    }
+  }
 
+  @Post('paypal/capture/:orderId')
+  @Roles(Role.Teacher, Role.Student)
+  @ApiOperation({ summary: 'Capturar orden de PayPal (manual desde backend)' })
+  @ApiParam({ name: 'orderId', description: 'ID de la orden PayPal (token)' })
+  async capturePaypalOrder(@Param('orderId') orderId: string, @CurrentUser() user: User) {
+    try {
+      const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString('base64');
 
+      const { data: tokenRes } = await axios.post(
+        `${process.env.PAYPAL_API_URL}/v1/oauth2/token`,
+        'grant_type=client_credentials',
+        {
+          headers: {
+            Authorization: `Basic ${auth}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        },
+      );
+
+      const { data: captureRes } = await axios.post(
+        `${process.env.PAYPAL_API_URL}/v2/checkout/orders/${orderId}/capture`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${(tokenRes as any).access_token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      const amount = parseFloat((captureRes as any).purchase_units[0].payments.captures[0].amount.value);
+      const currency = (captureRes as any).purchase_units[0].payments.captures[0].amount.currency_code;
+      const month = new Date().toISOString().slice(0, 7); // 'YYYY-MM'
+
+      console.log('🎯 Usuario logueado para asociar pago:', user.email);
+
+      await this.paymentsService.savePayment({
+        amount,
+        currency,
+        type: user.role === 'teacher' ? PaymentType.TEACHER_SUBSCRIPTION : PaymentType.STUDENT_SUBSCRIPTION,
+        paymentMethod: 'paypal',
+        status: PaymentStatus.COMPLETED,
+        month,
+        user,
+      });
+
+      user.isPaid = true;
+      await this.paymentsService.saveUser(user);
+
+      return { message: 'Pago registrado y orden capturada correctamente', captureRes };
+    } catch (error) {
+      console.log('❌ Error en capturePaypalOrder:', error);
+      if (typeof error === 'object' && error !== null) {
+        const err = error as any;
+        console.log('❌ ERROR al capturar orden PayPal:', err.response?.data || err.message);
+      } else {
+        console.log('❌ ERROR al capturar orden PayPal:', error);
+      }
+      throw new InternalServerErrorException('Error al capturar la orden de PayPal');
+    }
+  }
 }

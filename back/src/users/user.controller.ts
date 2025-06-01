@@ -174,6 +174,8 @@ export class UsersController {
     }
   }
 
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(Role.Admin)
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Admin)

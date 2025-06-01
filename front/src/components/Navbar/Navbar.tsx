@@ -51,7 +51,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
                      className="h-full w-[2rem] bg-white rounded-full rounded-tr-none rounded-br-none"
                   >
                      <img
-                        src="./search-icon.svg"
+                        src="/search-icon.svg"
                         alt="Buscar"
                         width={30}
                         height={35}

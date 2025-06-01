@@ -71,14 +71,10 @@ export class CreateUserDto {
 
   @ApiProperty()
   @IsBoolean()
-  isOauth: boolean;
+  isOauth!: boolean;
 
-  @ApiPropertyOptional({
-  example: 'Alumno apasionado por la tecnología',
-  description: 'Descripción personal del usuario',
-})
-@IsOptional()
-@IsString()
-description?: string;
-
+  @ApiPropertyOptional({ enum: ['google', 'github'], description: 'OAuth provider' })
+  @IsOptional()
+  @IsIn(['google', 'github','no-provider'])
+  oauthProvider?: 'google' | 'github' |'no-provider';
 }

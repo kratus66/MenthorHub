@@ -46,7 +46,7 @@ export class AuthController {
     @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
-
+  
   @Post('register')
   @UseInterceptors(CloudinaryFileInterceptor('profileImage'))
   @ApiConsumes('multipart/form-data')
@@ -55,42 +55,28 @@ export class AuthController {
     @Body() dto: RegisterDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    
     console.log('📨 Body:', dto);
     console.log('📷 Imagen recibida:', file);
+    console.log('📷imagen recibida por url',dto.profileImageUrl)
   
-    // Convierte isOauth a boolean (true si viene como 'true' o true)
-    const isOauth = dto.isOauth === true;
+    
+  // Decide qué imagen usar: la URL recibida o la del archivo subido
+  const profileImagePathOrURL = file?.path || dto.profileImageUrl;
+
+    // Normalizar isOauth a boolean, trimming spaces
+    const isOauth = dto.isOauth?.toString().trim().toLowerCase() === 'true';
   
-    // Pasa dto con isOauth convertido a booleano
+
     const registrationDto = {
       ...dto,
       isOauth,
+      oauthProvider: isOauth ? dto.oauthProvider : undefined,
+      
     };
   
-    return this.authService.register(registrationDto, file?.path);
+    return this.authService.register(registrationDto, profileImagePathOrURL || '');
+  }
     
-  }
-  
-  @Get('confirm-email')
-  async confirmEmail(@Query('token') token: string) {
-    try {
-      const payload = this.jwtService.verify(token, {
-        secret: process.env.JWT_EMAIL_SECRET,
-      });
-
-      const user = await this.userRepository.findOneBy({ email: payload.email });
-      if (!user) throw new NotFoundException('Usuario no encontrado');
-
-      user.isEmailConfirmed = true;
-      await this.userRepository.save(user);
-
-      return { message: 'Correo confirmado correctamente' };
-    } catch (err) {
-      throw new BadRequestException('Token inválido o expirado');
-    }
-  }
-  
 
   @Post('login')
   @ApiOperation({ summary: 'Iniciar sesión' })
@@ -106,55 +92,74 @@ export class AuthController {
 
   @Get('github')
   @UseGuards(AuthGuard('github'))
-  githubLogin() {}
+  async githubLogin() {
+    // redirige automáticamente a GitHub
+  }
+  
 
   @Get('google/redirect')
-@UseGuards(AuthGuard('google'))
-async googleRedirect(
-  @Req() req: Request & { user: any }, 
-  @Res() res: Response
-) {
-  const result = await this.authService.handleOAuthProcess(req.user, 'google');
-  const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:4173';
-
-  const user = result.oauthUserInfo || result.user || result.RegisteredUser?.user || {};
-  const userInfo = encodeURIComponent(JSON.stringify(user));
-
-  if (result.shouldCompleteProfile) {
-    return res.redirect(`${FRONTEND_URL}/register?userInfo=${userInfo}`);
-  } else {
-    const token = result.RegisteredUser?.token || '';
-    const encodedToken = encodeURIComponent(token);
-    console.log('usuario ya registrado, procediendo a logear',userInfo)
-    return res.redirect(`${FRONTEND_URL}/oauthlogin?token=${encodedToken}&userinfo=${userInfo}`);
+  @UseGuards(AuthGuard('google'))
+  async googleRedirect(
+    @Req() req: Request & { user: any },
+    @Res() res: Response
+  ) {
+    const result = await this.authService.handleOAuthProcess(req.user, 'google');
+    const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:4173';
+  
+    // 🚫 Redirección si intentó usar Google pero ya tenía cuenta con otro proveedor
+    if ('redirectToProvider' in result) {
+      const redirectProvider = result.redirectToProvider;
+      const email = (result as { originalEmail?: string }).originalEmail || '';
+      return res.redirect(
+        `${FRONTEND_URL}/wrong-provider?expected=${redirectProvider}&email=${email}`
+      );
+    }
+  
+    const user = result.oauthUserInfo || result.user || result.RegisteredUser?.user || {};
+    const userInfo = encodeURIComponent(JSON.stringify(user));
+  
+    if (result.shouldCompleteProfile) {
+      return res.redirect(`${FRONTEND_URL}/register?userInfo=${userInfo}`);
+    } else {
+      const token = result.RegisteredUser?.token || '';
+      const encodedToken = encodeURIComponent(token);
+      console.log('usuario ya registrado, procediendo a logear', userInfo);
+      return res.redirect(`${FRONTEND_URL}/oauthlogin?token=${encodedToken}&userinfo=${userInfo}`);
+    }
   }
-}
-
-
+  
 
   @Get('github/redirect')
-@UseGuards(AuthGuard('github'))
-async githubRedirect(
-  @Req() req: Request & { user: any }, 
-  @Res() res: Response
-) {
-  const result = await this.authService.handleOAuthProcess(req.user, 'github');
-  const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:4173';
-
-  const user = result.oauthUserInfo || result.user || result.RegisteredUser?.user || {};
-  const userInfo = encodeURIComponent(JSON.stringify(user));
-
-  if (result.shouldCompleteProfile) {
-    return res.redirect(`${FRONTEND_URL}/register?userInfo=${userInfo}`);
-  } else {
-    const token = result.RegisteredUser?.token || '';
-    const encodedToken = encodeURIComponent(token);
-    
-    return res.redirect(`${FRONTEND_URL}/oauthlogin?token=${encodedToken}&userinfo=${userInfo}`);
+  @UseGuards(AuthGuard('github'))
+  async githubRedirect(
+    @Req() req: Request & { user: any },
+    @Res() res: Response
+  ) {
+    const result = await this.authService.handleOAuthProcess(req.user, 'github');
+    const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:4173';
+  
+    // 🚫 Usuario intentó entrar con GitHub pero ya estaba registrado con otro proveedor
+    if ('redirectToProvider' in result) {
+      const redirectProvider = result.redirectToProvider;
+      const email = (result as { originalEmail?: string }).originalEmail || '';
+      return res.redirect(
+        `${FRONTEND_URL}/wrong-provider?expected=${redirectProvider}&email=${email}`
+      );
+    }
+  
+    const user = result.oauthUserInfo || result.user || result.RegisteredUser?.user || {};
+    const userInfo = encodeURIComponent(JSON.stringify(user));
+  
+    if (result.shouldCompleteProfile) {
+      return res.redirect(`${FRONTEND_URL}/register?userInfo=${userInfo}`);
+    } else {
+      const token = result.RegisteredUser?.token || '';
+      const encodedToken = encodeURIComponent(token);
+      console.log('usuario ya registrado, procediendo a logear', userInfo);
+      return res.redirect(`${FRONTEND_URL}/oauthlogin?token=${encodedToken}&userinfo=${userInfo}`);
+    }
   }
-}
   
 
     
   }
-

@@ -1,10 +1,12 @@
 # --- Configuración de rutas ---
 $REPO_DIR = "C:\Users\Administrator\repositories\MentorHub-PF"
-# $BACKEND_DIR = "$REPO_DIR\back"
+$BACKEND_DIR = "$REPO_DIR\back"
 $FRONTEND_DIR = "$REPO_DIR\front"
 
 # --- 1. Detener todos los procesos Node existentes ---
 Write-Output "=== Deteniendo procesos anteriores ==="
+kill-port 3001 4173
+taskkill /F /IM node.exe /T 2> $null
 kill-port 3001 4173
 taskkill /F /IM node.exe /T 2> $null
 
