@@ -20,28 +20,19 @@ import Terminos from './views/terminos-condiciones/Terminos';
 import Layout from './components/layout/Layout';
 import ConoceMas from './views/ConoceMas.tsx/ConoceMas';
 import CursoDetalle from './views/CursoDetalles/CursoDetalles';
+import { useUser } from './context/UserContext';
 // import CursoDetalle from './views/CursoDetalles/CursoDetalles';
 
 const AppWrapper = () => {
-   //esto es de prueba , cambia role a 'profesor' o 'alumno'
-   // const [user, setUser] = useState<{
-   // Solo para evitar "'setUser' is declared but its value is never read." en el deploy
-   const [user] = useState<{
-      role: 'profesor' | 'alumno' | 'otro';
-      nombre: string;
-   } | null>({
-      role: 'alumno',
-      nombre: 'Juan Pérez',
-   });
+ const { user } = useUser(); // 
+  const location = useLocation();
+  const noNavFooter = ['/login', '/register', '/'].includes(location.pathname);
 
-   const location = useLocation();
-   const noNavFooter = ['/login', '/register', '/'].includes(location.pathname);
-
-   const [filtros, setFiltros] = useState<{
-      search?: string;
-      category?: string;
-      teacherId?: string;
-   }>({});
+  const [filtros, setFiltros] = useState<{
+    search?: string;
+    category?: string;
+    teacherId?: string;
+  }>({});
 
    return (
       <>

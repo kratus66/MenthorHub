@@ -101,24 +101,25 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
                   Home
                </Link>
 
-               {user?.role === 'Profesor' && (
-                  <Link
-                     to="/clases/crear"
-                     onClick={() => setMenuOpen(false)}
-                     className="hover:text-gray-200"
-                  >
-                     Crear una clase
-                  </Link>
-               )}
-               {user?.role === 'Alumno' && (
-                  <Link
-                     to="/clases/unirme"
-                     onClick={() => setMenuOpen(false)}
-                     className="hover:text-gray-200"
-                  >
-                     Unirme a una clase
-                  </Link>
-               )}
+               {user?.role === 'profesor' && (
+   <Link
+      to="/clases/crear"
+      onClick={() => setMenuOpen(false)}
+      className="hover:text-gray-200"
+   >
+      Crear una clase
+   </Link>
+)}
+{user?.role === 'alumno' && (
+   <Link
+      to="/clases/unirme"
+      onClick={() => setMenuOpen(false)}
+      className="hover:text-gray-200"
+   >
+      Unirme a una clase
+   </Link>
+)}
+
 
                <Link
                   to="/about-us"
