@@ -32,8 +32,8 @@ import { Roles } from '../common/decorators/role';
 import { UpdateTaskDto } from './dto/update-task.dto';
 
 @ApiTags('Tasks')
- @ApiBearerAuth('JWT-auth')
- @UseGuards(JwtAuthGuard, RoleGuard)
+@ApiBearerAuth('JWT-auth')
+@UseGuards(JwtAuthGuard, RoleGuard)
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
@@ -52,7 +52,7 @@ export class TasksController {
   }
 
   @Get('eliminadas')
-  // @Roles(Role.Teacher)
+  @Roles(Role.Teacher)
   @ApiOperation({ summary: 'Ver tareas eliminadas del profesor autenticado' })
   @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
   @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
@@ -66,17 +66,16 @@ export class TasksController {
       if (!user) throw new UnauthorizedException('No autenticado');
       const tasks = await this.tasksService.findEliminadasByTeacher(user.id, Number(page), Number(limit));
       if (tasks.data.length === 0) {
-      return { message: 'No se encontraron tareas asignadas', ...tasks };
-}
-return tasks;
-
+        return { message: 'No se encontraron tareas asignadas', ...tasks };
+      }
+      return tasks;
     } catch (error) {
       throw new InternalServerErrorException('Error al obtener tareas eliminadas');
     }
   }
 
   @Get('teacher')
-  // @Roles(Role.Teacher)
+  @Roles(Role.Teacher)
   @ApiOperation({ summary: 'Obtener tareas del profesor con paginación' })
   @ApiQuery({ name: 'page', required: false, example: 1 })
   @ApiQuery({ name: 'limit', required: false, example: 10 })
@@ -97,7 +96,7 @@ return tasks;
   }
 
   @Get('student')
-  // @Roles(Role.Student)
+  @Roles(Role.Student)
   @ApiOperation({ summary: 'Obtener tareas asignadas al estudiante autenticado' })
   @ApiQuery({ name: 'page', required: false, example: 1 })
   @ApiQuery({ name: 'limit', required: false, example: 10 })

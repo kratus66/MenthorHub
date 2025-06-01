@@ -12,7 +12,7 @@ const ChatWindow = ({
    isWindowVisible,
    setIsWindowVisible,
 }: ChatWindowProps) => {
-   const windowVisibility = isWindowVisible ? 'opacity-100' : 'opacity-0';
+   const windowVisibility = isWindowVisible ? 'block' : 'hidden';
    const userData = JSON.parse(localStorage.getItem('user') ?? '{}');
    const [optionsVisible, setOptionsVisible] = useState(true);
    const [chatLog, setChatLog] = useState<

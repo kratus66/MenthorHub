@@ -109,7 +109,7 @@ export class AuthController {
     // 🚫 Redirección si intentó usar Google pero ya tenía cuenta con otro proveedor
     if ('redirectToProvider' in result) {
       const redirectProvider = result.redirectToProvider;
-      const email = result.originalEmail;
+      const email = (result as { originalEmail?: string }).originalEmail || '';
       return res.redirect(
         `${FRONTEND_URL}/wrong-provider?expected=${redirectProvider}&email=${email}`
       );
@@ -141,7 +141,7 @@ export class AuthController {
     // 🚫 Usuario intentó entrar con GitHub pero ya estaba registrado con otro proveedor
     if ('redirectToProvider' in result) {
       const redirectProvider = result.redirectToProvider;
-      const email = result.originalEmail;
+      const email = (result as { originalEmail?: string }).originalEmail || '';
       return res.redirect(
         `${FRONTEND_URL}/wrong-provider?expected=${redirectProvider}&email=${email}`
       );
@@ -163,4 +163,3 @@ export class AuthController {
 
     
   }
-

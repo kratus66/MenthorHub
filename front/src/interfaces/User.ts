@@ -16,4 +16,5 @@ export interface User {
    isEmailConfirmed?: boolean;
    isOauth?: boolean;
    isPaid?: boolean;
+   description?: string;
 }

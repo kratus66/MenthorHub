@@ -5,6 +5,7 @@ import { Review } from '../review/review.entity';
 import { CreateReviewDto } from '../review/dto/create-review.dto';
 import { User } from '../users/user.entity';
 import { Class } from '../classes/class.entity';
+import { PaymentsService } from '../payment/payment.service';
 
 @Injectable()
 export class ReviewsService {
@@ -12,11 +13,15 @@ export class ReviewsService {
     @InjectRepository(Review) private reviewRepo: Repository<Review>,
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Class) private classRepo: Repository<Class>,
+    private readonly paymentsService: PaymentsService,
   ) {}
 
   async create(dto: CreateReviewDto, user: User): Promise<Review> {
     console.log('Creando review:', dto);
     console.log('Autor (user):', user.id);
+
+    // 🔐 Validar pago activo del autor
+    await this.paymentsService.validateUserPaid(user.id, this.getCurrentMonth());
 
     if (dto.type === 'grade' && user.role !== 'teacher') {
       throw new BadRequestException('Solo los profesores pueden asignar calificaciones.');
@@ -45,6 +50,11 @@ export class ReviewsService {
     const saved = await this.reviewRepo.save(review);
     console.log('Review guardada con ID:', saved.id);
     return saved;
+  }
+
+  private getCurrentMonth(): string {
+    const now = new Date();
+    return `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
   }
 
   findAll(): Promise<Review[]> {
@@ -96,7 +106,6 @@ export class ReviewsService {
     console.log('Review eliminada con éxito');
   }
 
-  // ✅ Nuevo método agregado
   async findByUser(user: User): Promise<Review[]> {
     console.log(`Buscando calificaciones según rol: ${user.role}`);
 
