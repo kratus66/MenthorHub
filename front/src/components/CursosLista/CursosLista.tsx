@@ -121,7 +121,7 @@ const CursosLista = ({
                      </div>
                      <div className="flex flex-col">
                         <h3>Categoría: {curso.category.name}</h3>
-                        <h3>Materia: {curso.materia.description}</h3>
+                        <h3>Materia: {curso.materia.descripcion}</h3>
                      </div>
                   </div>
                </Link>
