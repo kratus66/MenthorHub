@@ -39,7 +39,7 @@ const CursoDetalle = () => {
                   </p>
                   <span className="mx-4 text-2xl">|</span>
                   <p className="text-gray-600 text-lg">
-                     <strong>Materia:</strong> {curso.materia.descripcion}
+                     <strong>Materia:</strong> {curso.materia.name}
                   </p>
                </div>
                <p className="text-gray-600 text-lg">
