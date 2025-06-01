@@ -4,6 +4,7 @@ import { Check, Camera } from 'lucide-react';
 import { useUser } from '../../context/UserContext';
 import axiosInstance from '../../services/axiosInstance';
 import type { User } from '../../interfaces/User';
+import Chatbot from '../../components/Chatbot/Chatbot';
 
 const UserProfile: React.FC = () => {
    const { user, setUser } = useUser();
@@ -73,9 +74,9 @@ const UserProfile: React.FC = () => {
    console.log('Datos de Usuario', user);
 
    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-900 to-blue-800 text-white px-6 py-12">
+      <div className="min-h-screen bg-gradient-to-br from-blue-900 to-blue-800 px-6 py-12">
          <div className="max-w-7xl mx-auto">
-            <h1 className="text-4xl font-bold mb-10 text-center">
+            <h1 className="text-4xl font-bold mb-10 text-center text-white">
                Hola, <span className="text-blue-300">{user.name}</span>
             </h1>
 
@@ -109,7 +110,7 @@ const UserProfile: React.FC = () => {
                   </div>
 
                   <div>
-                     <h2 className="text-xl font-semibold mb-2">
+                     <h2 className="text-xl font-semibold mb-2 text-white">
                         Descripción Personal
                      </h2>
                      <textarea
@@ -123,7 +124,7 @@ const UserProfile: React.FC = () => {
                   </div>
 
                   <div className="mt-4">
-                     <span className="text-lg font-medium mr-3">
+                     <span className="text-lg font-medium mr-3 text-white">
                         Suscripción:
                      </span>
                      <span
@@ -205,6 +206,7 @@ const UserProfile: React.FC = () => {
                )}
             </div>
          </div>
+         <Chatbot />
       </div>
    );
 };
