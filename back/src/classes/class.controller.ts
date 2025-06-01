@@ -12,7 +12,7 @@ import {
   UploadedFiles,
   Query,
   UseGuards,
-  UseGuards,
+  
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -33,7 +33,7 @@ import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { extname } from 'path';
 import { EnrollStudentDto } from './dto/enroll-student.dto';
-import { CloudinaryFileInterceptor, CloudinaryMultipleFilesInterceptor } from '../common/interceptors/cloudinary.interceptor';
+/* import { CloudinaryFileInterceptor, CloudinaryMultipleFilesInterceptor } from '../common/interceptors/cloudinary.interceptor'; */
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RoleGuard } from '../common/guards/role.guard';
 import { Role } from '../common/constants/roles.enum';
@@ -152,7 +152,7 @@ export class ClassesController {
     }
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard)
+ /*  @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Student, Role.Admin, Role.Teacher)
   @ApiOperation({summary:"Obtener las clases que dicta un profesor"})
   async findByTeacher(
@@ -171,7 +171,7 @@ export class ClassesController {
     } catch (error) {
       throw new InternalServerErrorException('Error al obtener clases por profesor');
     }
-  }
+  } */
   
   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(Role.Student, Role.Admin, Role.Teacher)
