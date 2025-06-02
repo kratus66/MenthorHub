@@ -5,18 +5,26 @@ import {
   MinLength,
   Matches,
   IsNumber,
-  IsIn,
   IsOptional,
   MaxLength,
   IsBoolean,
   ValidateIf,
   IsEnum,
+  IsIn,
 } from 'class-validator';
 
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { Role } from '../../common/constants/roles.enum';
+
+const roleMap: Record<string, Role> = {
+  alumno: Role.Student,
+  student: Role.Student,
+  profesor: Role.Teacher,
+  teacher: Role.Teacher,
+  admin: Role.Admin,
+};
 
 export class RegisterDto {
   @ApiProperty({ example: 'Ana Martínez' })
@@ -72,7 +80,6 @@ export class RegisterDto {
   @IsString()
   studies: string;
 
-  @ApiProperty()
   @ApiProperty({ enum: Role })
   @IsEnum(Role)
   role: Role;
