@@ -20,19 +20,35 @@ import Terminos from './views/terminos-condiciones/Terminos';
 import Layout from './components/layout/Layout';
 import ConoceMas from './views/ConoceMas.tsx/ConoceMas';
 import CursoDetalle from './views/CursoDetalles/CursoDetalles';
+import AdminPanel from './admin/AdminPanel';
 import { useUser } from './context/UserContext';
 // import CursoDetalle from './views/CursoDetalles/CursoDetalles';
 
 const AppWrapper = () => {
- const { user } = useUser(); // 
-  const location = useLocation();
-  const noNavFooter = ['/login', '/register', '/'].includes(location.pathname);
+   //esto es de prueba , cambia role a 'profesor' o 'alumno'
+   // const [user, setUser] = useState<{
+   // Solo para evitar "'setUser' is declared but its value is never read." en el deploy
+   const [user] = useState<{
+      role: 'profesor' | 'alumno' | 'otro';
+      nombre: string;
+   } | null>({
+      role: 'alumno',
+      nombre: 'Juan Pérez',
+   });
 
-  const [filtros, setFiltros] = useState<{
-    search?: string;
-    category?: string;
-    teacherId?: string;
-  }>({});
+   const location = useLocation();
+   const noNavFooter = ['/login', '/register', '/', '/admin'].includes(
+      location.pathname
+   );
+   const { user } = useUser(); //
+   const location = useLocation();
+   const noNavFooter = ['/login', '/register', '/'].includes(location.pathname);
+
+   const [filtros, setFiltros] = useState<{
+      search?: string;
+      category?: string;
+      teacherId?: string;
+   }>({});
 
    return (
       <>
@@ -44,6 +60,7 @@ const AppWrapper = () => {
                <Route path="/" element={<Landing />} />
                <Route path="/login" element={<Login />} />
                <Route path="/register" element={<Register />} />
+               <Route path="/admin" element={<AdminPanel />} />
             </Routes>
          ) : (
             <Layout>
@@ -67,11 +84,11 @@ const AppWrapper = () => {
                   <Route path="/cursos/:id" element={<CursoDetalle />} />
                   <Route path="/about-us" element={<AboutUs />} />
                   <Route path="/conoce-mas" element={<ConoceMas />} />
-
                   <Route path="/terminos" element={<Terminos />} />
                </Routes>
             </Layout>
          )}
+         <Routes></Routes>
       </>
    );
 };
