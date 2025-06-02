@@ -37,6 +37,10 @@ export class PaymentsService {
         ? PaymentType.TEACHER_SUBSCRIPTION
         : (dto.type as PaymentType);
 
+    const startDate = new Date(dto.month + '-01');
+    const endDate = new Date(startDate);
+    endDate.setMonth(endDate.getMonth() + 1);
+
     const payment = this.paymentRepo.create({
       amount: dto.amount,
       currency: dto.currency,
@@ -45,6 +49,8 @@ export class PaymentsService {
       status: PaymentStatus.COMPLETED,
       month: dto.month,
       user,
+      startDate,
+      endDate,
     });
 
     user.isPaid = true;
