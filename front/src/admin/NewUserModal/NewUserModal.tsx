@@ -59,7 +59,7 @@ const NewUserModal = ({
    };
 
    return (
-      <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
          <div className=" p-6 rounded-lg w-[90%] max-w-xl shadow-xl flex flex-col items-center bg-gray-100">
             <h2 className="text-xl font-semibold mb-4">Crear nuevo usuario</h2>
 
@@ -164,7 +164,7 @@ const NewUserModal = ({
                         <button
                            type="submit"
                            disabled={isSubmitting}
-                           className="px-4 py-2 bg-blue-600 text-white rounded"
+                           className="px-4 py-2 bg-blue-400 text-white rounded"
                         >
                            Crear
                         </button>

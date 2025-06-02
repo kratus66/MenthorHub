@@ -1,3 +1,5 @@
+import type { Teacher } from './entities';
+
 export type clasesType = {
    id: string;
    title: string;
@@ -9,21 +11,7 @@ export type clasesType = {
       imagenUrl?: string;
       descripcion?: string;
    };
-   teacher: {
-      id: string;
-      name: string;
-      email: string;
-      password: string;
-      role: string;
-      phoneNumber: string;
-      avatarId: string;
-      profileImage: null;
-      estudios: string;
-      country: string;
-      provincia: string;
-      localidad: string;
-      createdAt: string;
-   };
+   teacher: Teacher;
    students: [];
    tasks: [];
    category: {
