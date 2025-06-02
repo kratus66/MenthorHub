@@ -22,8 +22,7 @@ import { Roles } from '../common/decorators/role';
 import { Role } from '../common/constants/roles.enum';
 
 @ApiTags('Categorías')
-@ApiBearerAuth('JWT-auth')
-@UseGuards(JwtAuthGuard, RoleGuard)
+
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}

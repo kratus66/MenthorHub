@@ -10,11 +10,13 @@ import {
   MaxLength,
   IsBoolean,
   ValidateIf,
+  IsEnum,
 } from 'class-validator';
 
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 import { Type } from 'class-transformer';
+import { Role } from '../../common/constants/roles.enum';
 
 export class RegisterDto {
   @ApiProperty({ example: 'Ana Martínez' })
@@ -71,8 +73,9 @@ export class RegisterDto {
   studies: string;
 
   @ApiProperty()
-  @IsIn(['student', 'teacher', 'admin'])
-  role: string;
+  @ApiProperty({ enum: Role })
+  @IsEnum(Role)
+  role: Role;
 
   @ApiProperty()
   @IsString()

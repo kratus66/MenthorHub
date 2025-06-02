@@ -30,9 +30,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { Request, Response } from 'express';
-import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { EmailService } from '../email/email.service';
 
 
@@ -77,6 +75,34 @@ export class AuthController {
     return this.authService.register(registrationDto, profileImagePathOrURL || '');
   }
     
+  @Get('confirm-email')
+@ApiOperation({ summary: 'Confirmar correo electrónico con token' })
+@ApiResponse({ status: 200, description: 'Correo confirmado correctamente' })
+@ApiResponse({ status: 400, description: 'Token inválido o expirado' })
+async confirmEmail(
+  @Query('token') token: string,
+  @Res() res: Response,
+) {
+  if (!token || typeof token !== 'string') {
+    throw new BadRequestException('Falta o es inválido el token de confirmación');
+  }
+
+  try {
+    const result = await this.authService.confirmEmail(token);
+
+    const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:4173';
+
+    if (result.success) {
+      return res.redirect(`${FRONTEND_URL}/email-confirmed`);
+    } else {
+      return res.redirect(`${FRONTEND_URL}/email-confirmation-error`);
+    }
+  } catch (error) {
+    console.error('Error al confirmar email:', error);
+    throw new BadRequestException('Token inválido o expirado');
+  }
+}
+
 
   @Post('login')
   @ApiOperation({ summary: 'Iniciar sesión' })

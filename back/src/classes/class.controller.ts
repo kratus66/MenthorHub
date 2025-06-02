@@ -40,13 +40,12 @@ import { Role } from '../common/constants/roles.enum';
 import { Roles } from '../common/decorators/role';
 
 @ApiTags('Clases')
-@ApiBearerAuth('JWT-auth')
-@UseGuards(JwtAuthGuard, RoleGuard)
+
 @Controller('classes')
 export class ClassesController {
   constructor(private readonly classesService: ClassesService) {}
 
-  @UseGuards(JwtAuthGuard, RoleGuard)
+
   @Roles(Role.Admin, Role.Teacher)
   @Post()
   @UseInterceptors(CloudinaryMultipleFilesInterceptor('multimedia'))
@@ -70,7 +69,7 @@ export class ClassesController {
   async findAll() {
     return this.classesService.findAll();
   }
-  @UseGuards(JwtAuthGuard, RoleGuard)
+ 
   @Roles(Role.Admin, Role.Teacher)
   @Get('deleted')
   @Roles(Role.Admin)
@@ -89,8 +88,6 @@ export class ClassesController {
   }
 
 
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin, Role.Teacher)
   @Put(':id/restore')
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Restaurar una clase eliminada' })
@@ -105,8 +102,6 @@ export class ClassesController {
     }
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin,Role.Teacher)
   @Put(':id')
   @Roles(Role.Teacher)
   @ApiOperation({ summary: 'Actualizar una clase existente' })
@@ -122,8 +117,6 @@ export class ClassesController {
     }
   }
 
-  @UseGuards(JwtAuthGuard, RoleGuard )
-  @Roles(Role.Teacher, Role.Admin)
   @Delete(':id/unenroll')
   @Roles(Role.Teacher)
   @ApiOperation({ summary: 'Desinscribir estudiante de una clase' })
@@ -135,8 +128,6 @@ export class ClassesController {
   }
 
 
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin, Role.Teacher)
   @Delete(':id')
   @Roles(Role.Teacher)
   @ApiOperation({ summary: 'Eliminar (lógicamente) una clase' })
@@ -172,9 +163,7 @@ export class ClassesController {
       throw new InternalServerErrorException('Error al obtener clases por profesor');
     }
   } */
-  
-  @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Student, Role.Admin, Role.Teacher)
+
   @Get('student/:id')
   @Roles(Role.Student)
   @ApiOperation({ summary: 'Obtener clases por estudiante' })
@@ -185,8 +174,7 @@ export class ClassesController {
   }
 
 
-  @UseGuards(JwtAuthGuard,RoleGuard)
-  @Roles(Role.Teacher)
+
   @Post(':id/enroll')
   @Roles(Role.Student)
   @ApiOperation({ summary: 'Inscribir estudiante en una clase' })
@@ -198,7 +186,7 @@ export class ClassesController {
   }
 
   @Get('teacher/:id')
-  @Roles(Role.Teacher)
+
   @ApiOperation({ summary: 'Obtener clases por profesor' })
   @ApiParam({ name: 'id', description: 'UUID del profesor' })
   @ApiResponse({ status: 200, description: 'Clases encontradas', type: [Class] })

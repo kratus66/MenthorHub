@@ -15,6 +15,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { OAuthCompleteDto } from './dto/OauthRegister.dto';
 import passport from 'passport';
+import { Role } from '../common/constants/roles.enum';
 
  import { EmailService } from '../email/email.service';  
 
@@ -38,7 +39,12 @@ export class AuthService {
         `Ya existe una cuenta registrada con el correo ${dto.email}.`
       );
     }
-  
+    
+
+      // 👇 Normaliza el rol
+      dto.role = this.normalizeRole(dto.role);
+
+
     if (dto.isOauth) {
       if (!dto.oauthProvider) {
         throw new BadRequestException('El proveedor OAuth es requerido');
@@ -110,6 +116,7 @@ export class AuthService {
     });
   
     await this.usersRepository.save(newUser);
+
   
     const emailToken = this.generateEmailVerificationToken(newUser);
     const confirmUrl = `http://localhost:3001/api/auth/confirm-email?token=${emailToken}`;
@@ -156,6 +163,35 @@ export class AuthService {
       },
     };
   }
+
+  async confirmEmail(token: string): Promise<{ success: boolean }> {
+    try {
+      // Verificamos el token y obtenemos el payload (debe haber sido generado por nosotros)
+      const payload = this.jwtService.verify(token); // lanza error si es inválido o expiró
+  
+      const userId = payload.sub; // asegurate de usar 'sub' al crear el token
+      const user = await this.usersRepository.findOne({ where: { id: userId } });
+  
+      if (!user) {
+        return { success: false };
+      }
+  
+      // Si ya está confirmado, no hacemos nada
+      if (user.isEmailConfirmed) {
+        return { success: true };
+      }
+  
+      // Confirmamos el correo
+      user.isEmailConfirmed = true;
+      await this.usersRepository.save(user);
+  
+      return { success: true };
+    } catch (error) {
+      console.error('❌ Error al confirmar email:', error);
+      return { success: false };
+    }
+  }
+  
   
   
   async login(loginDto: LoginDto): Promise<any> {
@@ -289,6 +325,21 @@ async handleOAuthProcess(profile: any, provider: 'google' | 'github') {
         expiresIn: '1d',
       },
     );
+  }
+
+  private normalizeRole(role: string): Role {
+    switch (role.toLowerCase()) {
+      case 'alumno':
+        return Role.Student;
+      case 'profesor':
+        return Role.Teacher;
+      case 'admin':
+      case 'student':
+      case 'teacher':
+        return role as Role;
+      default:
+        throw new BadRequestException(`Rol inválido: ${role}`);
+    }
   }
     
 }
