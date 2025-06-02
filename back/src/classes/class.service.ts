@@ -250,6 +250,23 @@ async enrollStudent(classId: string, studentId: string): Promise<Class> {
   // Return the updated class
   return clase;
 }
+
+async unenrollStudent(classId: string, studentId: string): Promise<Class> {
+  console.log('➖ Desinscribiendo estudiante ID:', studentId, 'de clase ID:', classId);
+
+  const clase = await this.classRepository.findOne({
+    where: { id: classId, estado: true },
+    relations: ['students'],
+  });
+  if (!clase) throw new NotFoundException('Clase no encontrada o inactiva');
+
+  const studentIndex = clase.students.findIndex((s) => s.id === studentId);
+  if (studentIndex === -1) throw new NotFoundException('El estudiante no está inscrito en esta clase');
+
+  clase.students.splice(studentIndex, 1);
+  return this.classRepository.save(clase);
+}
+
  
 }
  
