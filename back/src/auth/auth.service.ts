@@ -216,7 +216,7 @@ async handleOAuthProcess(profile: any, provider: 'google' | 'github') {
 
   if (user) {
     const shouldCompleteProfile =
-      !user.role || !user.phoneNumber || !user.country || !user.estudios;
+      !user.role;
     if (shouldCompleteProfile) {
       return {
         shouldCompleteProfile,
@@ -239,6 +239,8 @@ async handleOAuthProcess(profile: any, provider: 'google' | 'github') {
             email: user.email,
             role: user.role,
             profileImage: user.profileImage,
+            isOauth: true,
+            oauthProvider: user.oauthProvider,
           },
         },
       };
