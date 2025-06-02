@@ -55,8 +55,7 @@ export default function LoginForm() {
       validate={validate}
       onSubmit={handleSubmit}
     >
-      <Form className="flex flex-col justify-between gap-[1.7vh]">
-        <h2 className="subtitle z-10">Ingreso</h2>
+      <Form className="flex flex-col justify-around h-full w-full px-[1.7vh]">
         <div className="mx-[2vw]">
           <label htmlFor="email" className="block font-medium">
             Email
@@ -67,7 +66,7 @@ export default function LoginForm() {
               id="email"
               type="email"
               placeholder="nombre123@correo.com"
-              className="w-full py-[0.8vw] px-[1vw] border rounded-full"
+              className="w-full py-[0.8vw] px-[1vw] border rounded-full outline-[#007AFF]"
             />
             <ErrorMessage
               name="email"
@@ -76,7 +75,7 @@ export default function LoginForm() {
             />
           </div>
         </div>
-        <div className="relative mx-[2vw]">
+        <div className="mx-[2vw]">
           <label htmlFor="password" className="block font-medium">
             Contraseña
           </label>
@@ -86,7 +85,7 @@ export default function LoginForm() {
               id="password"
               type="password"
               placeholder="Contraseña"
-              className="w-full py-[0.8vw] px-[1vw] border rounded-full"
+              className="w-full py-[0.8vw] px-[1vw] border rounded-full outline-[#007AFF]"
             />
             <ErrorMessage
               name="password"

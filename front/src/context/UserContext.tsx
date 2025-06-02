@@ -41,8 +41,6 @@ export const UserProvider = ({ children }: UserProviderProps) => {
       localStorage.removeItem('token');
    };
 
-   console.log('User en contexto:', user);
-
    return (
       <UserContext.Provider value={{ user, setUser, token, login, logout }}>
          {children}

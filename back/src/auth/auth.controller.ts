@@ -107,12 +107,12 @@ export class AuthController {
     const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:4173';
   
     // 🚫 Redirección si intentó usar Google pero ya tenía cuenta con otro proveedor
-    if ('redirectToProvider' in result) {
-      const redirectProvider = result.redirectToProvider;
-      return res.redirect(
-        `${FRONTEND_URL}/wrong-provider?expected=${redirectProvider}`
-      );
-    }
+    // if ('redirectToProvider' in result) {
+    //   const redirectProvider = result.redirectToProvider;
+    //   return res.redirect(
+    //     `${FRONTEND_URL}/wrong-provider?expected=${redirectProvider}`
+    //   );
+    // }
   
     const user = result.oauthUserInfo || result.user || result.RegisteredUser?.user || {};
     const userInfo = encodeURIComponent(JSON.stringify(user));
@@ -138,12 +138,12 @@ export class AuthController {
     const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:4173';
   
     // 🚫 Usuario intentó entrar con GitHub pero ya estaba registrado con otro proveedor
-    if ('redirectToProvider' in result) {
-      const redirectProvider = result.redirectToProvider;
-      return res.redirect(
-        `${FRONTEND_URL}/wrong-provider?expected=${redirectProvider}`
-      );
-    }
+    // if ('redirectToProvider' in result) {
+    //   const redirectProvider = result.redirectToProvider;
+    //   return res.redirect(
+    //     `${FRONTEND_URL}/wrong-provider?expected=${redirectProvider}`
+    //   );
+    // }
   
     const user = result.oauthUserInfo || result.user || result.RegisteredUser?.user || {};
     const userInfo = encodeURIComponent(JSON.stringify(user));

@@ -85,6 +85,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
                   </p>
                </div>
             </div>
+            
          </nav>
 
          <div

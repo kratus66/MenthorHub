@@ -27,7 +27,7 @@ const ChatButton = ({
          >
             <img
                className={`w-full h-full p-5 ${imageColor} transition-colors duration-500`}
-               src="/chatbot.svg"
+               src="/chat-bot.svg"
                alt="ChatBot"
             />
          </button>
