@@ -54,7 +54,7 @@ export class AuthController {
     @Body() dto: RegisterDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    try {
+  
       console.log('📨 Body:', dto);
       console.log('📷 Imagen recibida:', file);
       console.log('📷 imagen recibida por URL:', dto.profileImageUrl);
@@ -70,7 +70,7 @@ export class AuthController {
         isOauth,
         oauthProvider: isOauth ? dto.oauthProvider : undefined,
       };
-  
+      try {
       return await this.authService.register(registrationDto, profileImagePathOrURL || '');
     } catch (error) {
       console.error('❌ Error al registrar:', error);
