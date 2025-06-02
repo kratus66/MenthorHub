@@ -70,8 +70,8 @@ import { ReviewsModule } from './review/reviews.module';
             Materias,
             Review,
          ],
-         synchronize: true,
-         dropSchema: false,
+         synchronize: false,
+         dropSchema: true,
       }),
    ],
 })
