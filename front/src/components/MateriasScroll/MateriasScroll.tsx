@@ -24,14 +24,14 @@ const MateriasScroll = ({
                {materias.map((materia, index) => (
                   <button
                      key={index}
-                     onClick={() => handleMateriaClick(materia.descripcion)}
+                     onClick={() => handleMateriaClick(materia.name)}
                   >
                      <CategoriaCard
                         id={materia.id}
-                        nombre={materia.descripcion}
+                        nombre={materia.name}
                         imagen={materia.imagenUrl || '/image-placeholder.jpg'}
                         seleccionada={
-                           materiaSeleccionada === materia.descripcion
+                           materiaSeleccionada === materia.name
                         }
                      />
                   </button>

@@ -8,7 +8,7 @@ type Props = {
    onCategoriaActiva: (categoriaId: string) => void;
    onMateriaSeleccionada: (materiaId: string) => void;
    setMateriasVisibles: (
-      materias: { id: string; descripcion: string }[]
+      materias: { id: string; name: string }[]
    ) => void;
    categoriaActiva?: string;
    setCategoriasIniciales: React.Dispatch<React.SetStateAction<CategoryType[]>>;

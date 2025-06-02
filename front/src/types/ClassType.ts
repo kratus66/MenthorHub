@@ -7,7 +7,6 @@ export type clasesType = {
       id: string;
       name?: string;
       imagenUrl?: string;
-      descripcion?: string;
    };
    teacher: {
       id: string;

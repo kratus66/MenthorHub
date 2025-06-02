@@ -32,7 +32,7 @@ const Dashboard = ({ filtros, setFiltros }: DashboardProps) => {
    const [categoriaActiva, setCategoriaActiva] = useState<string | null>(null);
    const [materiaSeleccionada, setMateriaSeleccionada] = useState('');
    const [materiasVisibles, setMateriasVisibles] = useState<
-      { id: string; descripcion: string }[]
+      { id: string; name: string }[]
    >([]);
 
    const navigate = useNavigate();
