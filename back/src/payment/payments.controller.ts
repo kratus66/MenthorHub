@@ -174,6 +174,11 @@ export class PaymentsController {
       const currency = (captureRes as any).purchase_units[0].payments.captures[0].amount.currency_code;
       const month = new Date().toISOString().slice(0, 7); // 'YYYY-MM'
 
+      // Define startDate and endDate (example: subscription for 1 month)
+     const startDate = new Date(month + '-01');
+     const endDate = new Date(startDate);
+     endDate.setMonth(endDate.getMonth() + 1);
+
       console.log('🎯 Usuario logueado para asociar pago:', user.email);
 
       await this.paymentsService.savePayment({
@@ -183,6 +188,8 @@ export class PaymentsController {
         paymentMethod: 'paypal',
         status: PaymentStatus.COMPLETED,
         month,
+        startDate,
+        endDate,
         user,
       });
 
