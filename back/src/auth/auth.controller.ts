@@ -12,6 +12,7 @@ import {
   NotFoundException,
   Query,
   Res,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -53,27 +54,30 @@ export class AuthController {
     @Body() dto: RegisterDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    console.log('📨 Body:', dto);
-    console.log('📷 Imagen recibida:', file);
-    console.log('📷imagen recibida por url',dto.profileImageUrl)
+    try {
+      console.log('📨 Body:', dto);
+      console.log('📷 Imagen recibida:', file);
+      console.log('📷 imagen recibida por URL:', dto.profileImageUrl);
   
-    
-  // Decide qué imagen usar: la URL recibida o la del archivo subido
-  const profileImagePathOrURL = file?.path || dto.profileImageUrl;
-
-    // Normalizar isOauth a boolean, trimming spaces
-    const isOauth = dto.isOauth?.toString().trim().toLowerCase() === 'true';
+      // Decide qué imagen usar: la URL recibida o la del archivo subido
+      const profileImagePathOrURL = file?.path || dto.profileImageUrl;
   
-
-    const registrationDto = {
-      ...dto,
-      isOauth,
-      oauthProvider: isOauth ? dto.oauthProvider : undefined,
-      
-    };
+      // Normalizar isOauth a boolean, trimming spaces
+      const isOauth = dto.isOauth?.toString().trim().toLowerCase() === 'true';
   
-    return this.authService.register(registrationDto, profileImagePathOrURL || '');
+      const registrationDto = {
+        ...dto,
+        isOauth,
+        oauthProvider: isOauth ? dto.oauthProvider : undefined,
+      };
+  
+      return await this.authService.register(registrationDto, profileImagePathOrURL || '');
+    } catch (error) {
+      console.error('❌ Error al registrar:', error);
+      throw new InternalServerErrorException('Error interno al registrar el usuario');
+    }
   }
+  
     
   @Get('confirm-email')
 @ApiOperation({ summary: 'Confirmar correo electrónico con token' })
