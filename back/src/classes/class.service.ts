@@ -15,7 +15,6 @@ import { UpdateClassDto } from '../dto/update-class.dto';
 import { cloudinary } from '../config/cloudinary.config';
 import { Payment, PaymentStatus, PaymentType } from '../payment/payment.entity';
 import { PaymentsService } from '../payment/payment.service';
-import { sanitizeName } from '../common/utils/sanitize-name';
 
 @Injectable()
 export class ClassesService {
@@ -45,65 +44,38 @@ export class ClassesService {
     if (!teacher) throw new NotFoundException('Profesor no encontrado');
 
     // 🔐 Validación con validateUserPaid del PaymentsService
-    /*// 🔐 Validación con validateUserPaid del PaymentsService
     await this.paymentsService.validateUserPaid(teacherId, this.getCurrentMonth());
 
-*/
     const category = await this.categoryRepository.findOne({ where: { id: categoryId } });
     if (!category) throw new NotFoundException('Categoría no encontrada');
 
     const materia = await this.materiaRepository.findOne({ where: { id: materiaId } });
     if (!materia) throw new NotFoundException('Materia no encontrada');
 
-
+    const multimediaUrls = files?.map((file) => file.path) ?? [];
 
     const newClass = this.classRepository.create({
       title,
       description,
       sector,
       materia,
-      multimedia: [],
+      multimedia: multimediaUrls,
       teacher,
       category,
     });
 
-     
     const savedClass = await this.classRepository.save(newClass);
     console.log('✅ Clase guardada con ID:', savedClass.id);
-    
-    // 🧼 Nombres para carpetas
-    const sanitizedCategory = sanitizeName(category.name);
-    const sanitizedMateria = sanitizeName(materia.name);
-    const sanitizedTitle = sanitizeName(savedClass.title);
-  
-    const baseCategoryPath = `mentorhub/categorias/${sanitizedCategory}`;
-    const baseMateriaPath = `${baseCategoryPath}/materias/${sanitizedMateria}`;
-    const classFolderPath = `${baseMateriaPath}/clases/${sanitizedTitle}-${savedClass.id}`;
-
 
     try {
-      await cloudinary.api.create_folder(baseCategoryPath);
-      await cloudinary.api.create_folder(baseMateriaPath);
-      await cloudinary.api.create_folder(`${baseMateriaPath}/clases`);
-      await cloudinary.api.create_folder(classFolderPath);
+      await cloudinary.api.create_folder(`classes/${savedClass.title.replace(/ /g, '_')}-${savedClass.id}`);
     } catch (error) {
-      console.warn('⚠️ Error subiendo archivos multimedia:', error instanceof Error ? error.message : error);
+      if (error instanceof Error) {
+        console.warn(`⚠️ No se pudo crear la carpeta: ${savedClass.title}-${savedClass.id}`, error.message);
+      } else {
+        console.warn('⚠️ No se pudo crear la carpeta (error desconocido)');
+      }
     }
-
-     // 📤 Subida de archivos multimedia
-     const multimediaUrls: string[] = [];
-  
-     if (files && files.length > 0) {
-       for (const file of files) {
-         const uploadResult = await cloudinary.uploader.upload(file.path, {
-           folder: classFolderPath,
-           resource_type: 'auto',
-         });
-         multimediaUrls.push(uploadResult.secure_url);  
-       }
-       savedClass.multimedia = multimediaUrls;
-       await this.classRepository.save(savedClass);
-     }
 
     return savedClass;
   }
@@ -111,7 +83,7 @@ export class ClassesService {
   private getCurrentMonth(): string {
     const now = new Date();
     return `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
-  } 
+  }
 
   async update(id: string, updateDto: UpdateClassDto): Promise<Class> {
     console.log('🛠️ Actualizando clase:', id);
@@ -227,7 +199,6 @@ export class ClassesService {
     if (alreadyEnrolled) throw new Error('El estudiante ya está inscrito en esta clase');
 
     const latestPayment = await this.paymentRepository.findOne({
-    /*/const latestPayment = await this.paymentRepository.findOne({
       where: {
         user: { id: studentId },
         type: PaymentType.STUDENT_SUBSCRIPTION,
@@ -235,13 +206,11 @@ export class ClassesService {
       },
       order: { createdAt: 'DESC' },
     });
-    
 
     if (!latestPayment) {
       console.log('⛔ Estudiante sin historial de pago mensual');
       throw new ForbiddenException('Debes pagar la suscripción mensual para unirte a clases.');
     }
-    
 
     const paymentDate = new Date(latestPayment.createdAt);
     const now = new Date();
@@ -260,12 +229,11 @@ export class ClassesService {
       .leftJoin('class.students', 'student')
       .where('student.id = :studentId', { studentId })
       .getCount();
-    
+
     if (!student.isPaid && enrolledCount >= 3) {
       console.log('⛔ Estudiante excedió el límite sin plan mensual premium');
       throw new ForbiddenException('Debes pagar la suscripción mensual Premium para unirte a más de 3 clases');
     }
-    */
 
     clase.students.push(student);
     await this.classRepository.save(clase);

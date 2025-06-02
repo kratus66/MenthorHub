@@ -108,14 +108,13 @@ export class TasksController {
   ) {
     try {
       if (!user) throw new UnauthorizedException('No autenticado');
-      const tasks = await this.tasksService.findByStudent(user.id, +page, +limit);
+      const tasks = await this.tasksService.findByStudent(user.id, parseInt(page), parseInt(limit));
       if (!tasks.length) return { message: 'No se encontraron tareas asignadas' };
       return tasks;
     } catch (error) {
       throw new InternalServerErrorException('Error al obtener las tareas del estudiante');
     }
   }
-  
 
   @Delete(':id')
   @Roles(Role.Teacher)

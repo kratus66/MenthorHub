@@ -33,7 +33,7 @@ import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { extname } from 'path';
 import { EnrollStudentDto } from './dto/enroll-student.dto';
-import { CloudinaryFileInterceptor, CloudinaryMultipleFilesInterceptor } from '../common/interceptors/cloudinary.interceptor'; 
+/* import { CloudinaryFileInterceptor, CloudinaryMultipleFilesInterceptor } from '../common/interceptors/cloudinary.interceptor'; */
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RoleGuard } from '../common/guards/role.guard';
 import { Role } from '../common/constants/roles.enum';
@@ -186,8 +186,9 @@ export class ClassesController {
 
 
   @UseGuards(JwtAuthGuard,RoleGuard)
-  @Roles(Role.Student)
+  @Roles(Role.Teacher)
   @Post(':id/enroll')
+  @Roles(Role.Student)
   @ApiOperation({ summary: 'Inscribir estudiante en una clase' })
   @ApiParam({ name: 'id', description: 'UUID de la clase' })
   @ApiBody({ type: EnrollStudentDto })
@@ -218,7 +219,7 @@ export class ClassesController {
   }
 }
 
-/*function CloudinaryMultipleFilesInterceptor(fieldName: string) {
+function CloudinaryMultipleFilesInterceptor(fieldName: string) {
   return FilesInterceptor(fieldName, 10, {
     storage: diskStorage({
       filename: (req, file, callback) => {
@@ -227,5 +228,4 @@ export class ClassesController {
       },
     }),
   });
-  */
-
+}
