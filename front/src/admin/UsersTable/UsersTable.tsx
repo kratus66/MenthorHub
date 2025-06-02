@@ -7,6 +7,8 @@ type UsersTableProps = {
    setShowDeleteModal: React.Dispatch<React.SetStateAction<boolean>>;
    setUserToBeDeleted: React.Dispatch<React.SetStateAction<User>>;
    userIsDeleted: boolean;
+   setShowNewUserModal: React.Dispatch<React.SetStateAction<boolean>>;
+   newUserConfirmed: boolean;
 };
 
 type UsersPaginados = {
@@ -20,6 +22,8 @@ const UsersTable = ({
    setShowDeleteModal,
    setUserToBeDeleted,
    userIsDeleted,
+   setShowNewUserModal,
+   newUserConfirmed,
 }: UsersTableProps) => {
    const [users, setUsers] = useState<UsersPaginados>({
       data: [],
@@ -29,12 +33,7 @@ const UsersTable = ({
    });
    const [dataToBeEdited, setDataToBeEdited] = useState<User>({});
    const [editionConfirmed, setEditionConfirmed] = useState(false);
-   const [newUserConfirmed, setNewUserConfirmed] = useState(false);
    const [currentPage, setCurrentPage] = useState(1);
-   const [newData, setNewData] = useState<User>({
-      createdAt: new Date().toISOString(),
-   });
-   const [nuevoUsuario, setNuevoUsuario] = useState(false);
 
    useEffect(() => {
       axiosInstance
@@ -45,7 +44,7 @@ const UsersTable = ({
          .catch((err) => {
             console.log('Error al cargar las clases', err);
          });
-   }, [userIsDeleted, editionConfirmed, currentPage]);
+   }, [userIsDeleted, editionConfirmed, currentPage, newUserConfirmed]);
 
    const handleDeleteData = (user: User) => {
       setShowDeleteModal(true);
@@ -70,20 +69,7 @@ const UsersTable = ({
    };
 
    const handleNuevoUsuario = () => {
-      setNuevoUsuario(true);
-   };
-
-   const handleCrearNuevoUsuario = () => {
-      axiosInstance
-         .post('/users', newData)
-         .then(() => {
-            setNewUserConfirmed(true);
-            setNewData({});
-            setTimeout(() => setNewUserConfirmed(false), 100);
-         })
-         .catch((err) => {
-            alert(`Error al crear el nuevo ususario. ${err}`);
-         });
+      setShowNewUserModal(true);
    };
 
    return (
@@ -146,131 +132,6 @@ const UsersTable = ({
                      </tr>
                   </thead>
                   <tbody className="text-sm">
-                     {nuevoUsuario && (
-                        <tr>
-                           <td className="p-2 px-0">
-                              <input
-                                 type="text"
-                                 onChange={(e) =>
-                                    setNewData((prev) =>
-                                       prev
-                                          ? { ...prev, name: e.target.value }
-                                          : prev
-                                    )
-                                 }
-                                 className="p-2 rounded-md"
-                              />
-                           </td>
-                           <td className="p-2 px-0">
-                              <input
-                                 type="text"
-                                 onChange={(e) =>
-                                    setNewData((prev) =>
-                                       prev
-                                          ? { ...prev, email: e.target.value }
-                                          : prev
-                                    )
-                                 }
-                                 className="p-2 rounded-md"
-                              />
-                           </td>
-                           <td className="p-2 px-0">
-                              <select
-                                 onChange={(e) =>
-                                    setNewData((prev) =>
-                                       prev
-                                          ? { ...prev, role: e.target.value }
-                                          : prev
-                                    )
-                                 }
-                                 className="p-2 rounded-md"
-                              >
-                                 <option value=""></option>
-                                 <option value="admin">Admin</option>
-                                 <option value="alumno">Alumno</option>
-                                 <option value="profesor">Profesor</option>
-                              </select>
-                           </td>
-                           <td className="p-2 px-0">
-                              <input
-                                 type="text"
-                                 onChange={(e) =>
-                                    setNewData((prev) =>
-                                       prev
-                                          ? {
-                                               ...prev,
-                                               phoneNumber: e.target.value,
-                                            }
-                                          : prev
-                                    )
-                                 }
-                                 className="p-2 rounded-md"
-                              />
-                           </td>
-                           <td></td>
-                           <td className="p-2 px-0">
-                              <input
-                                 type="text"
-                                 onChange={(e) =>
-                                    setNewData((prev) =>
-                                       prev
-                                          ? { ...prev, country: e.target.value }
-                                          : prev
-                                    )
-                                 }
-                                 className="p-2 rounded-md w-[8rem]"
-                              />
-                           </td>
-                           <td className="p-2 px-0">
-                              <input
-                                 type="text"
-                                 onChange={(e) =>
-                                    setNewData((prev) =>
-                                       prev
-                                          ? {
-                                               ...prev,
-                                               localidad: e.target.value,
-                                            }
-                                          : prev
-                                    )
-                                 }
-                                 className="p-2 rounded-md w-[8rem]"
-                              />
-                           </td>
-                           <td className="p-2">
-                              <input
-                                 type="checkbox"
-                                 onChange={(e) =>
-                                    setNewData((prev) =>
-                                       prev
-                                          ? {
-                                               ...prev,
-                                               isPaid: e.target.checked,
-                                            }
-                                          : prev
-                                    )
-                                 }
-                                 className="p-2 scale-150"
-                              />
-                           </td>
-                           <td className="p-2 px-0">
-                              <input
-                                 type="text"
-                                 value={new Date().toISOString()}
-                                 readOnly
-                                 className="p-2 rounded-md w-[10rem] bg-gray-100 text-gray-600"
-                              />
-                           </td>
-                           <td className="p-2">
-                              <button
-                                 className="p-2 bg-green-600 text-white rounded-md"
-                                 onClick={() => handleCrearNuevoUsuario()}
-                              >
-                                 Guardar Ususario
-                              </button>
-                           </td>
-                        </tr>
-                     )}
                      {users.data.map((user, index) => {
                         return dataToBeEdited?.id !== user.id ? (
                            <tr

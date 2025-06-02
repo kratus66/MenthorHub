@@ -3,19 +3,19 @@ import type { User } from '../../interfaces/User';
 import { formatearFecha } from '../helpers/formatoFecha';
 import axiosInstance from '../../services/axiosInstance';
 
-type DeleteModalProps = {
+type DeleteUserModalProps = {
    userToBeDeleted: User;
    showDeleteModal: boolean;
    setShowDeleteModal: React.Dispatch<React.SetStateAction<boolean>>;
    setUserIsDeleted: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const DeleteModal = ({
+const DeleteUserModal = ({
    userToBeDeleted,
    showDeleteModal,
    setShowDeleteModal,
    setUserIsDeleted,
-}: DeleteModalProps) => {
+}: DeleteUserModalProps) => {
    const [disabled, setDisabled] = useState(true);
 
    useEffect(() => {
@@ -118,4 +118,4 @@ const DeleteModal = ({
    );
 };
 
-export default DeleteModal;
+export default DeleteUserModal;

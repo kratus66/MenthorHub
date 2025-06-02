@@ -3,14 +3,17 @@ import AdminNavBar from './AdminNavBar/AdminNavBar';
 import Stats from './Stats/Stats';
 import ClassesTable from './ClassesTable/ClassesTable';
 import UsersTable from './UsersTable/UsersTable';
-import DeleteModal from './DeleteModal/DeleteModal';
 import type { User } from '../interfaces/User';
+import DeleteUserModal from './DeleteUserModal/DeleteUserModal';
+import NewUserModal from './NewUserModal/NewUserModal';
 
 const AdminPanel = () => {
    const [activeTab, setActiveTab] = useState('estadisticas');
-   const [showDeleteModal, setShowDeleteModal] = useState(false);
+   const [showDeleteUserModal, setShowDeleteUserModal] = useState(false);
+   const [showNewUserModal, setShowNewUserModal] = useState(false);
    const [userToBeDeleted, setUserToBeDeleted] = useState<User>({});
    const [userIsDeleted, setUserIsDeleted] = useState(false);
+   const [newUserConfirmed, setNewUserConfirmed] = useState(false);
 
    const adminTabs = [
       { id: 'estadisticas', label: 'Estadísticas' },
@@ -49,18 +52,26 @@ const AdminPanel = () => {
                {activeTab === 'clases' && <ClassesTable />}
                {activeTab === 'usuarios' && (
                   <UsersTable
-                     setShowDeleteModal={setShowDeleteModal}
+                     setShowDeleteModal={setShowDeleteUserModal}
                      setUserToBeDeleted={setUserToBeDeleted}
                      userIsDeleted={userIsDeleted}
+                     setShowNewUserModal={setShowNewUserModal}
+                     newUserConfirmed={newUserConfirmed}
                   />
                )}
             </div>
-            {showDeleteModal === true && (
-               <DeleteModal
+            {showDeleteUserModal === true && (
+               <DeleteUserModal
                   userToBeDeleted={userToBeDeleted}
-                  showDeleteModal={showDeleteModal}
-                  setShowDeleteModal={setShowDeleteModal}
+                  showDeleteModal={showDeleteUserModal}
+                  setShowDeleteModal={setShowDeleteUserModal}
                   setUserIsDeleted={setUserIsDeleted}
+               />
+            )}
+            {showNewUserModal === true && (
+               <NewUserModal
+                  setNewUserConfirmed={setNewUserConfirmed}
+                  setShowNewUserModal={setShowNewUserModal}
                />
             )}
          </div>
