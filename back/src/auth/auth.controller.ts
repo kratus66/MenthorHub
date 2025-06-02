@@ -77,6 +77,24 @@ export class AuthController {
     return this.authService.register(registrationDto, profileImagePathOrURL || '');
   }
     
+  @Get('confirm-email')
+  async confirmEmail(@Query('token') token: string) {
+    try {
+      const payload = this.jwtService.verify(token, {
+        secret: process.env.JWT_EMAIL_SECRET,
+      });
+
+      const user = await this.userRepository.findOneBy({ email: payload.email });
+      if (!user) throw new NotFoundException('Usuario no encontrado');
+
+      user.isEmailConfirmed = true;
+      await this.userRepository.save(user);
+
+      return { message: 'Correo confirmado correctamente' };
+    } catch (err) {
+      throw new BadRequestException('Token inválido o expirado');
+    }
+  }
 
   @Post('login')
   @ApiOperation({ summary: 'Iniciar sesión' })

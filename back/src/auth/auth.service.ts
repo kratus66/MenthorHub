@@ -201,6 +201,7 @@ async handleOAuthProcess(profile: any, provider: 'google' | 'github') {
     userByEmail.oauthProvider !== provider
   ) {
     return {
+      message: `Ya existe una cuenta con este email ${userByEmail.email}, conecta con ${userByEmail.oauthProvider}`,
       redirectToProvider: userByEmail.oauthProvider, // 'google' o 'github'
       originalEmail: userByEmail.email,
     };
@@ -213,6 +214,7 @@ async handleOAuthProcess(profile: any, provider: 'google' | 'github') {
       oauthProvider: provider,
     },
   });
+
 
   if (user) {
     const shouldCompleteProfile =
@@ -239,6 +241,8 @@ async handleOAuthProcess(profile: any, provider: 'google' | 'github') {
             email: user.email,
             role: user.role,
             profileImage: user.profileImage,
+            isOauth: true,
+            oauthProvider: provider,
           },
         },
       };

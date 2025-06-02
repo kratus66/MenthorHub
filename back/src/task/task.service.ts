@@ -28,7 +28,9 @@ export class TasksService {
     console.log('👤 ID del profesor autenticado:', teacherId);
 
     // 🔐 Validar pago del mes actual
+    /*// 🔐 Validar pago del mes actual
     await this.paymentsService.validateUserPaid(teacherId, this.getCurrentMonth());
+*/
 
     const classRef = await this.classRepository.findOne({
       where: { id: dto.classId },
@@ -73,14 +75,13 @@ export class TasksService {
       .getMany();
   }
 
-  async findByStudent(studentId: string, page = 1, limit = 10): Promise<Task[]> {
-    return this.taskRepository
+  async findByStudent(studentId: string, page = 1, limit = 10): Promise<Task[]> { 
+    
+      return this.taskRepository
       .createQueryBuilder('task')
       .leftJoinAndSelect('task.classRef', 'class')
       .leftJoin('class.students', 'student')
-      .where('student.id = :studentId AND task.estado = true', { studentId })
-      .skip((page - 1) * limit)
-      .take(limit)
+      .where('student.id = :studentId', { studentId })
       .getMany();
   }
 
