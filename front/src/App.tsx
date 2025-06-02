@@ -20,6 +20,7 @@ import Terminos from './views/terminos-condiciones/Terminos';
 import Layout from './components/layout/Layout';
 import ConoceMas from './views/ConoceMas.tsx/ConoceMas';
 import CursoDetalle from './views/CursoDetalles/CursoDetalles';
+import AdminPanel from './admin/AdminPanel';
 // import CursoDetalle from './views/CursoDetalles/CursoDetalles';
 
 const AppWrapper = () => {
@@ -35,7 +36,9 @@ const AppWrapper = () => {
    });
 
    const location = useLocation();
-   const noNavFooter = ['/login', '/register', '/'].includes(location.pathname);
+   const noNavFooter = ['/login', '/register', '/', '/admin'].includes(
+      location.pathname
+   );
 
    const [filtros, setFiltros] = useState<{
       search?: string;
@@ -53,6 +56,7 @@ const AppWrapper = () => {
                <Route path="/" element={<Landing />} />
                <Route path="/login" element={<Login />} />
                <Route path="/register" element={<Register />} />
+               <Route path="/admin" element={<AdminPanel />} />
             </Routes>
          ) : (
             <Layout>
@@ -76,11 +80,11 @@ const AppWrapper = () => {
                   <Route path="/cursos/:id" element={<CursoDetalle />} />
                   <Route path="/about-us" element={<AboutUs />} />
                   <Route path="/conoce-mas" element={<ConoceMas />} />
-
                   <Route path="/terminos" element={<Terminos />} />
                </Routes>
             </Layout>
          )}
+         <Routes></Routes>
       </>
    );
 };
