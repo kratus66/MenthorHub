@@ -1,61 +1,69 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
-import axios from "axios";
+
+import React, { useEffect, useState } from "react";
 import { useUser } from "../../context/UserContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import axiosInstance from "../../services/axiosInstance";
+
 
 const Suscripcion: React.FC = () => {
   const { user } = useUser();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [loading, setLoading] = useState(false);
+
+  
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+    if (token) {
+      axiosInstance
+        .post("/payments/paypal/capture/" + token)
+        .then(() => {
+          alert("✅ Pago capturado con éxito");
+          navigate("/panel");
+        })
+        .catch(() => {
+          alert("❌ Error al capturar el pago");
+        });
+    }
+  }, [location.search, navigate]);
 
   if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-gray-600">
-        Debes iniciar sesión para ver esta página.
-      </div>
-    );
+    return <p>Debes iniciar sesión para realizar el pago.</p>;
   }
 
   const rol = user.role as "alumno" | "profesor";
 
   const handlePago = async () => {
+    setLoading(true);
     try {
-      // 1. Crear la orden en el backend
-      const response = await axios.post("http://localhost:3001/api/payments/create-paypal-payment", {
-        tipoSuscripcion: rol,
+      const now = new Date();
+      const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+
+      const response = await axiosInstance.post("/payments/create-paypal-payment", {
+        userId: user.id,
+        amount: 15000,
+        currency: "COP",
+        type: rol === "alumno" ? "student_subscription" : "teacher_subscription",
+        paymentMethod: "paypal",
+        month,
       });
 
-      const approvalUrl = response.data?.links?.find(
-        (link: any) => link.rel === "approval_url"
-      )?.href;
-
-      const orderId = response.data?.id;
-
-      if (!approvalUrl || !orderId) {
-        return alert("No se pudo obtener el enlace de PayPal o el ID de la orden.");
+      const approvalUrl = response.data?.url;
+      if (!approvalUrl) {
+        alert("No se pudo obtener el enlace de aprobación de PayPal.");
+        return;
       }
 
-      window.open(approvalUrl, "_blank");
-
-     
-      const confirmar = window.confirm("¿Confirmar pago de la suscripción?");
-      if (confirmar) {
-        const captura = await axios.post(
-          `http://localhost:3001/api/payments/paypal/capture/${orderId}`
-        );
-
-        if (captura.status === 200) {
-          alert("¡Pago confirmado exitosamente!");
-          navigate("/panel"); 
-        } else {
-          alert("No se pudo capturar el pago.");
-        }
-      }
+      window.location.href = approvalUrl;
     } catch (error) {
       console.error("Error al procesar el pago:", error);
       alert("Hubo un error al procesar el pago.");
+    } finally {
+      setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
@@ -71,15 +79,16 @@ const Suscripcion: React.FC = () => {
         </p>
 
         <div className="flex justify-center mb-8">
-          <span className="text-4xl font-semibold text-blue-600">$9.99</span>
+          <span className="text-4xl font-semibold text-blue-600">$15.000</span>
           <span className="text-gray-500 self-end ml-1">/mes</span>
         </div>
 
         <button
           onClick={handlePago}
+          disabled={loading}
           className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-medium py-3 px-6 rounded-lg transition duration-200 shadow"
         >
-          Pagar con PayPal
+          {loading ? "Redirigiendo a PayPal..." : "Pagar con PayPal"}
         </button>
 
         <p className="text-xs text-gray-400 text-center mt-4">
