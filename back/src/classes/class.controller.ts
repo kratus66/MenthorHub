@@ -49,7 +49,8 @@ export class ClassesController {
 
   @Post()
   @Roles(Role.Admin, Role.Teacher)
-  @UseInterceptors(CloudinaryMultipleFilesInterceptor('multimedia'))
+  @Post()
+  // @UseInterceptors(CloudinaryMultipleFilesInterceptor('multimedia'))
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Crear una nueva clase con multimedia' })
   @ApiBody({ description: 'Datos para crear una clase con archivos multimedia', type: CreateClassDto })
@@ -182,13 +183,3 @@ export class ClassesController {
   }
 }
 
-function CloudinaryMultipleFilesInterceptor(fieldName: string) {
-  return FilesInterceptor(fieldName, 10, {
-    storage: diskStorage({
-      filename: (req, file, callback) => {
-        const uniqueSuffix = `${uuidv4()}${extname(file.originalname)}`;
-        callback(null, uniqueSuffix);
-      },
-    }),
-  });
-}
