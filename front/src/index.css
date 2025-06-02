@@ -1,75 +1,99 @@
-@import './styles/fira-sans.css';
+@import "./styles/fira-sans.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body,
 html {
-   max-width: 100vw;
-   max-height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
 }
 
 button {
-   @apply outline-none;
+  @apply outline-none;
 }
 
 /********************** FUENTE PRINCIPAL ********************/
 body,
 html,
 * {
-   font-family: 'Fira Sans';
+  font-family: "Fira Sans";
 }
 
 /******************* FUENTE-SIZE RESPONSIVE *****************/
 .title {
-   @apply !text-[10.06vh];
+  @apply !text-[10.06vh];
 }
 
 .subtitle {
-   @apply !text-[4.73vh];
+  @apply !text-[4vh] !whitespace-nowrap !overflow-hidden !text-ellipsis;
+}
+
+.title,
+.subtitle {
+  margin-left: calc(3vw + 2vh);
+  margin-right: 2vh;
 }
 
 /********************** AJUSTES ROBOTITO ********************/
 .menvirLogin {
-   position: absolute;
-   top: 50%;
-   transform: translateY(-50%);
-   left: -15rem;
-   max-width: none !important;
-   width: 700px;
-   height: auto;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: -15rem;
+  max-width: none !important;
+  width: 700px;
+  height: auto;
 }
 .menvirLanding {
-   height: auto;
-   width: 40rem;
+  height: auto;
+  width: 40rem;
+}
+.imgRegister {
+  position: fixed;
+  top: -11vw;
+  left: -11vw;
+  z-index: -1;
+  width: 78vw;
+  transform: scaleX(-1);
+  opacity: 0.6;
+  filter: blur(10px);
 }
 
 /********************** AJUSTES PANELES ********************/
 .-z-1 {
-   z-index: -1;
+  z-index: -1;
 }
 .panel {
-   background-color: rgba(255, 255, 255, 0.3);
-   border-radius: 4vh;
-   margin-top: 26vh;
-   margin-bottom: 6vh;
-   margin-inline: 3vw;
-   box-shadow: 0px 4px 70px rgba(0, 0, 0, 0.1);
-   backdrop-filter: blur(30px);
-   -webkit-backdrop-filter: blur(30px);
-   padding-right: 19vw;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 4vh;
+  margin-top: 26vh;
+  margin-bottom: 6vh;
+  margin-inline: 3vw;
+  box-shadow: 0px 4px 70px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  padding-right: 19vw;
 }
 .panel-text {
-   padding-bottom: 8vh;
-   padding-top: 2vh;
-   padding-left: calc(3vw + 2vh);
-   padding-right: 2vh;
-   z-index: 1;
-   font-size: 3.08vh;
+  padding-bottom: 8vh;
+  padding-top: 2vh;
+  padding-left: calc(3vw + 2vh);
+  padding-right: 2vh;
+  z-index: 1;
+  font-size: 3.08vh;
+}
+.panel-text2 {
+  padding-bottom: 8vh;
+  padding-top: 2vh;
+  padding-left: calc(3vw + 2vh);
+  padding-right: calc(3vw + 2vh);
+  z-index: 1;
+  font-size: 3.08vh;
 }
 
 .line-nofill {
-   font-family: sans-serif;
-   text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000,
-      -1px 1px 0 #000;
+  font-family: sans-serif;
+  text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000,
+    -1px 1px 0 #000;
 }

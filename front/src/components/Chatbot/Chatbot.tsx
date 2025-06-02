@@ -7,7 +7,7 @@ const Chatbot = () => {
 
    return (
       <>
-         <div className="fixed w-fit min-h-[10rem] bottom-0 right-0 flex justify-end mb-6 p-2 gap-4">
+         <div className="fixed w-fit min-h-[10rem] bottom-0 right-0 flex justify-end mb-6 p-2 gap-4 z-50">
             <ChatWindow
                isWindowVisible={isWindowVisible}
                setIsWindowVisible={setIsWindowVisible}
