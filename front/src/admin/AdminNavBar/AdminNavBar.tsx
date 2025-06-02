@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import imagenUsuario from '../../images/imagenUsuario.png';
-import { useNavigate, useLocation } from 'react-router-dom';
+// import { useNavigate, useLocation } from 'react-router-dom';
 
 import { useUser } from '../../context/UserContext';
 
 const AdminNavBar: React.FC = () => {
    const { user } = useUser();
    const [menuOpen, setMenuOpen] = useState(false);
-   const [searchInput, setSearchInput] = useState('');
+   // const [searchInput, setSearchInput] = useState('');
 
-   const navigate = useNavigate();
-   const location = useLocation();
+   // const navigate = useNavigate();
+   // const location = useLocation();
 
    return (
       <>
