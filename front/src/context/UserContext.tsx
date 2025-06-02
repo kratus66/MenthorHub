@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import type { User } from '../interfaces/User';
 // Tipo del usuario
 
-interface UserContextType {
+interface UserContextType {   
    user: User | null;
    token: string | null;
    login: (userData: User, token: string) => void;
