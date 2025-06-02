@@ -7,6 +7,8 @@ type UsersTableProps = {
    setShowDeleteModal: React.Dispatch<React.SetStateAction<boolean>>;
    setUserToBeDeleted: React.Dispatch<React.SetStateAction<User>>;
    userIsDeleted: boolean;
+   setShowNewUserModal: React.Dispatch<React.SetStateAction<boolean>>;
+   newUserConfirmed: boolean;
 };
 
 type UsersPaginados = {
@@ -20,6 +22,8 @@ const UsersTable = ({
    setShowDeleteModal,
    setUserToBeDeleted,
    userIsDeleted,
+   setShowNewUserModal,
+   newUserConfirmed,
 }: UsersTableProps) => {
    const [users, setUsers] = useState<UsersPaginados>({
       data: [],
@@ -40,7 +44,7 @@ const UsersTable = ({
          .catch((err) => {
             console.log('Error al cargar las clases', err);
          });
-   }, [userIsDeleted, editionConfirmed, currentPage]);
+   }, [userIsDeleted, editionConfirmed, currentPage, newUserConfirmed]);
 
    const handleDeleteData = (user: User) => {
       setShowDeleteModal(true);
@@ -54,7 +58,7 @@ const UsersTable = ({
    const handleConfirmEdition = () => {
       axiosInstance
          .put(`users/${dataToBeEdited.id}`, dataToBeEdited)
-         .then((res) => {
+         .then(() => {
             setEditionConfirmed(true);
             setDataToBeEdited({});
             setTimeout(() => setEditionConfirmed(false), 100);
@@ -64,13 +68,20 @@ const UsersTable = ({
          });
    };
 
+   const handleNuevoUsuario = () => {
+      setShowNewUserModal(true);
+   };
+
    return (
       <>
          <div className="p-4 w-full">
             <h2 className="text-3xl mb-4">Usuarios</h2>
             <hr className="border-2 border-black" />
             <div className="flex items-center my-2 gap-4">
-               <button className="bg-blue-400 p-2 rounded-md text-white me-[16rem]">
+               <button
+                  className="bg-blue-400 p-2 rounded-md text-white me-[16rem]"
+                  onClick={handleNuevoUsuario}
+               >
                   Nuevo Usuario
                </button>
                <button
@@ -294,7 +305,7 @@ const UsersTable = ({
                               </td>
                               <td>
                                  <button
-                                    className="bg-green-400 rounded-md m-2 p-2 text-white"
+                                    className="bg-green-600 rounded-md m-2 p-2 text-white"
                                     onClick={handleConfirmEdition}
                                  >
                                     Guardar Cambios
