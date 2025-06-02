@@ -21,13 +21,24 @@ const Register: React.FC = () => {
       setTimeout(() => navigate('/login'), 2000);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.error('Error al registrar:', error);
-      if (error.response?.data?.message) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error('Error inesperado al registrar. Por favor intenta nuevamente.');
-      }
+  console.error('Error al registrar:', error);
+  const errorMessage = error.response?.data?.message;
+
+  if (errorMessage) {
+    toast.error(errorMessage);
+
+    // Redirigir al login si ya hay una cuenta registrada
+    if (
+      errorMessage.toLowerCase().includes('ya existe una cuenta registrada') ||
+      errorMessage.toLowerCase().includes('correo ya registrado') ||
+      errorMessage.toLowerCase().includes('ya está registrado')
+    ) {
+      setTimeout(() => navigate('/login'), 3000); // da tiempo a leer el toast
     }
+  } else {
+    toast.error('Error inesperado al registrar. Por favor intenta nuevamente.');
+  }
+}
   };
 
   return (
@@ -53,6 +64,22 @@ const Register: React.FC = () => {
 
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
                 bg-white bg-opacity-90 backdrop-blur-lg rounded-3xl p-12 w-11/12 max-w-4xl shadow-lg z-20">
+                  <button
+  onClick={() => navigate('/login')}
+  className="absolute top-4 left-4 text-gray-700 hover:text-black transition duration-300 flex items-center"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={2}
+    stroke="currentColor"
+    className="w-6 h-6 mr-1"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+  </svg>
+  <span className="text-sm">Volver al login</span>
+</button>
         <h1 className="text-4xl font-bold text-black mb-3">MentorHub</h1>
         <h2 className="text-xl font-medium text-gray-700 mb-8">Registro</h2>
         <RegisterForm onSubmit={handleSubmit} />
