@@ -25,7 +25,7 @@ import { useUser } from "./context/UserContext";
 import Oauthlogin from "./views/oauthlogin/oauthlogin";
 import Suscripcion from "./views/Suscripcion/suscripcion";
 // import CursoDetalle from './views/CursoDetalles/CursoDetalles';
-import ForgotPassword from "./views/PasswordRecovery/ForgotPassword";
+
 import ResetPassword from "./views/PasswordRecovery/ResetPassword";
 
 const AppWrapper = () => {
