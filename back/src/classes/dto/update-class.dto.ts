@@ -18,6 +18,13 @@ export class UpdateClassDto {
   @IsOptional()
   description?: string;
 
+  @ApiPropertyOptional({
+    example: 'Tecnología',
+    description: 'Nuevo sector de la clase',
+  })
+  @IsString()
+  @IsOptional()
+  sector?: string;
 
   @ApiPropertyOptional({
     example: 'a1d0c6e8-2fcf-4b1e-bf41-b0c2460cc071',

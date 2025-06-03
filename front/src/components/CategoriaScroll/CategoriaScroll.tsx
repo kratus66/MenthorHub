@@ -46,7 +46,7 @@ const CategoriaScroll = ({
    return (
       <>
          <div className="min-h-[13rem] w-full flex flex-col gap-2">
-            <h2 className="text-4xl"></h2>
+            <h2 className="text-4xl">Sector:</h2>
             <div className="h-[10rem] flex flex-nowrap overflow-x-scroll overflow-y-visible gap-2">
                {categorias.map((categoria, index) => (
                   <button

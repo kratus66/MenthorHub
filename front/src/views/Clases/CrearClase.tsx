@@ -10,7 +10,7 @@ export default function CrearClase() {
   const [teacherId, setTeacherId] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [materiaId, setMateriaId] = useState("");
- 
+  const [sector, setSector] = useState("");
   const [allCategories, setAllCategories] = useState<CategoryType[]>([]);
   const [allMaterias, setAllMaterias] = useState<MateriaType[]>([]);
   const [archivos, setArchivos] = useState<File[]>([]);
@@ -50,7 +50,7 @@ export default function CrearClase() {
     formData.append("teacherId", teacherId);
     formData.append("categoryId", categoryId);
     formData.append("materiaId", materiaId);
-    
+    formData.append("sector", sector);
     archivos.forEach((file) => {
       formData.append("multimedia", file);
     });
@@ -66,7 +66,7 @@ export default function CrearClase() {
       setDescription("");
       setCategoryId("");
       setMateriaId("");
-      
+      setSector("");
       setArchivos([]);
     } catch (err) {
       alert("Error al crear la clase");
@@ -109,7 +109,14 @@ export default function CrearClase() {
               </option>
             ))}
           </select>
-          
+          <input
+            type="text"
+            placeholder="Sector"
+            value={sector}
+            onChange={(e) => setSector(e.target.value)}
+            className="border rounded px-2 py-1 text-sm"
+            required
+          />
         </div>
 
         <input
@@ -174,6 +181,7 @@ export default function CrearClase() {
               setDescription("");
               setCategoryId("");
               setMateriaId("");
+              setSector("");
               setArchivos([]);
             }}
           >

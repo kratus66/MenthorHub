@@ -47,7 +47,7 @@ export class ClassesService {
       );
     }
 
-    const { title, description, teacherId, categoryId, materiaId } = createDto;
+    const { title, description, teacherId, categoryId, materiaId, sector } = createDto;
 
     const teacher = await this.userRepository.findOne({
       where: { id: teacherId, role: 'teacher' },
@@ -84,6 +84,7 @@ export class ClassesService {
     const newClass = this.classRepository.create({
       title,
       description,
+      sector,
       materia,
       multimedia: multimediaUrls,
       teacher,

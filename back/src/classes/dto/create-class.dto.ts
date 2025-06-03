@@ -43,6 +43,10 @@
       imagen: string;
     };
 
+    @ApiProperty({ example: 'Tecnología', type: 'string' })
+    @IsString()
+    @IsNotEmpty()
+    sector!: string;
 
     @ApiProperty({
       description: 'Archivos multimedia a subir',

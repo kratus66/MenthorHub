@@ -25,6 +25,8 @@ export class Class {
   @Column('text')
   description!: string;
 
+  @Column({ nullable: true }) // 👈 solución rápida
+  sector!: string; 
 
   @Column('text', { array: true, nullable: true })
   multimedia!: string[];
