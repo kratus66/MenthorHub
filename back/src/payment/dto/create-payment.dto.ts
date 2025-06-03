@@ -27,11 +27,11 @@ export class CreatePaymentDto {
 
   @ApiProperty({
     example: 'paypal',
-    description: 'Método de pago (paypal o card)',
-    enum: ['paypal', 'card'],
+    description: 'Método de pago (solo paypal permitido)',
+    enum: ['paypal'],
   })
-  @IsEnum(['paypal', 'card'])
-  paymentMethod!: 'paypal' | 'card';
+  @IsEnum(['paypal'])
+  paymentMethod!: 'paypal';
 
   @ApiProperty({
     example: '2025-05',
