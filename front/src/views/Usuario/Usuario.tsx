@@ -175,7 +175,7 @@ const UserProfile: React.FC = () => {
                      disabled
                      className="p-3 border border-gray-300 rounded bg-gray-100 text-gray-600 col-span-1"
                   />
-                  {user && user.role?.toLowerCase() === 'alumno' && (
+                  {user && user.role?.toLowerCase() === 'student' && (
                      <input
                         value={user.estudios}
                         disabled

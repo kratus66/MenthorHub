@@ -286,8 +286,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
                 className="w-full rounded px-3 py-2 mt-1 border border-gray-300"
               >
                 <option value="">Seleccionar</option>
-                <option value="alumno">Alumno</option>
-                <option value="profesor">Profesor</option>
+                <option value="student">Alumno</option>
+                <option value="teacher">Profesor</option>
               </select>
             </label>
 

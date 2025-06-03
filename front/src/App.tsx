@@ -27,9 +27,6 @@ import Suscripcion from "./views/Suscripcion/suscripcion";
 // import CursoDetalle from './views/CursoDetalles/CursoDetalles';
 
 const AppWrapper = () => {
-  //esto es de prueba , cambia role a 'profesor' o 'alumno'
-  // const [user, setUser] = useState<{
-  // Solo para evitar "'setUser' is declared but its value is never read." en el deploy
 
   const location = useLocation();
   const noNavFooter = [
@@ -66,10 +63,10 @@ const AppWrapper = () => {
             <Route path="/home" element={<Home />} />
             <Route path="/usuario" element={<Usuario />} />
 
-            {user?.role === "profesor" && (
+            {user?.role === "teacher" && (
               <Route path="/clases/crear" element={<CrearClase />} />
             )}
-            {user?.role === "alumno" && (
+            {user?.role === "student" && (
               <Route path="/clases/unirme" element={<UnirmeClase />} />
             )}
 

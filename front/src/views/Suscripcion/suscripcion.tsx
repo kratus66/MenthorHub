@@ -32,7 +32,7 @@ const Suscripcion: React.FC = () => {
     return <p>Debes iniciar sesión para realizar el pago.</p>;
   }
 
-  const rol = user.role as "alumno" | "profesor";
+  const rol = user.role as "student" | "teacher";
 
   const handlePago = async () => {
     setLoading(true);
@@ -41,10 +41,10 @@ const Suscripcion: React.FC = () => {
       const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 
       const response = await axiosInstance.post("/payments/create-paypal-payment", {
-        userId: user.id,
-        amount: 15000,
+        amount: 5.99,
         currency: "COP",
-        type: rol === "alumno" ? "student_subscription" : "teacher_subscription",
+        type: rol === "student" ? "student_subscription" : "teacher_monthly_fee",
+
         paymentMethod: "paypal",
         month,
       });
@@ -69,17 +69,17 @@ const Suscripcion: React.FC = () => {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="max-w-md w-full bg-white shadow-xl rounded-2xl p-8">
         <h1 className="text-3xl font-bold text-gray-800 text-center mb-4">
-          Suscripción {rol === "alumno" ? "Alumno" : "Profesor"}
+          Suscripción {rol === "student" ? "Student" : "Teacher"}
         </h1>
 
         <p className="text-gray-600 text-center mb-6">
-          {rol === "alumno"
+          {rol === "student"
             ? "Accede a clases ilimitadas, material exclusivo y más."
             : "Crea clases ilimitadas y monetiza tu conocimiento."}
         </p>
 
         <div className="flex justify-center mb-8">
-          <span className="text-4xl font-semibold text-blue-600">$15.000</span>
+          <span className="text-4xl font-semibold text-blue-600">$5.99</span>
           <span className="text-gray-500 self-end ml-1">/mes</span>
         </div>
 

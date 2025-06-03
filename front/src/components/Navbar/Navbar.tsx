@@ -19,6 +19,15 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  
+const normalizedRole = (() => {
+  if (!user?.role) return null;
+  const roleLower = user.role.toLowerCase();
+  if (roleLower === 'alumno' || roleLower === 'student') return 'student';
+  if (roleLower === 'profesor' || roleLower === 'teacher') return 'teacher';
+  if (roleLower === 'admin') return 'admin';
+  return null;
+})();
   return (
     <>
       <nav className="bg-blue-700 p-3 h-[3.5rem] flex items-center justify-between relative z-50">
@@ -111,25 +120,23 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
             Home
           </Link>
 
-          {user?.role === "profesor" && (
-            <Link
-              to="/clases/crear"
-              onClick={() => setMenuOpen(false)}
-              className="hover:text-gray-200"
-            >
-              Crear una clase
-            </Link>
-          )}
-          {user?.role === "alumno" && (
-            <Link
-              to="/clases/unirme"
-              onClick={() => setMenuOpen(false)}
-              className="hover:text-gray-200"
-            >
-              Unirme a una clase
-            </Link>
-          )}
+         
 
+{normalizedRole === 'teacher' && (
+  <Link to="/clases/crear" onClick={() => setMenuOpen(false)} className="hover:text-gray-200">
+    Crear una clase
+  </Link>
+)}
+{normalizedRole === 'student' && (
+  <Link to="/clases/unirme" onClick={() => setMenuOpen(false)} className="hover:text-gray-200">
+    Unirme a una clase
+  </Link>
+)}
+<Link
+            to="/suscripcion"
+            onClick={() => setMenuOpen(false)}
+            className="hover:text-gray-200"
+          >Suscribete</Link>
           <Link
             to="/about-us"
             onClick={() => setMenuOpen(false)}
