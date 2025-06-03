@@ -165,7 +165,6 @@ export class SeederService implements OnApplicationBootstrap {
         title: cls.title,
         description: cls.description,
         materia: materia,
-        sector: cls.sector ?? 'General',
         multimedia: cls.multimedia ?? [],
         teacher: profesor,
         category: categoria,
