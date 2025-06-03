@@ -71,7 +71,7 @@ import { ReviewsModule } from './review/reviews.module';
             Review,
          ],
          synchronize: true,
-         dropSchema: true,
+         dropSchema: false,
       }),
    ],
 })

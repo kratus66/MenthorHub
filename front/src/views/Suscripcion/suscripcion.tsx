@@ -13,6 +13,9 @@ const Suscripcion: React.FC = () => {
   const captureCalledRef = useRef(false);
 
   useEffect(() => {
+    sessionStorage.removeItem("paypal_captured"); // Limpia el flag para permitir capturas nuevas
+  
+
     const params = new URLSearchParams(location.search);
     const token = params.get("token");
     const alreadyCaptured = sessionStorage.getItem("paypal_captured");
