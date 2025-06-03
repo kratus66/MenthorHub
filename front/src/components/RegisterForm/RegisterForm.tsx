@@ -62,6 +62,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = e.target;
     if (name === "profileImage" && files) {
+      console.log("Archivo seleccionado en handleChange:", files[0]);
       setFormData((prev) => ({
         ...prev,
         profileImageFile: files[0],
@@ -155,11 +156,17 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
     dataToSend.append("oauthProvider", formData.oauthProvider);
     dataToSend.append("isConfirmed", String(formData.isConfirmed));
 
+  // Si hay archivo local, lo agrego
     if (formData.profileImageFile) {
       dataToSend.append("profileImage", formData.profileImageFile);
+    } else if (formData.profileImageUrl) {
+      // Si tengo solo URL (OAuth), la mando como string normal
+      dataToSend.append("profileImageUrl", formData.profileImageUrl);
     }
+   
 
     onSubmit(dataToSend);
+    console.log('📨 Datos enviados:', dataToSend);
   };
 
   return (

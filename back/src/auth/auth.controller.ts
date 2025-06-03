@@ -54,24 +54,22 @@ export class AuthController {
     @Body() dto: RegisterDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
+    console.log('📨 Body:', dto);
+    console.log('📷 Imagen recibida como archivo:', file);
+    console.log('🌐 Imagen recibida como URL:', dto.profileImage);
   
-      console.log('📨 Body:', dto);
-      console.log('📷 Imagen recibida:', file);
-      console.log('📷 imagen recibida por URL:', dto.profileImageUrl);
+    const imageUrl = file?.path || dto.profileImage || dto.profileImageUrl || null;
   
-      // Decide qué imagen usar: la URL recibida o la del archivo subido
-      const profileImagePathOrURL = file?.path || dto.profileImageUrl;
+    const isOauth = dto.isOauth?.toString().trim().toLowerCase() === 'true';
   
-      // Normalizar isOauth a boolean, trimming spaces
-      const isOauth = dto.isOauth?.toString().trim().toLowerCase() === 'true';
+    const registrationDto = {
+      ...dto,
+      isOauth,
+      oauthProvider: isOauth ? dto.oauthProvider : undefined,
+    };
   
-      const registrationDto = {
-        ...dto,
-        isOauth,
-        oauthProvider: isOauth ? dto.oauthProvider : undefined,
-      };
-      try {
-      return await this.authService.register(registrationDto, profileImagePathOrURL || '');
+    try {
+      return await this.authService.register(registrationDto, imageUrl);
     } catch (error) {
       console.error('❌ Error al registrar:', error);
       throw new InternalServerErrorException('Error interno al registrar el usuario');
@@ -107,6 +105,45 @@ async confirmEmail(
   }
 }
 
+@Post('forgot-password')
+@ApiOperation({ summary: 'Solicitar restablecimiento de contraseña' })
+@ApiResponse({ status: 200, description: 'Email enviado con instrucciones para restablecer contraseña' })
+async forgotPassword(@Body('email') email: string) {
+  const user = await this.userRepository.findOne({ where: { email } });
+
+  if (!user) {
+    throw new NotFoundException('No existe un usuario con ese email');
+  }
+
+  const token = await this.authService.generatePasswordResetToken(user);
+
+  const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+
+  
+
+  return { message: 'Se ha enviado un correo con instrucciones para restablecer tu contraseña' };
+}
+
+
+@Post('reset-password')
+@ApiOperation({ summary: 'Restablecer contraseña' })
+@ApiResponse({ status: 200, description: 'Contraseña actualizada correctamente' })
+@ApiResponse({ status: 400, description: 'Token inválido o expirado' })
+async resetPassword(
+  @Body('token') token: string,
+  @Body('newPassword') newPassword: string
+) {
+  const user = await this.authService.verifyPasswordResetToken(token);
+
+  if (!user) {
+    throw new BadRequestException('Token inválido o expirado');
+  }
+
+  await this.authService.updatePassword(user.id, newPassword);
+
+  return { message: 'Contraseña actualizada correctamente' };
+}
+
 
   @Post('login')
   @ApiOperation({ summary: 'Iniciar sesión' })
@@ -122,7 +159,7 @@ async confirmEmail(
 
   @Get('github')
   @UseGuards(AuthGuard('github'))
-  async githubLogin() {
+  githubLogin() {
     // redirige automáticamente a GitHub
   }
   

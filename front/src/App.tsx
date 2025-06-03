@@ -25,9 +25,10 @@ import { useUser } from "./context/UserContext";
 import Oauthlogin from "./views/oauthlogin/oauthlogin";
 import Suscripcion from "./views/Suscripcion/suscripcion";
 // import CursoDetalle from './views/CursoDetalles/CursoDetalles';
+import ForgotPassword from "./views/PasswordRecovery/ForgotPassword";
+import ResetPassword from "./views/PasswordRecovery/ResetPassword";
 
 const AppWrapper = () => {
-
   const location = useLocation();
   const noNavFooter = [
     "/login",
@@ -35,6 +36,8 @@ const AppWrapper = () => {
     "/",
     "/admin",
     "/oauthlogin",
+    "/forgot-password",    
+    "/reset-password",     
   ].includes(location.pathname);
   const { user } = useUser(); //
 
@@ -54,6 +57,8 @@ const AppWrapper = () => {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />   {/* Nueva ruta */}
+          <Route path="/reset-password" element={<ResetPassword />} />     {/* Nueva ruta */}
           <Route path="/oauthlogin" element={<Oauthlogin />} />
           <Route path="/admin" element={<AdminPanel />} />
         </Routes>
