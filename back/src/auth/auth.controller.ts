@@ -160,8 +160,7 @@ async resetPassword(
   @Get('github')
   @UseGuards(AuthGuard('github'))
   githubLogin() {
-    // redirige automáticamente a GitHub
-  }
+    console.log('📢 githubLogin activado');  }
   
 
   @Get('google/redirect')
@@ -186,12 +185,12 @@ async resetPassword(
   
     if (result.shouldCompleteProfile) {
       return res.redirect(`${FRONTEND_URL}/register?userInfo=${userInfo}`);
-    } else {
+    } 
       const token = result.RegisteredUser?.token || '';
       const encodedToken = encodeURIComponent(token);
       console.log('usuario ya registrado, procediendo a logear', userInfo);
       return res.redirect(`${FRONTEND_URL}/oauthlogin?token=${encodedToken}&userinfo=${userInfo}`);
-    }
+    
   }
   
 
@@ -217,14 +216,12 @@ async resetPassword(
   
     if (result.shouldCompleteProfile) {
       return res.redirect(`${FRONTEND_URL}/register?userInfo=${userInfo}`);
-    } else {
+    } 
       const token = result.RegisteredUser?.token || '';
       const encodedToken = encodeURIComponent(token);
       console.log('usuario ya registrado, procediendo a logear', userInfo);
       return res.redirect(`${FRONTEND_URL}/oauthlogin?token=${encodedToken}&userinfo=${userInfo}`);
     }
-  }
-  
 
-    
+  
   }

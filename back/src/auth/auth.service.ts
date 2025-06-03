@@ -253,28 +253,12 @@ export class AuthService {
 // auth.service.ts
 
 async handleOAuthProcess(profile: any, provider: 'google' | 'github') {
-  // Buscar usuario por email sin importar el proveedor
-  const userByEmail = await this.usersRepository.findOne({
-    where: { email: profile.email },
-  });
-
-  // Si ya existe con otro proveedor
-  if (
-    userByEmail &&
-    userByEmail.isOauth &&
-    userByEmail.oauthProvider !== provider
-  ) {
-    return {
-      redirectToProvider: userByEmail.oauthProvider, // 'google' o 'github'
-      originalEmail: userByEmail.email,
-    };
-  }
+  
 
   // Buscar usuario con este email Y este proveedor
   const user = await this.usersRepository.findOne({
     where: {
       email: profile.email,
-      oauthProvider: provider,
     },
   });
 
