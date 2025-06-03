@@ -1,16 +1,27 @@
-import { IsOptional, IsString, IsUUID, IsInt, Min, Max, IsEnum } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsUUID,
+  IsInt,
+  Min,
+  Max,
+  IsEnum,
+  ValidateIf,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateReviewDto {
   @ApiProperty({
     example: 5,
-    description: 'Calificación del curso o estudiante (1 a 5)',
-    minimum: 1,
-    maximum: 5,
+    description: 'Calificación del curso o estudiante. 1-5 si es review, 0-100 si es grade',
   })
   @IsInt()
+  @ValidateIf((o) => o.type === 'review' || !o.type)
   @Min(1)
   @Max(5)
+  @ValidateIf((o) => o.type === 'grade')
+  @Min(0)
+  @Max(100)
   rating: number;
 
   @ApiPropertyOptional({

@@ -1,12 +1,11 @@
-// payment.entity.ts
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
+  CreateDateColumn,
 } from 'typeorm';
 import { User } from '../users/user.entity';
-import { CreateDateColumn } from 'typeorm';
 
 export enum PaymentStatus {
   PENDING = 'pending',
@@ -44,10 +43,15 @@ export class Payment {
   @Column()
   month: string; // formato: 'YYYY-MM'
 
+@Column({ type: 'timestamp', nullable: true })
+startDate: Date;
+
+@Column({ type: 'timestamp', nullable: true })
+endDate: Date;
+
   @ManyToOne(() => User, (user) => user.payments)
   user: User;
 
   @CreateDateColumn()
-createdAt: Date;
-
+  createdAt: Date;
 }

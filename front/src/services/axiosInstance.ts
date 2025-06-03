@@ -1,14 +1,27 @@
-// src/api/axiosInstance.js
-import axios from 'axios';
+import axios from "axios";
 
-const apiUrl: string = import.meta.env.VITE_API_URL || 'localhost:3001';
+const apiUrl = import.meta.env.VITE_API_URL || "localhost:3001";
+
 const axiosInstance = axios.create({
-   baseURL: `${window.location.protocol}//${apiUrl}/api`, // Reemplazá con la URL de tu backend si es otra
-   headers: {
-      'Content-Type': 'application/json',
-      token: localStorage.getItem('token') || '', // Agrega el token de autenticación si está disponible
-   },
-   // También podés agregar otras configs si querés
+  baseURL: `${window.location.protocol}//${apiUrl}/api`,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
+
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 export default axiosInstance;

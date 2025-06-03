@@ -27,6 +27,7 @@ import { Role } from '../common/constants/roles.enum';
 @ApiTags('Filtros')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard, RoleGuard)
+
 @Controller('filters')
 export class FilterController {
   constructor(private readonly classesService: FilterService) {}

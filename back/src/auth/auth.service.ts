@@ -15,6 +15,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { OAuthCompleteDto } from './dto/OauthRegister.dto';
 import passport from 'passport';
+import { Role } from '../common/constants/roles.enum';
 
  import { EmailService } from '../email/email.service';  
 
@@ -38,7 +39,11 @@ export class AuthService {
         `Ya existe una cuenta registrada con el correo ${dto.email}.`
       );
     }
+    
+      // Normaliza el rol para asegurarte que siempre sea del enum con valor inglés
+     dto.role = this.normalizeRole(dto.role as unknown as string);
   
+
     if (dto.isOauth) {
       if (!dto.oauthProvider) {
         throw new BadRequestException('El proveedor OAuth es requerido');
@@ -58,7 +63,7 @@ export class AuthService {
       avatarId: dto.avatarId,
       profileImage: profileImagePathOrURL || dto.profileImage,
       estudios: dto.studies,
-      role: dto.role as 'student' | 'teacher' | 'admin',
+      role: dto.role,
       country: dto.country,
       provincia: dto.province,
       localidad: dto.location,
@@ -70,8 +75,35 @@ export class AuthService {
     await this.usersRepository.save(newUser);
   
     const accessToken = this.generateToken(newUser);
+
+    await this.emailService.sendEmail(
+      newUser.email,
+      '¡Bienvenido a MentorHub!',
+      `
+        <div style="font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f4f9ff; color: #333; padding: 30px; border-radius: 10px; max-width: 600px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
+          <div style="text-align: center;">
+            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712107.png" alt="Robot Bienvenida" width="100" style="margin-bottom: 20px;" />
+          </div>
+          <h2 style="color: #2a70c9; text-align: center;">¡Hola ${newUser.name}, te damos la bienvenida a MentorHub!</h2>
+          <p style="font-size: 16px; line-height: 1.6;">
+            Nos alegra mucho que hayas decidido unirte utilizando tu cuenta de ${newUser.oauthProvider}. Ya estás listo para comenzar a explorar la plataforma y aprovechar todos nuestros recursos.
+          </p>
+         
+          <p style="font-size: 14px; color: #555;">
+            Si tú no iniciaste sesión con esta cuenta, por favor ignora este mensaje o contáctanos para ayudarte.
+          </p>
+          <p style="font-size: 14px; color: #555; margin-top: 30px;">
+            Saludos,<br>
+            <strong>El equipo de MentorHub</strong>
+          </p>
+        </div>
+      `
+    );
+    console.log('EMAIL ENVIADO')
+    console.log(newUser)
   
     return {
+      
       message: `Bienvenido ${newUser.name}, tu cuenta OAuth fue creada correctamente.`,
       token: accessToken,
       user: {
@@ -110,37 +142,38 @@ export class AuthService {
     });
   
     await this.usersRepository.save(newUser);
+
   
     const emailToken = this.generateEmailVerificationToken(newUser);
     const confirmUrl = `http://localhost:3001/api/auth/confirm-email?token=${emailToken}`;
   
-    await this.emailService.sendEmail(
-      newUser.email,
-      'Confirma tu correo',
-      `
-        <div style="font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f4f9ff; color: #333; padding: 30px; border-radius: 10px; max-width: 600px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
-          <div style="text-align: center;">
-            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712107.png" alt="Robot Bienvenida" width="100" style="margin-bottom: 20px;" />
+      await this.emailService.sendEmail(
+        newUser.email,
+        'Confirma tu correo',
+        `
+          <div style="font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f4f9ff; color: #333; padding: 30px; border-radius: 10px; max-width: 600px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
+            <div style="text-align: center;">
+              <img src="https://cdn-icons-png.flaticon.com/512/4712/4712107.png" alt="Robot Bienvenida" width="100" style="margin-bottom: 20px;" />
+            </div>
+            <h2 style="color: #2a70c9; text-align: center;">¡Bienvenido a MentorHub, ${newUser.name}!</h2>
+            <p style="font-size: 16px; line-height: 1.6;">
+              Nos alegra mucho tenerte con nosotros. Para comenzar a explorar la plataforma y acceder a todos nuestros recursos, por favor confirma tu correo electrónico haciendo clic en el siguiente botón:
+            </p>
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${confirmUrl}" style="background-color: #2a70c9; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;">
+                Confirmar correo
+              </a>
+            </div>
+            <p style="font-size: 14px; color: #555;">
+              Si tú no creaste esta cuenta, simplemente ignora este mensaje.
+            </p>
+            <p style="font-size: 14px; color: #555; margin-top: 30px;">
+              Saludos,<br>
+              <strong>El equipo de MentorHub</strong>
+            </p>
           </div>
-          <h2 style="color: #2a70c9; text-align: center;">¡Bienvenido a MentorHub, ${newUser.name}!</h2>
-          <p style="font-size: 16px; line-height: 1.6;">
-            Nos alegra mucho tenerte con nosotros. Para comenzar a explorar la plataforma y acceder a todos nuestros recursos, por favor confirma tu correo electrónico haciendo clic en el siguiente botón:
-          </p>
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="${confirmUrl}" style="background-color: #2a70c9; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;">
-              Confirmar correo
-            </a>
-          </div>
-          <p style="font-size: 14px; color: #555;">
-            Si tú no creaste esta cuenta, simplemente ignora este mensaje.
-          </p>
-          <p style="font-size: 14px; color: #555; margin-top: 30px;">
-            Saludos,<br>
-            <strong>El equipo de MentorHub</strong>
-          </p>
-        </div>
-      `
-    );
+        `
+      );
     
     const accessToken = this.generateToken(newUser);
   
@@ -156,6 +189,35 @@ export class AuthService {
       },
     };
   }
+
+  async confirmEmail(token: string): Promise<{ success: boolean }> {
+    try {
+      // Verificamos el token y obtenemos el payload (debe haber sido generado por nosotros)
+      const payload = this.jwtService.verify(token); // lanza error si es inválido o expiró
+  
+      const userId = payload.sub; // asegurate de usar 'sub' al crear el token
+      const user = await this.usersRepository.findOne({ where: { id: userId } });
+  
+      if (!user) {
+        return { success: false };
+      }
+  
+      // Si ya está confirmado, no hacemos nada
+      if (user.isEmailConfirmed) {
+        return { success: true };
+      }
+  
+      // Confirmamos el correo
+      user.isEmailConfirmed = true;
+      await this.usersRepository.save(user);
+  
+      return { success: true };
+    } catch (error) {
+      console.error('❌ Error al confirmar email:', error);
+      return { success: false };
+    }
+  }
+  
   
   
   async login(loginDto: LoginDto): Promise<any> {
@@ -290,5 +352,28 @@ async handleOAuthProcess(profile: any, provider: 'google' | 'github') {
       },
     );
   }
+
+  normalizeRole(role?: string): Role {
+    if (!role) {
+      throw new BadRequestException('El rol es requerido');
+    }
+  
+    const normalized = role.toLowerCase();
+  
+    switch (normalized) {
+      case 'alumno':
+      case 'student':
+        return Role.Student;
+      case 'profesor':
+      case 'teacher':
+        return Role.Teacher;
+      case 'admin':
+        return Role.Admin;
+      default:
+        throw new BadRequestException(`Rol inválido: ${role}`);
+    }
+  }
+  
+    
     
 }

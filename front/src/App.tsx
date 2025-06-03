@@ -85,9 +85,6 @@ const AppWrapper = () => {
           </Routes>
         </Layout>
       )}
-      <Routes>
-        <Route path="/oauthlogin" element={<Oauthlogin />} />
-      </Routes>
     </>
   );
 };

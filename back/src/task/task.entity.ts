@@ -44,4 +44,7 @@ export class Task {
 
   @Column({ type: 'timestamp', nullable: true })
   fechaEliminado?: Date | null;
+
+  @Column({ default: false })
+  FreeServicesUses: boolean;
 }

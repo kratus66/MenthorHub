@@ -26,8 +26,7 @@ import { Role } from '../common/constants/roles.enum';
 export class MateriasController {
   constructor(private readonly materiasService: MateriasService) {}
 
-  @UseGuards(JwtAuthGuard,RoleGuard)
-  @Roles(Role.Admin, Role.Teacher)
+ 
   @Post()
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Crear Materia' })
@@ -40,7 +39,7 @@ export class MateriasController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
+  
   @Get()
   @Roles(Role.Admin, Role.Teacher, Role.Student)
   @ApiOperation({ summary: 'Listar materias' })

@@ -24,15 +24,31 @@ export class SubmissionsService {
   ) {}
 
   async create(dto: CreateSubmissionDto & { content: string }, studentId: string) {
-    // 🔐 Validar pago activo del estudiante
-    await this.paymentsService.validateUserPaid(studentId, this.getCurrentMonth());
+    // Contar cuántas entregas activas tiene el estudiante
+    const submissionsCount = await this.submissionsRepo.count({
+      where: { student: { id: studentId }, estado: true },
+    });
 
     const student = await this.userRepo.findOne({ where: { id: studentId } });
+    if (!student) {
+      throw new NotFoundException('Estudiante no encontrado');
+    }
+
+    // Permitir solo una entrega gratis si no es usuario pago
+    if (!student.isPaid && submissionsCount >= 1) {
+      throw new Error('Debes pagar la suscripción para realizar más de una entrega.');
+    }
+
+    // Si es usuario pago, valida el pago activo
+    if (student.isPaid) {
+      await this.paymentsService.validateUserPaid(studentId, this.getCurrentMonth());
+    }
+
     const task = await this.taskRepo.findOne({ where: { id: dto.taskId } });
     const clase = await this.classRepo.findOne({ where: { id: dto.classId } });
 
-    if (!student || !task || !clase) {
-      throw new NotFoundException('Estudiante, tarea o clase no encontrados');
+    if (!task || !clase) {
+      throw new NotFoundException('Tarea o clase no encontrados');
     }
 
     const submission = this.submissionsRepo.create({

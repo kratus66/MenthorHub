@@ -20,11 +20,42 @@ export class ReviewsService {
     console.log('Creando review:', dto);
     console.log('Autor (user):', user.id);
 
-    // 🔐 Validar pago activo del autor
-    await this.paymentsService.validateUserPaid(user.id, this.getCurrentMonth());
+    // 1. Lógica para grades (calificaciones)
+    if (dto.type === 'grade') {
+      if (user.role !== 'teacher') {
+        throw new BadRequestException('Solo los profesores pueden asignar calificaciones.');
+      }
 
-    if (dto.type === 'grade' && user.role !== 'teacher') {
-      throw new BadRequestException('Solo los profesores pueden asignar calificaciones.');
+      // Contar cuántos grades ha puesto este profesor
+      const gradesCount = await this.reviewRepo.count({
+        where: { author: { id: user.id }, type: 'grade' },
+      });
+
+      if (!user.isPaid && gradesCount >= 1) {
+        throw new BadRequestException('Debes pagar la suscripción para asignar más de una calificación.');
+      }
+
+      // Si es usuario pago, valida el pago activo
+      if (user.isPaid) {
+        await this.paymentsService.validateUserPaid(user.id, this.getCurrentMonth());
+      }
+    }
+
+    // 2. Lógica para reviews (comentarios)
+    if (dto.type !== 'grade') {
+      // Contar cuántos reviews ha puesto este usuario
+      const reviewsCount = await this.reviewRepo.count({
+        where: { author: { id: user.id }, type: 'review' },
+      });
+
+      if (!user.isPaid && reviewsCount >= 1) {
+        throw new BadRequestException('Debes pagar la suscripción para dejar más de un review.');
+      }
+
+      // Si es usuario pago, valida el pago activo
+      if (user.isPaid) {
+        await this.paymentsService.validateUserPaid(user.id, this.getCurrentMonth());
+      }
     }
 
     const review = new Review();

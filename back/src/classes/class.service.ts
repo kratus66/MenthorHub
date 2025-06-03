@@ -46,6 +46,15 @@ export class ClassesService {
     // 🔐 Validación con validateUserPaid del PaymentsService
     await this.paymentsService.validateUserPaid(teacherId, this.getCurrentMonth());
 
+    // 🚫 Validación para limitar a 1 clase antes del pago
+    const teacherClassesCount = await this.classRepository.count({
+      where: { teacher: { id: teacherId }, estado: true },
+    });
+    if (!teacher.isPaid && teacherClassesCount >= 1) {
+      console.log('⛔ Profesor sin plan pago intentó crear más de 1 clase');
+      throw new ForbiddenException('Debes pagar el plan mensual para crear más de 1 clase');
+    }
+
     const category = await this.categoryRepository.findOne({ where: { id: categoryId } });
     if (!category) throw new NotFoundException('Categoría no encontrada');
 
@@ -183,35 +192,46 @@ export class ClassesService {
       .getMany();
   }
 
-  async enrollStudent(classId: string, studentId: string): Promise<Class> {
-    console.log('➕ Inscribiendo estudiante ID:', studentId, 'a clase ID:', classId);
+async enrollStudent(classId: string, studentId: string): Promise<Class> {
+  console.log('➕ Inscribiendo estudiante ID:', studentId, 'a clase ID:', classId);
 
-    const clase = await this.classRepository.findOne({
-      where: { id: classId, estado: true },
-      relations: ['students', 'teacher'],
-    });
-    if (!clase) throw new NotFoundException('Clase no encontrada o inactiva');
+  const clase = await this.classRepository.findOne({
+    where: { id: classId, estado: true },
+    relations: ['students', 'teacher'],
+  });
+  if (!clase) throw new NotFoundException('Clase no encontrada o inactiva');
 
-    const student = await this.userRepository.findOne({ where: { id: studentId, role: 'student' } });
-    if (!student) throw new NotFoundException('Estudiante no encontrado');
+  const student = await this.userRepository.findOne({ where: { id: studentId, role: 'student' } });
+  if (!student) throw new NotFoundException('Estudiante no encontrado');
 
-    const alreadyEnrolled = clase.students.some((s) => s.id === studentId);
-    if (alreadyEnrolled) throw new Error('El estudiante ya está inscrito en esta clase');
+  const alreadyEnrolled = clase.students.some((s) => s.id === studentId);
+  if (alreadyEnrolled) throw new Error('El estudiante ya está inscrito en esta clase');
 
-    const latestPayment = await this.paymentRepository.findOne({
-      where: {
-        user: { id: studentId },
-        type: PaymentType.STUDENT_SUBSCRIPTION,
-        status: PaymentStatus.COMPLETED,
-      },
-      order: { createdAt: 'DESC' },
-    });
+  const latestPayment = await this.paymentRepository.findOne({
+    where: {
+      user: { id: studentId },
+      type: PaymentType.STUDENT_SUBSCRIPTION,
+      status: PaymentStatus.COMPLETED,
+    },
+    order: { createdAt: 'DESC' },
+  });
 
-    if (!latestPayment) {
-      console.log('⛔ Estudiante sin historial de pago mensual');
-      throw new ForbiddenException('Debes pagar la suscripción mensual para unirte a clases.');
+  if (!latestPayment) {
+    console.log('⛔ Estudiante sin historial de pago mensual');
+    // 🚫 Validación para limitar a 2 clases antes del pago
+    const enrolledCount = await this.classRepository
+      .createQueryBuilder('class')
+      .leftJoin('class.students', 'student')
+      .where('student.id = :studentId', { studentId })
+      .getCount();
+
+    if (!student.isPaid && enrolledCount >= 2) {
+      console.log('⛔ Estudiante excedió el límite sin plan mensual premium');
+      throw new ForbiddenException('Debes pagar la suscripción mensual Premium para unirte a más de 2 clases');
     }
 
+    console.log('✅ Estudiante sin pago pero dentro del límite de clases permitidas');
+  } else {
     const paymentDate = new Date(latestPayment.createdAt);
     const now = new Date();
     const diffInMs = now.getTime() - paymentDate.getTime();
@@ -219,45 +239,34 @@ export class ClassesService {
 
     if (diffInDays > 30) {
       console.log('⛔ Suscripción del estudiante expirada hace', Math.floor(diffInDays), 'días');
-      throw new ForbiddenException('Tu suscripción ha expirado. Debes renovarla para unirte a clases.');
+      throw new ForbiddenException('La suscripción mensual ha expirado. Por favor, renueva tu suscripción para unirte a más clases.');
     }
-
-    console.log('✅ Estudiante tiene suscripción activa. Último pago fue hace', Math.floor(diffInDays), 'días');
-
-    const enrolledCount = await this.classRepository
-      .createQueryBuilder('class')
-      .leftJoin('class.students', 'student')
-      .where('student.id = :studentId', { studentId })
-      .getCount();
-
-    if (!student.isPaid && enrolledCount >= 3) {
-      console.log('⛔ Estudiante excedió el límite sin plan mensual premium');
-      throw new ForbiddenException('Debes pagar la suscripción mensual Premium para unirte a más de 3 clases');
-    }
-
-    clase.students.push(student);
-    await this.classRepository.save(clase);
-
-    const updatedClass = await this.classRepository.findOne({
-      where: { id: classId },
-      relations: ['students', 'teacher'],
-    });
-    if (!updatedClass) throw new NotFoundException('Clase no encontrada después de la inscripción');
-    return updatedClass;
   }
 
-  async unenrollStudent(classId: string, studentId: string): Promise<Class> {
-    console.log('➖ Desinscribiendo estudiante ID:', studentId, 'de clase ID:', classId);
-    const clase = await this.classRepository.findOne({
-      where: { id: classId, estado: true },
-      relations: ['students'],
-    });
-    if (!clase) throw new NotFoundException('Clase no encontrada o inactiva');
+  // Add the student to the class and save
+  clase.students.push(student);
+  await this.classRepository.save(clase);
 
-    const studentIndex = clase.students.findIndex((s) => s.id === studentId);
-    if (studentIndex === -1) throw new NotFoundException('El estudiante no está inscrito en esta clase');
-
-    clase.students.splice(studentIndex, 1);
-    return this.classRepository.save(clase);
-  }
+  // Return the updated class
+  return clase;
 }
+
+async unenrollStudent(classId: string, studentId: string): Promise<Class> {
+  console.log('➖ Desinscribiendo estudiante ID:', studentId, 'de clase ID:', classId);
+
+  const clase = await this.classRepository.findOne({
+    where: { id: classId, estado: true },
+    relations: ['students'],
+  });
+  if (!clase) throw new NotFoundException('Clase no encontrada o inactiva');
+
+  const studentIndex = clase.students.findIndex((s) => s.id === studentId);
+  if (studentIndex === -1) throw new NotFoundException('El estudiante no está inscrito en esta clase');
+
+  clase.students.splice(studentIndex, 1);
+  return this.classRepository.save(clase);
+}
+
+ 
+}
+ 

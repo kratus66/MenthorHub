@@ -12,6 +12,7 @@ import {
   NotFoundException,
   Query,
   Res,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -30,9 +31,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { Request, Response } from 'express';
-import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { EmailService } from '../email/email.service';
 
 
@@ -55,28 +54,59 @@ export class AuthController {
     @Body() dto: RegisterDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    console.log('📨 Body:', dto);
-    console.log('📷 Imagen recibida:', file);
-    console.log('📷imagen recibida por url',dto.profileImageUrl)
   
-    
-  // Decide qué imagen usar: la URL recibida o la del archivo subido
-  const profileImagePathOrURL = file?.path || dto.profileImageUrl;
-
-    // Normalizar isOauth a boolean, trimming spaces
-    const isOauth = dto.isOauth?.toString().trim().toLowerCase() === 'true';
+      console.log('📨 Body:', dto);
+      console.log('📷 Imagen recibida:', file);
+      console.log('📷 imagen recibida por URL:', dto.profileImageUrl);
   
-
-    const registrationDto = {
-      ...dto,
-      isOauth,
-      oauthProvider: isOauth ? dto.oauthProvider : undefined,
-      
-    };
+      // Decide qué imagen usar: la URL recibida o la del archivo subido
+      const profileImagePathOrURL = file?.path || dto.profileImageUrl;
   
-    return this.authService.register(registrationDto, profileImagePathOrURL || '');
+      // Normalizar isOauth a boolean, trimming spaces
+      const isOauth = dto.isOauth?.toString().trim().toLowerCase() === 'true';
+  
+      const registrationDto = {
+        ...dto,
+        isOauth,
+        oauthProvider: isOauth ? dto.oauthProvider : undefined,
+      };
+      try {
+      return await this.authService.register(registrationDto, profileImagePathOrURL || '');
+    } catch (error) {
+      console.error('❌ Error al registrar:', error);
+      throw new InternalServerErrorException('Error interno al registrar el usuario');
+    }
   }
+  
     
+  @Get('confirm-email')
+@ApiOperation({ summary: 'Confirmar correo electrónico con token' })
+@ApiResponse({ status: 200, description: 'Correo confirmado correctamente' })
+@ApiResponse({ status: 400, description: 'Token inválido o expirado' })
+async confirmEmail(
+  @Query('token') token: string,
+  @Res() res: Response,
+) {
+  if (!token || typeof token !== 'string') {
+    throw new BadRequestException('Falta o es inválido el token de confirmación');
+  }
+
+  try {
+    const result = await this.authService.confirmEmail(token);
+
+    const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:4173';
+
+    if (result.success) {
+      return res.redirect(`${FRONTEND_URL}/email-confirmed`);
+    } else {
+      return res.redirect(`${FRONTEND_URL}/email-confirmation-error`);
+    }
+  } catch (error) {
+    console.error('Error al confirmar email:', error);
+    throw new BadRequestException('Token inválido o expirado');
+  }
+}
+
 
   @Post('login')
   @ApiOperation({ summary: 'Iniciar sesión' })

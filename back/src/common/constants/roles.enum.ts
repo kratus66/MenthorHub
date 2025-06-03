@@ -3,6 +3,3 @@ export enum Role {
   Teacher = 'teacher',
   Student = 'student',
 }
-
-console.log('Enum Role cargado:', Role);
-
