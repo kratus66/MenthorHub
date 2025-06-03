@@ -2,14 +2,8 @@ import { useEffect, useState } from 'react';
 import axiosInstance from '../../services/axiosInstance';
 import type { User } from '../../interfaces/User';
 import { formatearFecha } from '../helpers/formatoFecha';
-
-type UsersTableProps = {
-   setShowDeleteModal: React.Dispatch<React.SetStateAction<boolean>>;
-   setUserToBeDeleted: React.Dispatch<React.SetStateAction<User>>;
-   userIsDeleted: boolean;
-   setShowNewUserModal: React.Dispatch<React.SetStateAction<boolean>>;
-   newUserConfirmed: boolean;
-};
+import DeleteUserModal from '../DeleteUserModal/DeleteUserModal';
+import NewUserModal from '../NewUserModal/NewUserModal';
 
 type UsersPaginados = {
    data: User[];
@@ -18,13 +12,7 @@ type UsersPaginados = {
    total: number;
 };
 
-const UsersTable = ({
-   setShowDeleteModal,
-   setUserToBeDeleted,
-   userIsDeleted,
-   setShowNewUserModal,
-   newUserConfirmed,
-}: UsersTableProps) => {
+const UsersTable = () => {
    const [users, setUsers] = useState<UsersPaginados>({
       data: [],
       limit: 0,
@@ -34,6 +22,11 @@ const UsersTable = ({
    const [dataToBeEdited, setDataToBeEdited] = useState<User>({});
    const [editionConfirmed, setEditionConfirmed] = useState(false);
    const [currentPage, setCurrentPage] = useState(1);
+   const [showDeleteUserModal, setShowDeleteUserModal] = useState(false);
+   const [userToBeDeleted, setUserToBeDeleted] = useState<User>({});
+   const [userIsDeleted, setUserIsDeleted] = useState(false);
+   const [showNewUserModal, setShowNewUserModal] = useState(false);
+   const [newUserConfirmed, setNewUserConfirmed] = useState(false);
 
    useEffect(() => {
       axiosInstance
@@ -47,7 +40,7 @@ const UsersTable = ({
    }, [userIsDeleted, editionConfirmed, currentPage, newUserConfirmed]);
 
    const handleDeleteData = (user: User) => {
-      setShowDeleteModal(true);
+      setShowDeleteUserModal(true);
       setUserToBeDeleted(user);
    };
 
@@ -317,6 +310,20 @@ const UsersTable = ({
                   </tbody>
                </table>
             </div>
+            {showDeleteUserModal === true && (
+               <DeleteUserModal
+                  userToBeDeleted={userToBeDeleted}
+                  showDeleteModal={showDeleteUserModal}
+                  setShowDeleteModal={setShowDeleteUserModal}
+                  setUserIsDeleted={setUserIsDeleted}
+               />
+            )}
+            {showNewUserModal === true && (
+               <NewUserModal
+                  setNewUserConfirmed={setNewUserConfirmed}
+                  setShowNewUserModal={setShowNewUserModal}
+               />
+            )}
          </div>
       </>
    );

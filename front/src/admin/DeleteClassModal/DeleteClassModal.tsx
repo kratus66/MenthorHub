@@ -1,20 +1,20 @@
 import { useEffect, useState } from 'react';
-import type { User } from '../../interfaces/User';
 import { formatearFecha } from '../helpers/formatoFecha';
 import axiosInstance from '../../services/axiosInstance';
+import type { Class } from '../../interfaces/Class';
 
 type DeleteUserModalProps = {
-   userToBeDeleted: User;
-   showDeleteModal: boolean;
-   setShowDeleteModal: React.Dispatch<React.SetStateAction<boolean>>;
-   setUserIsDeleted: React.Dispatch<React.SetStateAction<boolean>>;
+   classToBeDeleted: Partial<Class>;
+   showDeleteClassModal: boolean;
+   setShowDeleteClassModal: React.Dispatch<React.SetStateAction<boolean>>;
+   setClassIsDeleted: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const DeleteUserModal = ({
-   userToBeDeleted,
-   showDeleteModal,
-   setShowDeleteModal,
-   setUserIsDeleted,
+const DeleteClassModal = ({
+   classToBeDeleted,
+   showDeleteClassModal,
+   setShowDeleteClassModal,
+   setClassIsDeleted,
 }: DeleteUserModalProps) => {
    const [disabled, setDisabled] = useState(true);
 
@@ -24,21 +24,21 @@ const DeleteUserModal = ({
       }, 5000);
 
       return () => clearTimeout(timer);
-   }, [showDeleteModal]);
+   }, [showDeleteClassModal]);
 
    const handleCancel = () => {
-      setShowDeleteModal(false);
+      setShowDeleteClassModal(false);
    };
 
    const handleDelete = (id: string) => {
       axiosInstance
-         .delete(`users/${id}`)
+         .delete(`classes/${id}`)
          .then(() => {
-            setUserIsDeleted((prev) => !prev);
-            setShowDeleteModal(false);
+            setClassIsDeleted((prev) => !prev);
+            setShowDeleteClassModal(false);
          })
          .catch((err) => {
-            console.log('Error al eliminar los datos', err);
+            alert(`Error al eliminar los datos: ${err}`);
          });
    };
 
@@ -59,43 +59,37 @@ const DeleteUserModal = ({
                   <table className="table-fixed w-full">
                      <thead className="h-[3rem] bg-blue-200">
                         <tr>
-                           <th className="w-[11rem] text-start p-2">Nombre</th>
-                           <th className="w-[15rem] text-start p-2">Email</th>
-                           <th className="w-[8rem] text-start p-2">Rol</th>
-                           <th className="w-[10rem] text-start p-2">
-                              Teléfono
+                           <th className="w-[11rem] text-start p-2">Titulo</th>
+                           <th className="w-[15rem] text-start p-2">
+                              Descripción
                            </th>
-                           <th className="w-[10rem] text-start p-2">Foto</th>
-                           <th className="w-[10rem] text-start p-2">Pais</th>
-                           <th className="w-[12rem] text-start p-2">
-                              Localidad
-                           </th>
-                           <th className="w-[10rem] text-start p-2">Premium</th>
+                           <th className="w-[8rem] text-start p-2">Profesor</th>
                            <th className="w-[10rem] text-start p-2">
-                              Fecha Registro
+                              Categoría
+                           </th>
+                           <th className="w-[10rem] text-start p-2">Materia</th>
+                           <th className="w-[10rem] text-start p-2">
+                              Fecha Creación
                            </th>
                         </tr>
                      </thead>
                      <tbody className="text-sm">
                         <tr className="h-[3rem] hover:bg-gray-200">
-                           <td className="p-2">{userToBeDeleted.name}</td>
-                           <td className="p-2">{userToBeDeleted.email}</td>
-                           <td className="p-2">{userToBeDeleted.role}</td>
+                           <td className="p-2">{classToBeDeleted.title}</td>
                            <td className="p-2">
-                              {userToBeDeleted.phoneNumber}
+                              {classToBeDeleted.description}
+                           </td>
+                           <td className="p-2">
+                              {classToBeDeleted.teacher?.name}
+                           </td>
+                           <td className="p-2">
+                              {classToBeDeleted.category?.name}
                            </td>
                            <td className="w-[10rem] text-start truncate p-2">
-                              {userToBeDeleted.profileImage}
-                           </td>
-                           <td className="p-2">{userToBeDeleted.country}</td>
-                           <td className="truncate p-2">
-                              {userToBeDeleted.localidad}
-                           </td>
-                           <td className="text-yellow-500 p-2">
-                              {userToBeDeleted.isPaid && 'Premium'}
+                              {classToBeDeleted.materia?.name}
                            </td>
                            <td className="p-2">
-                              {formatearFecha(userToBeDeleted.createdAt ?? '')}
+                              {formatearFecha(classToBeDeleted.createdAt ?? '')}
                            </td>
                         </tr>
                      </tbody>
@@ -109,7 +103,7 @@ const DeleteUserModal = ({
                            : 'bg-red-600 hover:brightness-110'
                      }`}
                      disabled={disabled}
-                     onClick={() => handleDelete(userToBeDeleted.id ?? '')}
+                     onClick={() => handleDelete(classToBeDeleted.id ?? '')}
                   >
                      Eliminar
                   </button>
@@ -126,4 +120,4 @@ const DeleteUserModal = ({
    );
 };
 
-export default DeleteUserModal;
+export default DeleteClassModal;

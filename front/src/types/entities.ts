@@ -28,5 +28,20 @@ export interface Class {
    tasks: Task[];
    category: CategoryType;
    materia: string;
-   createdAt: Date;
+   createdAt: string;
+}
+
+export interface Teacher {
+   id: string;
+   name: string;
+   email: string;
+   role: string;
+   phoneNumber: string;
+   avatarId: string;
+   profileImage: null;
+   estudios: string;
+   country: string;
+   provincia: string;
+   localidad: string;
+   createdAt: string;
 }

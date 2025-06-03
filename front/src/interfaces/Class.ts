@@ -1,6 +1,6 @@
-import type { Teacher } from './entities';
+import type { Teacher } from '../types/entities';
 
-export type clasesType = {
+export interface Class {
    id: string;
    title: string;
    description: string;
@@ -9,6 +9,7 @@ export type clasesType = {
       id: string;
       name?: string;
       imagenUrl?: string;
+      descripcion?: string;
    };
    teacher: Teacher;
    students: [];
@@ -19,4 +20,4 @@ export type clasesType = {
       imageUrl: string;
       description: string;
    };
-};
+}
