@@ -1,9 +1,7 @@
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useUser } from "../../context/UserContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import axiosInstance from "../../services/axiosInstance";
-
 
 const Suscripcion: React.FC = () => {
   const { user } = useUser();
@@ -11,52 +9,73 @@ const Suscripcion: React.FC = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
 
+  // Ref que impide ejecutar la captura más de una vez
+  const captureCalledRef = useRef(false);
+
   useEffect(() => {
-  const params = new URLSearchParams(location.search);
-  const token = params.get("token");
-  const alreadyCaptured = sessionStorage.getItem("paypal_captured");
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+    const alreadyCaptured = sessionStorage.getItem("paypal_captured");
 
-  console.log("location.search:", location.search);
-  console.log("Token recibido:", token);
+    console.log("location.search:", location.search);
+    console.log("Token recibido:", token);
+    console.log("alreadyCaptured:", alreadyCaptured);
+    console.log("captureCalledRef.current:", captureCalledRef.current);
 
-  if (token && !alreadyCaptured) {
-    // Construyo aquí la URL completa para que la veas en consola
+    // Si ya procesamos esta captura o no hay token → no hacemos nada
+    if (!token || alreadyCaptured || captureCalledRef.current) {
+      return;
+    }
+
+    // Marcamos que ya iniciamos la captura para no repetirla
+    captureCalledRef.current = true;
+
     const captureEndpoint = `/payments/paypal/capture/${token}`;
-    console.log("📡 Llamando a endpoint de captura:", axiosInstance.defaults.baseURL + captureEndpoint);
+    console.log(
+      "📡 Llamando a endpoint de captura:",
+      axiosInstance.defaults.baseURL + captureEndpoint
+    );
 
     axiosInstance
       .post(captureEndpoint)
       .then((response) => {
-        console.log("⏪ Respuesta completa del backend:", response);
-        const { saved, payment, message } = response.data;
-
-        if (saved) {
-          console.log("🎉 Pago capturado y guardado en BD:", payment);
+        // Éxito si status === 201
+        if (response.status === 201) {
+          console.log("⏪ Respuesta del backend:", response.data);
           sessionStorage.setItem("paypal_captured", "true");
-          alert("🎉 ¡Tu pago se registró correctamente en la base de datos!");
-        } else if (message === "ORDER_ALREADY_CAPTURED") {
+          alert("🎉 ¡Pago registrado y orden capturada correctamente!");
+        }
+        // Si el backend devolvió message 'ORDER_ALREADY_CAPTURED'
+        else if (response.data?.message === "ORDER_ALREADY_CAPTURED") {
           console.warn("⚠️ La orden ya estaba capturada.");
           alert("ℹ️ Este pago ya fue registrado anteriormente.");
         } else {
-          console.warn("⚠️ El backend devolvió saved: false, response:", response.data);
+          console.warn(
+            "⚠️ Backend devolvió status distinto a 201:",
+            response.data
+          );
           alert("⚠️ No se pudo registrar el pago en la base de datos.");
         }
 
-        navigate("/panel");
+        // Navegamos al panel sin conservar el query ?token=…
+        navigate("/panel", { replace: true });
       })
       .catch((err) => {
         console.error("❌ Error al capturar/guardar el pago:", err);
         if (err.response) {
           console.error("🔍 err.response.data:", err.response.data);
-          alert(`❌ Error: ${err.response.data?.message || "Vuelve a intentarlo."}`);
+          alert(
+            `❌ Error: ${
+              err.response.data?.message || "Vuelve a intentarlo."
+            }`
+          );
         } else {
           alert("❌ No se pudo contactar con el servidor.");
         }
+        // También redirigimos al panel para evitar repetición
+        navigate("/panel", { replace: true });
       });
-  }
-}, [location.search, navigate]);
-
-
+  }, [location.search, navigate]);
 
   if (!user) {
     return <p>Debes iniciar sesión para realizar el pago.</p>;
@@ -68,16 +87,24 @@ const Suscripcion: React.FC = () => {
     setLoading(true);
     try {
       const now = new Date();
-      const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+      const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}`;
 
-      const response = await axiosInstance.post("/payments/create-paypal-payment", {
-        amount: "USD",
-        currency: "USD",
-        type: rol === "student" ? "student_subscription" : "teacher_monthly_fee",
-
-        paymentMethod: "paypal",
-        month,
-      });
+      const response = await axiosInstance.post(
+        "/payments/create-paypal-payment",
+        {
+          amount: "USD",
+          currency: "USD",
+          type:
+            rol === "student"
+              ? "student_subscription"
+              : "teacher_monthly_fee",
+          paymentMethod: "paypal",
+          month,
+        }
+      );
 
       const approvalUrl = response.data?.url;
       if (!approvalUrl) {
@@ -93,7 +120,6 @@ const Suscripcion: React.FC = () => {
       setLoading(false);
     }
   };
-
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
