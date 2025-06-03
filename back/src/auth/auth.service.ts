@@ -230,11 +230,11 @@ export class AuthService {
       throw new BadRequestException('Credenciales incorrectas');
     }
 
-     if (!user.isEmailConfirmed) {
-      throw new UnauthorizedException(
-        'Debes confirmar tu correo antes de iniciar sesión',
-      );
-    }
+    //  if (!user.isEmailConfirmed) {
+    //   throw new UnauthorizedException(
+    //     'Debes confirmar tu correo antes de iniciar sesión',
+    //   );
+    // }
 
     const token = this.generateToken(user);
 

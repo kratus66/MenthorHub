@@ -22,7 +22,6 @@ export class PaymentsService {
     const user = await this.userRepo.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('Usuario no encontrado');
 
-    
     const amount = 5.99;
     const currency = 'USD';
 
@@ -54,59 +53,55 @@ export class PaymentsService {
 
     return await this.paymentRepo.save(payment);
   }
-async simulatePaypal(dto: CreatePaymentDto): Promise<string> {
-  const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString('base64');
 
-  const { data: tokenRes } = await axios.post(
-    `${process.env.PAYPAL_API_URL}/v1/oauth2/token`,
-    'grant_type=client_credentials',
-    {
-      headers: {
-        Authorization: `Basic ${auth}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    },
-  );
+  async simulatePaypal(dto: CreatePaymentDto): Promise<string> {
+    const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString('base64');
 
-  
-  const amount = 5.99;
-  const currency = 'USD';
-
-  const { data: paymentRes } = await axios.post(
-    `${process.env.PAYPAL_API_URL}/v2/checkout/orders`,
-    {
-      intent: 'CAPTURE',
-      purchase_units: [
-        {
-          amount: {
-            currency_code: currency,
-            value: amount.toFixed(2),
-          },
+    const { data: tokenRes } = await axios.post(
+      `${process.env.PAYPAL_API_URL}/v1/oauth2/token`,
+      'grant_type=client_credentials',
+      {
+        headers: {
+          Authorization: `Basic ${auth}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-      ],
-   application_context: {
-  return_url: 'http://localhost:4173/suscripcion',
-  cancel_url: 'http://localhost:4173/suscripcion?cancel=true',
-
-}
-
-
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${(tokenRes as any).access_token}`,
-        'Content-Type': 'application/json',
       },
-    },
-  );
+    );
 
-  const approvalUrl = (paymentRes as any).links.find((link: any) => link.rel === 'approve')?.href;
-  if (!approvalUrl) throw new Error('No se pudo obtener la URL de aprobación');
+    const amount = 5.99;
+    const currency = 'USD';
 
-  return approvalUrl;
-}
+    const { data: paymentRes } = await axios.post(
+      `${process.env.PAYPAL_API_URL}/v2/checkout/orders`,
+      {
+        intent: 'CAPTURE',
+        purchase_units: [
+          {
+            amount: {
+              currency_code: currency,
+              value: amount.toFixed(2),
+            },
+          },
+        ],
+        application_context: {
+          return_url: 'http://localhost:4173/suscripcion',
+          cancel_url: 'http://localhost:4173/suscripcion?cancel=true',
+        },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${(tokenRes as any).access_token}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
 
- 
+    const approvalUrl = (paymentRes as any).links.find((link: any) => link.rel === 'approve')?.href;
+    if (!approvalUrl) throw new Error('No se pudo obtener la URL de aprobación');
+
+    return approvalUrl;
+  }
+
   async registerPaypalPayment(payerEmail: string, amount: number, currency: string, month: string) {
     const sandboxEmailMap: Record<string, string> = {
       // Mapea tu correo sandbox al correo real del usuario registrado
@@ -127,12 +122,11 @@ async simulatePaypal(dto: CreatePaymentDto): Promise<string> {
       month,
       user,
     });
-const savedPayment = await this.paymentRepo.save(payment);
+    const savedPayment = await this.paymentRepo.save(payment);
 
-   
     console.log(
       `🎉 Pago guardado en BD: user=${user.email}, ` +
-      `monto=${savedPayment.amount} ${savedPayment.currency}, mes=${savedPayment.month}`
+        `monto=${savedPayment.amount} ${savedPayment.currency}, mes=${savedPayment.month}`
     );
 
     await this.paymentRepo.save(payment);
@@ -145,6 +139,10 @@ const savedPayment = await this.paymentRepo.save(payment);
     const user = await this.userRepo.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('Usuario no encontrado');
 
+    // Permite si el usuario tiene isPaid (flag global después de un pago)
+    if (user.isPaid) return;
+
+    // O si existe pago completado del mes
     const payment = await this.paymentRepo.findOne({
       where: {
         user: { id: userId },
@@ -197,5 +195,8 @@ const savedPayment = await this.paymentRepo.save(payment);
 
   async saveUser(user: User) {
     return await this.userRepo.save(user);
+  }
+  async getUserById(id: string): Promise<User | null> {
+    return this.userRepo.findOne({ where: { id } });
   }
 }

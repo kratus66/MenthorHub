@@ -52,6 +52,7 @@ export class ClassesService {
     const teacher = await this.userRepository.findOne({
       where: { id: teacherId, role: 'teacher' },
     });
+    console.log('👨‍🏫 teacher:', teacher); // <-- LOG SOLICITADO
     if (!teacher) throw new NotFoundException('Profesor no encontrado');
 
     // 🔐 Validación de suscripción al día
@@ -247,58 +248,32 @@ export class ClassesService {
     const alreadyEnrolled = clase.students.some((s) => s.id === studentId);
     if (alreadyEnrolled) throw new Error('El estudiante ya está inscrito en esta clase');
 
-    const latestPayment = await this.paymentRepository.findOne({
-      where: {
-        user: { id: studentId },
-        type: PaymentType.STUDENT_SUBSCRIPTION,
-        status: PaymentStatus.COMPLETED,
-      },
-      order: { createdAt: 'DESC' },
-    });
-
-    if (!latestPayment) {
-      console.log('⛔ Estudiante sin historial de pago mensual');
-      // 🚫 Validación para limitar a 2 clases antes del pago
-      const enrolledCount = await this.classRepository
-        .createQueryBuilder('class')
-        .leftJoin('class.students', 'student')
-        .where('student.id = :studentId', { studentId })
-        .getCount();
-
-      if (!student.isPaid && enrolledCount >= 2) {
-        console.log(
-          '⛔ Estudiante excedió el límite sin plan mensual premium',
-        );
-        throw new ForbiddenException(
-          'Debes pagar la suscripción mensual Premium para unirte a más de 2 clases',
-        );
-      }
-
-      console.log(
-        '✅ Estudiante sin pago pero dentro del límite de clases permitidas',
-      );
-    } else {
-      const paymentDate = new Date(latestPayment.createdAt);
-      const now = new Date();
-      const diffInMs = now.getTime() - paymentDate.getTime();
-      const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-
-      if (diffInDays > 30) {
-        console.log(
-          '⛔ Suscripción del estudiante expirada hace',
-          Math.floor(diffInDays),
-          'días',
-        );
-        throw new ForbiddenException(
-          'La suscripción mensual ha expirado. Por favor, renueva tu suscripción para unirte a más clases.',
-        );
-      }
+    // ✅ Si es usuario pago, acceso ilimitado
+    if (student.isPaid) {
+      clase.students.push(student);
+      await this.classRepository.save(clase);
+      return clase;
     }
 
-    // Agregar el estudiante a la clase y guardar
+    // 🚫 Si NO es pago, validar límite de 2 clases
+    const enrolledCount = await this.classRepository
+      .createQueryBuilder('class')
+      .leftJoin('class.students', 'student')
+      .where('student.id = :studentId', { studentId })
+      .getCount();
+
+    if (enrolledCount >= 2) {
+      console.log(
+        '⛔ Estudiante excedió el límite sin plan mensual premium',
+      );
+      throw new ForbiddenException(
+        'Debes pagar la suscripción mensual Premium para unirte a más de 2 clases',
+      );
+    }
+
+    // Permitir inscribir dentro del límite
     clase.students.push(student);
     await this.classRepository.save(clase);
-
     return clase;
   }
 
