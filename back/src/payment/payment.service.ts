@@ -22,13 +22,9 @@ export class PaymentsService {
     const user = await this.userRepo.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('Usuario no encontrado');
 
-    const existing = await this.paymentRepo.findOne({
-      where: {
-        user: { id: userId },
-        month: dto.month,
-      },
-    });
-    if (existing) throw new Error(`Ya existe un pago para el mes ${dto.month}`);
+    
+    const amount = 5.99;
+    const currency = 'USD';
 
     const type: PaymentType =
       user.role === 'student'
@@ -42,8 +38,8 @@ export class PaymentsService {
     endDate.setMonth(endDate.getMonth() + 1);
 
     const payment = this.paymentRepo.create({
-      amount: dto.amount,
-      currency: dto.currency,
+      amount,
+      currency,
       type,
       paymentMethod: dto.paymentMethod,
       status: PaymentStatus.COMPLETED,
@@ -58,52 +54,59 @@ export class PaymentsService {
 
     return await this.paymentRepo.save(payment);
   }
+async simulatePaypal(dto: CreatePaymentDto): Promise<string> {
+  const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString('base64');
 
-  async simulatePaypal(dto: CreatePaymentDto): Promise<string> {
-    const auth = Buffer.from(`${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString('base64');
-
-    const { data: tokenRes } = await axios.post(
-      `${process.env.PAYPAL_API_URL}/v1/oauth2/token`,
-      'grant_type=client_credentials',
-      {
-        headers: {
-          Authorization: `Basic ${auth}`,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+  const { data: tokenRes } = await axios.post(
+    `${process.env.PAYPAL_API_URL}/v1/oauth2/token`,
+    'grant_type=client_credentials',
+    {
+      headers: {
+        Authorization: `Basic ${auth}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-    );
+    },
+  );
 
-    const { data: paymentRes } = await axios.post(
-      `${process.env.PAYPAL_API_URL}/v2/checkout/orders`,
-      {
-        intent: 'CAPTURE',
-        purchase_units: [
-          {
-            amount: {
-              currency_code: dto.currency || 'USD',
-              value: dto.amount.toFixed(2),
-            },
+  
+  const amount = 5.99;
+  const currency = 'USD';
+
+  const { data: paymentRes } = await axios.post(
+    `${process.env.PAYPAL_API_URL}/v2/checkout/orders`,
+    {
+      intent: 'CAPTURE',
+      purchase_units: [
+        {
+          amount: {
+            currency_code: currency,
+            value: amount.toFixed(2),
           },
-        ],
-        application_context: {
-          return_url: 'http://localhost:3000/payment-success',
-          cancel_url: 'http://localhost:3000/payment-cancelled',
         },
+      ],
+   application_context: {
+  return_url: 'http://localhost:4173/suscripcion',
+  cancel_url: 'http://localhost:4173/suscripcion?cancel=true',
+
+}
+
+
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${(tokenRes as any).access_token}`,
+        'Content-Type': 'application/json',
       },
-      {
-        headers: {
-          Authorization: `Bearer ${(tokenRes as any).access_token}`,
-          'Content-Type': 'application/json',
-        },
-      },
-    );
+    },
+  );
 
-    const approvalUrl = (paymentRes as any).links.find((link: any) => link.rel === 'approve')?.href;
-    if (!approvalUrl) throw new Error('No se pudo obtener la URL de aprobación');
+  const approvalUrl = (paymentRes as any).links.find((link: any) => link.rel === 'approve')?.href;
+  if (!approvalUrl) throw new Error('No se pudo obtener la URL de aprobación');
 
-    return approvalUrl;
-  }
+  return approvalUrl;
+}
 
+ 
   async registerPaypalPayment(payerEmail: string, amount: number, currency: string, month: string) {
     const sandboxEmailMap: Record<string, string> = {
       // Mapea tu correo sandbox al correo real del usuario registrado
@@ -124,6 +127,13 @@ export class PaymentsService {
       month,
       user,
     });
+const savedPayment = await this.paymentRepo.save(payment);
+
+   
+    console.log(
+      `🎉 Pago guardado en BD: user=${user.email}, ` +
+      `monto=${savedPayment.amount} ${savedPayment.currency}, mes=${savedPayment.month}`
+    );
 
     await this.paymentRepo.save(payment);
 

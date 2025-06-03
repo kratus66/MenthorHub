@@ -4,14 +4,14 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePaymentDto {
   @ApiProperty({
-    example: 15000,
+    example: 5.99,
     description: 'Monto del pago',
   })
   @IsNumber()
   amount!: number;
 
   @ApiProperty({
-    example: 'COP',
+    example: 'USD',
     description: 'Moneda del pago (ej. COP, USD)',
   })
   @IsString()

@@ -11,22 +11,52 @@ const Suscripcion: React.FC = () => {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
 
-  
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const token = params.get("token");
-    if (token) {
-      axiosInstance
-        .post("/payments/paypal/capture/" + token)
-        .then(() => {
-          alert("✅ Pago capturado con éxito");
-          navigate("/panel");
-        })
-        .catch(() => {
-          alert("❌ Error al capturar el pago");
-        });
-    }
-  }, [location.search, navigate]);
+  const params = new URLSearchParams(location.search);
+  const token = params.get("token");
+  const alreadyCaptured = sessionStorage.getItem("paypal_captured");
+
+  console.log("location.search:", location.search);
+  console.log("Token recibido:", token);
+
+  if (token && !alreadyCaptured) {
+    // Construyo aquí la URL completa para que la veas en consola
+    const captureEndpoint = `/payments/paypal/capture/${token}`;
+    console.log("📡 Llamando a endpoint de captura:", axiosInstance.defaults.baseURL + captureEndpoint);
+
+    axiosInstance
+      .post(captureEndpoint)
+      .then((response) => {
+        console.log("⏪ Respuesta completa del backend:", response);
+        const { saved, payment, message } = response.data;
+
+        if (saved) {
+          console.log("🎉 Pago capturado y guardado en BD:", payment);
+          sessionStorage.setItem("paypal_captured", "true");
+          alert("🎉 ¡Tu pago se registró correctamente en la base de datos!");
+        } else if (message === "ORDER_ALREADY_CAPTURED") {
+          console.warn("⚠️ La orden ya estaba capturada.");
+          alert("ℹ️ Este pago ya fue registrado anteriormente.");
+        } else {
+          console.warn("⚠️ El backend devolvió saved: false, response:", response.data);
+          alert("⚠️ No se pudo registrar el pago en la base de datos.");
+        }
+
+        navigate("/panel");
+      })
+      .catch((err) => {
+        console.error("❌ Error al capturar/guardar el pago:", err);
+        if (err.response) {
+          console.error("🔍 err.response.data:", err.response.data);
+          alert(`❌ Error: ${err.response.data?.message || "Vuelve a intentarlo."}`);
+        } else {
+          alert("❌ No se pudo contactar con el servidor.");
+        }
+      });
+  }
+}, [location.search, navigate]);
+
+
 
   if (!user) {
     return <p>Debes iniciar sesión para realizar el pago.</p>;
@@ -41,8 +71,8 @@ const Suscripcion: React.FC = () => {
       const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 
       const response = await axiosInstance.post("/payments/create-paypal-payment", {
-        amount: 5.99,
-        currency: "COP",
+        amount: "USD",
+        currency: "USD",
         type: rol === "student" ? "student_subscription" : "teacher_monthly_fee",
 
         paymentMethod: "paypal",
