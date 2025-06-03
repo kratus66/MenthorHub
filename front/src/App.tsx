@@ -23,6 +23,7 @@ import CursoDetalle from "./views/CursoDetalles/CursoDetalles";
 import AdminPanel from "./admin/AdminPanel";
 import { useUser } from "./context/UserContext";
 import Oauthlogin from "./views/oauthlogin/oauthlogin";
+import Suscripcion from "./views/Suscripcion/suscripcion";
 // import CursoDetalle from './views/CursoDetalles/CursoDetalles';
 
 const AppWrapper = () => {
@@ -79,6 +80,7 @@ const AppWrapper = () => {
             <Route path="/cursos/:id" element={<CursoDetalle />} />
             <Route path="/about-us" element={<AboutUs />} />
             <Route path="/conoce-mas" element={<ConoceMas />} />
+            <Route path="/suscripcion" element={<Suscripcion />} />
             <Route path="/terminos" element={<Terminos />} />
           </Routes>
         </Layout>
