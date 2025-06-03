@@ -1,17 +1,40 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AdminNavBar from './AdminNavBar/AdminNavBar';
 import Stats from './Stats/Stats';
 import ClassesTable from './ClassesTable/ClassesTable';
 import UsersTable from './UsersTable/UsersTable';
+import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../services/axiosInstance';
 
 const AdminPanel = () => {
    const [activeTab, setActiveTab] = useState('estadisticas');
+   const [tareasDelAlumno, setTareasDelALumno] = useState();
 
    const adminTabs = [
       { id: 'estadisticas', label: 'Estadísticas' },
       { id: 'clases', label: 'Clases' },
       { id: 'usuarios', label: 'Usuarios' },
    ];
+
+   const navigate = useNavigate();
+
+   useEffect(() => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+         navigate('/login');
+      }
+   }, [navigate]);
+
+   useEffect(() => {
+      axiosInstance
+         .get('/tasks/student')
+         .then((res) => {
+            console.log(res);
+         })
+         .catch((err) => {
+            alert(`Error al cargar las tareas: ${err}`);
+         });
+   }, []);
 
    return (
       <>

@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import imagenUsuario from '../../images/imagenUsuario.png';
 import type { FiltrosType } from '../../types/FiltrosType';
 import { useNavigate, useLocation } from 'react-router-dom';
-
 import { useUser } from '../../context/UserContext';
 
 type NavBarProps = {
@@ -126,6 +125,13 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
                   className="hover:text-gray-200"
                >
                   About Us
+               </Link>
+               <Link
+                  to="/admin"
+                  onClick={() => setMenuOpen(false)}
+                  className="hover:text-gray-200"
+               >
+                  Admin
                </Link>
             </div>
          </div>
