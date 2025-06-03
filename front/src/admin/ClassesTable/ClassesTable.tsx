@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import axiosInstance from '../../services/axiosInstance';
-import type { User } from '../../interfaces/User';
 import { formatearFecha } from '../helpers/formatoFecha';
-import DeleteUserModal from '../DeleteUserModal/DeleteUserModal';
-import NewUserModal from '../NewUserModal/NewUserModal';
 import type { clasesType } from '../../types/ClassType';
 import type { CategoryType } from '../../types/CategoryType';
 import type { MateriaType } from '../../types/MateriaType';
 import type { Teacher } from '../../types/entities';
+import type { Class } from '../../interfaces/Class';
+import DeleteClassModal from '../DeleteClassModal/DeleteClassModal';
+import NewClassModal from '../NewClassModal/NewClassModal';
 
 type ClasesPaginadas = {
    data: clasesType[];
@@ -28,11 +28,11 @@ const ClassesTable = () => {
    );
    const [editionConfirmed, setEditionConfirmed] = useState(false);
    const [currentPage, setCurrentPage] = useState(1);
-   const [showDeleteUserModal, setShowDeleteUserModal] = useState(false);
-   const [userToBeDeleted, setUserToBeDeleted] = useState<User>({});
-   const [userIsDeleted, setUserIsDeleted] = useState(false);
-   const [showNewUserModal, setShowNewUserModal] = useState(false);
-   const [newUserConfirmed, setNewUserConfirmed] = useState(false);
+   const [showDeleteClassModal, setShowDeleteClassModal] = useState(false);
+   const [classToBeDeleted, setClassToBeDeleted] = useState<Partial<Class>>({});
+   const [classIsDeleted, setClassIsDeleted] = useState(false);
+   const [showNewClassModal, setShowNewClassModal] = useState(false);
+   const [newClassConfirmed, setNewClassConfirmed] = useState(false);
    const [categorias, setCategorias] = useState<CategoryType[]>([]);
    const [materias, setMaterias] = useState<MateriaType[]>([]);
    const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -89,11 +89,11 @@ const ClassesTable = () => {
          .catch((err) => {
             console.log('Error al cargar las clases', err);
          });
-   }, [editionConfirmed]);
+   }, [editionConfirmed, classIsDeleted, newClassConfirmed]);
 
-   const handleDeleteData = (user: User) => {
-      setShowDeleteUserModal(true);
-      setUserToBeDeleted(user);
+   const handleDeleteClassData = (clase: clasesType) => {
+      setShowDeleteClassModal(true);
+      setClassToBeDeleted(clase);
    };
 
    const handleEditData = (clases: clasesType) => {
@@ -129,8 +129,8 @@ const ClassesTable = () => {
          });
    };
 
-   const handleNuevoUsuario = () => {
-      setShowNewUserModal(true);
+   const handleNuevaClase = () => {
+      setShowNewClassModal(true);
    };
 
    return (
@@ -141,7 +141,7 @@ const ClassesTable = () => {
             <div className="flex items-center my-2 gap-4">
                <button
                   className="bg-blue-400 p-2 rounded-md text-white me-[16rem]"
-                  onClick={handleNuevoUsuario}
+                  onClick={handleNuevaClase}
                >
                   Nueva Clase
                </button>
@@ -193,7 +193,7 @@ const ClassesTable = () => {
                      </tr>
                   </thead>
                   <tbody className="text-sm">
-                     {clases.data.map((clase, index) => {
+                     {clases.data.map((clase) => {
                         return dataToBeEdited?.id !== clase.id ? (
                            <tr
                               className="h-[3rem] hover:bg-gray-200"
@@ -220,7 +220,7 @@ const ClassesTable = () => {
                                  </button>
                                  <button
                                     className="bg-red-400 rounded-md m-2"
-                                    onClick={() => handleDeleteData(clase)}
+                                    onClick={() => handleDeleteClassData(clase)}
                                  >
                                     <img
                                        src="/icons/borrar.svg"
@@ -377,18 +377,21 @@ const ClassesTable = () => {
                   </tbody>
                </table>
             </div>
-            {showDeleteUserModal === true && (
-               <DeleteUserModal
-                  userToBeDeleted={userToBeDeleted}
-                  showDeleteModal={showDeleteUserModal}
-                  setShowDeleteModal={setShowDeleteUserModal}
-                  setUserIsDeleted={setUserIsDeleted}
+            {showDeleteClassModal === true && (
+               <DeleteClassModal
+                  classToBeDeleted={classToBeDeleted}
+                  showDeleteClassModal={showDeleteClassModal}
+                  setShowDeleteClassModal={setShowDeleteClassModal}
+                  setClassIsDeleted={setClassIsDeleted}
                />
             )}
-            {showNewUserModal === true && (
-               <NewUserModal
-                  setNewUserConfirmed={setNewUserConfirmed}
-                  setShowNewUserModal={setShowNewUserModal}
+            {showNewClassModal === true && (
+               <NewClassModal
+                  categorias={categorias}
+                  materias={materias}
+                  teachers={teachers}
+                  setNewClassConfirmed={setNewClassConfirmed}
+                  setShowNewClassModal={setShowNewClassModal}
                />
             )}
          </div>
