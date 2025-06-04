@@ -55,23 +55,23 @@ export class ClassesService {
      const teacher = await this.userRepository.findOne({
         where: { id: teacherId, role: 'teacher' },
      });
-     console.log('👨‍🏫 teacher:', teacher);
      if (!teacher) throw new NotFoundException('Profesor no encontrado');
-
-     // 🔐 Validación de suscripción al día
-     await this.paymentsService.validateUserPaid(
-        teacherId,
-        this.getCurrentMonth()
-     );
 
      // 🚫 Si no ha pagado y ya tiene 1 clase, no puede crear más
      const teacherClassesCount = await this.classRepository.count({
         where: { teacher: { id: teacherId }, estado: true },
      });
      if (!teacher.isPaid && teacherClassesCount >= 1) {
-        console.log('⛔ Profesor sin plan pago intentó crear más de 1 clase');
         throw new ForbiddenException(
            'Debes pagar el plan mensual para crear más de 1 clase'
+        );
+     }
+
+     // 🔐 Si es usuario pago, valida el pago activo
+     if (teacher.isPaid) {
+        await this.paymentsService.validateUserPaid(
+           teacherId,
+           this.getCurrentMonth()
         );
      }
 
