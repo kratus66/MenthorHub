@@ -1,3 +1,6 @@
+import { Link } from "react-router-dom";
+
+
 const Home = () => {
   return (
     <div className="w-full min-h-screen bg-gray-100">
@@ -21,33 +24,33 @@ const Home = () => {
       
       <section className="py-12 px-6 md:px-20 bg-white">
         <h2 className="text-3xl font-semibold text-center mb-10">¿Qué te brindamos?</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-     <div className="bg-gray-50 shadow-md rounded-2xl p-6 hover:shadow-lg transition">
-            <h3 className="text-xl font-bold mb-2">Mentoría Personalizada</h3>
-            <p className="text-gray-600">
-              Cada estudiante recibe acompañamiento directo de mentores especializados que guían su proceso de aprendizaje.
-            </p>
-          </div>
-          <div className="bg-gray-50 shadow-md rounded-2xl p-6 hover:shadow-lg transition">
-            <h3 className="text-xl font-bold mb-2">Material Actualizado</h3>
-            <p className="text-gray-600">
-              Accede a contenido relevante, actualizado y adaptado a las necesidades del mercado tecnológico actual.
-            </p>
-          </div>
-          <div className="bg-gray-50 shadow-md rounded-2xl p-6 hover:shadow-lg transition">
-            <h3 className="text-xl font-bold mb-2">Proyectos Reales</h3>
-            <p className="text-gray-600">
-              Aplica lo aprendido desarrollando proyectos reales que puedes incluir en tu portafolio profesional.
-            </p>
-          </div>
-          <div className="bg-gray-50 shadow-md rounded-2xl p-6 hover:shadow-lg transition">
-            <h3 className="text-xl font-bold mb-2">Comunidad Estudiantil</h3>
-            <p className="text-gray-600">
-              Forma parte de una comunidad activa de estudiantes y mentores donde podrás intercambiar ideas, resolver dudas y crecer en equipo.
-            </p>
-          </div>
-        
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+  <div className="bg-gray-50 shadow-md rounded-2xl p-6 hover:shadow-lg transition border-t-4 border-red-500">
+    <h3 className="text-xl font-bold mb-2">Mentoría Personalizada</h3>
+    <p className="text-gray-600">
+      Cada estudiante recibe acompañamiento directo de mentores especializados que guían su proceso de aprendizaje.
+    </p>
+  </div>
+  <div className="bg-gray-50 shadow-md rounded-2xl p-6 hover:shadow-lg transition border-t-4 border-yellow-400">
+    <h3 className="text-xl font-bold mb-2">Material Actualizado</h3>
+    <p className="text-gray-600">
+      Accede a contenido relevante, actualizado y adaptado a las necesidades del mercado tecnológico actual.
+    </p>
+  </div>
+  <div className="bg-gray-50 shadow-md rounded-2xl p-6 hover:shadow-lg transition border-t-4 border-green-500">
+    <h3 className="text-xl font-bold mb-2">Proyectos Reales</h3>
+    <p className="text-gray-600">
+      Aplica lo aprendido desarrollando proyectos reales que puedes incluir en tu portafolio profesional.
+    </p>
+  </div>
+  <div className="bg-gray-50 shadow-md rounded-2xl p-6 hover:shadow-lg transition border-t-4 border-purple-500">
+    <h3 className="text-xl font-bold mb-2">Comunidad Estudiantil</h3>
+    <p className="text-gray-600">
+      Forma parte de una comunidad activa de estudiantes y mentores donde podrás intercambiar ideas, resolver dudas y crecer en equipo.
+    </p>
+  </div>
+</div>
+
       </section>
 
     
@@ -56,9 +59,12 @@ const Home = () => {
         <p className="mb-6 max-w-3xl mx-auto text-lg">
           Únete a Mentor Hub y comienza tu camino hacia una carrera tecnológica exitosa con el mejor acompañamiento.
         </p>
+        <Link to="/suscripcion" >
         <button className="bg-white text-indigo-700 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition">
           Inscribirme Ahora
         </button>
+        </Link>
+        
       </section>
 
     </div>

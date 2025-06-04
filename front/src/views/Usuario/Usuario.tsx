@@ -123,20 +123,23 @@ const UserProfile: React.FC = () => {
                      />
                   </div>
 
-                  <div className="mt-4">
-                     <span className="text-lg font-medium mr-3 text-white">
-                        Suscripción:
-                     </span>
-                     <span
-                        className={`inline-block px-3 py-1 rounded-full font-semibold text-sm ${
-                           user.isPaid
-                              ? 'bg-green-500 text-white'
-                              : 'bg-red-500 text-white'
-                        }`}
-                     >
-                        {user.isPaid ? 'Activa' : 'Inactiva'}
-                     </span>
-                  </div>
+                 {user && (
+   <div className="mt-4">
+      <span className="text-lg font-medium mr-3 text-white">
+         Suscripción:
+      </span>
+      <span
+         className={`inline-block px-3 py-1 rounded-full font-semibold text-sm ${
+            user.isPaid
+               ? 'bg-green-500 text-white'
+               : 'bg-red-500 text-white'
+         }`}
+      >
+         {user.isPaid ? 'activa' : 'inactiva'}
+      </span>
+   </div>
+)}
+
                </div>
 
                <div className="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-4">

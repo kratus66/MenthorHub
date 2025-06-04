@@ -82,6 +82,7 @@ const AppWrapper = () => {
             <Route path="/about-us" element={<AboutUs />} />
             <Route path="/conoce-mas" element={<ConoceMas />} />
             <Route path="/suscripcion" element={<Suscripcion />} />
+            
             <Route path="/terminos" element={<Terminos />} />
           </Routes>
         </Layout>
