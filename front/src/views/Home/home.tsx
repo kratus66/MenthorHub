@@ -1,3 +1,6 @@
+import { Link } from "react-router-dom";
+
+
 const Home = () => {
   return (
     <div className="w-full min-h-screen bg-gray-100">
@@ -56,9 +59,12 @@ const Home = () => {
         <p className="mb-6 max-w-3xl mx-auto text-lg">
           Únete a Mentor Hub y comienza tu camino hacia una carrera tecnológica exitosa con el mejor acompañamiento.
         </p>
+        <Link to="/suscripcion" >
         <button className="bg-white text-indigo-700 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition">
           Inscribirme Ahora
         </button>
+        </Link>
+        
       </section>
 
     </div>
