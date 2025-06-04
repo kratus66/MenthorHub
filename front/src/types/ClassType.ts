@@ -1,3 +1,4 @@
+import type { Review } from '../interfaces/Review';
 import type { Teacher } from './entities';
 
 export type clasesType = {
@@ -19,4 +20,5 @@ export type clasesType = {
       imageUrl: string;
       description: string;
    };
+   reviews: Review[];
 };
