@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState, useRef } from "react";
 import { useUser } from "../../context/UserContext";
 import { useNavigate, useLocation } from "react-router-dom";
