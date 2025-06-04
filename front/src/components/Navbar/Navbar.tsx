@@ -113,7 +113,7 @@ const normalizedRole = (() => {
       >
         <div className="p-8 mt-16 flex flex-col space-y-6 text-lg md:text-2xl">
           <Link
-            to="/panel"
+            to="/home"
             onClick={() => setMenuOpen(false)}
             className="hover:text-gray-200"
           >
@@ -132,6 +132,11 @@ const normalizedRole = (() => {
     Unirme a una clase
   </Link>
 )}
+<Link
+            to="/panel"
+            onClick={() => setMenuOpen(false)}
+            className="hover:text-gray-200"
+          >Clases</Link>
 <Link
             to="/suscripcion"
             onClick={() => setMenuOpen(false)}
