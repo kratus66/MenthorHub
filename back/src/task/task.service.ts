@@ -24,8 +24,7 @@ export class TasksService {
   ) {}
 
   async createByTeacher(teacherId: string, dto: CreateTaskDto): Promise<Task> {
-    console.log('📥 DTO recibido:', dto);
-    console.log('👤 ID del profesor autenticado:', teacherId);
+
 
     // Contar cuántas tareas activas tiene el profesor
     const taskCount = await this.taskRepository
@@ -81,6 +80,13 @@ export class TasksService {
     return `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
   }
 
+   async getTasksByClassId(classId: string): Promise<Task[]> {
+    return this.taskRepository.find({
+      where: { classRef : { id: classId } },
+      relations: ['classRef'], // agrega otras relaciones si las necesitás
+      order: { dueDate: 'ASC' }, // opcional: ordenar por fecha de entrega
+    });
+  }
   async findByTeacher(teacherId: string, page = 1, limit = 10): Promise<Task[]> {
     return this.taskRepository
       .createQueryBuilder('task')
