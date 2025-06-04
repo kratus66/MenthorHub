@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Submission } from './submission.entity';
@@ -8,7 +8,7 @@ import { User } from '../users/user.entity';
 import { Task } from '../task/task.entity';
 import { Class } from '../classes/class.entity';
 import { PaymentsService } from '../payment/payment.service';
-
+import { CloudinaryService } from '../common/cloudinary/cloudinary.service';
 @Injectable()
 export class SubmissionsService {
   constructor(
@@ -21,45 +21,57 @@ export class SubmissionsService {
     @InjectRepository(Class)
     private classRepo: Repository<Class>,
     private readonly paymentsService: PaymentsService,
+    private readonly cloudinaryService: CloudinaryService,
+   
   ) {}
 
-  async create(dto: CreateSubmissionDto & { content: string }, studentId: string) {
-    // Contar cuántas entregas activas tiene el estudiante
-    const submissionsCount = await this.submissionsRepo.count({
-      where: { student: { id: studentId }, estado: true },
+  async createSubmission(
+    createDto: CreateSubmissionDto,
+    fileUrl: string,
+    userId: string,
+  ): Promise<Submission> {
+    console.log('📥 Datos recibidos en createSubmission:', createDto);
+  
+    const { taskId, classId } = createDto;
+  
+    if (!userId) {
+      throw new ForbiddenException('No se ha especificado el usuario que entrega');
+    }
+  
+    // Obtener estudiante y validar rol
+    const student = await this.userRepo.findOne({
+      where: { id: userId, role: 'student' },
     });
-
-    const student = await this.userRepo.findOne({ where: { id: studentId } });
-    if (!student) {
-      throw new NotFoundException('Estudiante no encontrado');
+    if (!student) throw new NotFoundException('Estudiante no encontrado');
+  
+    // Validar que la tarea exista y pertenezca a la clase especificada (opcional)
+    const task = await this.taskRepo.findOne({
+      where: { id: taskId },
+      relations: ['classRef'], // asumiendo que Task tiene relación con Class
+    });
+    if (!task) throw new NotFoundException('Tarea no encontrada');
+  
+    if (task.classRef.id !== classId) {
+      throw new BadRequestException('La tarea no pertenece a la clase especificada');
     }
-
-    // Permitir solo una entrega gratis si no es usuario pago
-    if (!student.isPaid && submissionsCount >= 1) {
-      throw new Error('Debes pagar la suscripción para realizar más de una entrega.');
-    }
-
-    // Si es usuario pago, valida el pago activo
-    if (student.isPaid) {
-      await this.paymentsService.validateUserPaid(studentId, this.getCurrentMonth());
-    }
-
-    const task = await this.taskRepo.findOne({ where: { id: dto.taskId } });
-    const clase = await this.classRepo.findOne({ where: { id: dto.classId } });
-
-    if (!task || !clase) {
-      throw new NotFoundException('Tarea o clase no encontrados');
-    }
-
-    const submission = this.submissionsRepo.create({
-      content: dto.content,
-      student,
+  
+    // Crear la entrega con la URL ya subida
+    const newSubmission = this.submissionsRepo.create({
       task,
+      student,
+      content: fileUrl,  // <--- aquí asignas la URL directamente
+      createdAt: new Date(),
+      isGraded: false,
+      estado: true,
     });
-
-    return this.submissionsRepo.save(submission);
+  
+    const savedSubmission = await this.submissionsRepo.save(newSubmission);
+    console.log('✅ Entrega guardada con ID:', savedSubmission.id);
+  
+    return savedSubmission;
   }
-
+  
+  
   private getCurrentMonth(): string {
     const now = new Date();
     return `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;

@@ -13,7 +13,7 @@ export default function CrearClase() {
  
   const [allCategories, setAllCategories] = useState<CategoryType[]>([]);
   const [allMaterias, setAllMaterias] = useState<MateriaType[]>([]);
-  const [archivos, setArchivos] = useState<File[]>([]);
+  const [multimedia, setMultimedia] = useState<File[]>([]);
 
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -33,7 +33,7 @@ export default function CrearClase() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files;
     if (selectedFiles) {
-      setArchivos((prev) => [...prev, ...Array.from(selectedFiles)]);
+      setMultimedia((prev) => [...prev, ...Array.from(selectedFiles)]);
     }
   };
 
@@ -50,16 +50,17 @@ export default function CrearClase() {
     formData.append("teacherId", teacherId);
     formData.append("categoryId", categoryId);
     formData.append("materiaId", materiaId);
-    
-    console.log(archivos);
-    archivos.forEach((file) => {
+    for (const file of multimedia) {
       formData.append("multimedia", file);
-    });
-
+    }
     try {
+      for (const pair of formData.entries()) {
+        console.log(pair[0], pair[1]);
+      }
       await axiosInstance.post("/classes", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
         },
       });
       alert("Clase creada correctamente");
@@ -68,7 +69,7 @@ export default function CrearClase() {
       setCategoryId("");
       setMateriaId("");
       
-      setArchivos([]);
+      setMultimedia([]);
     } catch (err) {
       alert("Error al crear la clase");
       console.error(err);
@@ -158,9 +159,9 @@ export default function CrearClase() {
           <input type="file" accept=".pdf,.doc,.docx,.zip,.rar" ref={fileInputRef} onChange={handleFileChange} hidden />
         </div>
 
-        {archivos.length > 0 && (
+        {multimedia.length > 0 && (
           <ul className="text-sm text-gray-600 mb-4">
-            {archivos.map((file, i) => (
+            {multimedia.map((file, i) => (
               <li key={i}>{file.name}</li>
             ))}
           </ul>
@@ -176,7 +177,7 @@ export default function CrearClase() {
               setCategoryId("");
               setMateriaId("");
               
-              setArchivos([]);
+              setMultimedia([]);
             }}
           >
             Cancelar

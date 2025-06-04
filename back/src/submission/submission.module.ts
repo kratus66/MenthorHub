@@ -8,12 +8,13 @@ import { SubmissionsController } from './submission.controller';
 import { UsersModule } from '../users/user.module';
 import { Class } from '../classes/class.entity';
 import { PaymentsModule } from '../payment/payments.module';
-
+import { CloudinaryModule } from '../common/cloudinary/cloudinary.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Submission, Task, User, Class]),
     UsersModule,
     PaymentsModule, // ✅ necesario para validar pagos
+    CloudinaryModule,
   ],
   providers: [SubmissionsService],
   controllers: [SubmissionsController],

@@ -11,6 +11,7 @@ import {
 } from '@nestjs/platform-express';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import { v2 as cloudinary } from 'cloudinary';
+import { memoryStorage } from 'multer';
 
 const cloudinaryStorage = new CloudinaryStorage({
   cloudinary,
@@ -44,14 +45,27 @@ export function CloudinaryFileInterceptor(fieldName: string) {
 }
 
 // 🎯 Para múltiples archivos
-export function CloudinaryMultipleFilesInterceptor(fieldName: string, maxCount = 10) {
+export function CloudinaryMultipleFilesInterceptor(fieldName: string) {
+  return FilesInterceptor(fieldName, 10, {
+    storage: memoryStorage(),
+    fileFilter: (req, file, cb) => {
+      // Opcional: filtro para solo imágenes o videos
+      if (!file.mimetype.match(/\/(jpg|jpeg|png|gif|mp4|mov)$/)) {
+        return cb(new Error('Solo archivos multimedia permitidos'), false);
+      }
+      cb(null, true);
+    },
+  });
+}
+
+export function CloudinarySubmissionsInterceptor(fieldName: string) {
   @Injectable()
   class MixinInterceptor implements NestInterceptor {
     private interceptor;
 
     constructor() {
-      const InterceptorClass = FilesInterceptor(fieldName, maxCount, {
-        storage: cloudinaryStorage,
+      const InterceptorClass = FileInterceptor(fieldName, {
+        storage: memoryStorage(), // Archivo queda en buffer para subir después
       });
       this.interceptor = new InterceptorClass();
     }

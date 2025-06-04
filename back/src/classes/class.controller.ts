@@ -52,13 +52,13 @@ export class ClassesController {
 
   @Post()
   @Roles(Role.Admin, Role.Teacher)
-  @Post()
   @UseInterceptors(CloudinaryMultipleFilesInterceptor('multimedia'))
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Crear una nueva clase con multimedia' })
   @ApiBody({ description: 'Datos para crear una clase con archivos multimedia', type: CreateClassDto })
   @ApiResponse({ status: 201, description: 'Clase creada exitosamente', type: Class })
   async create(@Body() createDto: CreateClassDto, @UploadedFiles() files: Express.Multer.File[]) {
+    console.log('🧪 Archivos recibidos por Multer:', files);
     try {
       return await this.classesService.create(createDto, files);
     } catch (error) {

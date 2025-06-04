@@ -12,6 +12,7 @@ import {
   UseInterceptors,
   InternalServerErrorException,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { SubmissionsService } from './submission.service';
 import { CreateSubmissionDto } from './dto/CreateSubmissions.dto';
@@ -30,52 +31,38 @@ import {
   ApiConsumes,
   ApiQuery,
 } from '@nestjs/swagger';
-import { CloudinaryFileInterceptor } from '../common/interceptors/cloudinary.interceptor';
+import { CloudinaryFileInterceptor, CloudinaryMultipleFilesInterceptor, CloudinarySubmissionsInterceptor,  } from '../common/interceptors/cloudinary.interceptor';
 import { Roles } from '../common/decorators/role';
-
+import { CloudinaryService } from '../common/cloudinary/cloudinary.service';
 @ApiTags('Submissions')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RoleGuard)
 @Controller('submissions')
 export class SubmissionsController {
-  constructor(private submissionsService: SubmissionsService) {}
+  constructor(private submissionsService: SubmissionsService,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
   @Post()
-  @Roles(Role.Student)
-  @UseInterceptors(CloudinaryFileInterceptor('file'))
-  @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Crear una entrega con archivo (solo estudiantes)' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        taskId: { type: 'string', example: 'uuid-task-ejemplo' },
-        classId: { type: 'string', example: 'uuid-class-ejemplo' },
-        file: { type: 'string', format: 'binary' },
-      },
-    },
-  })
-  @ApiResponse({ status: 201, description: 'Entrega creada exitosamente' })
+  @UseInterceptors(CloudinarySubmissionsInterceptor('file'))
   async create(
     @UploadedFile() file: Express.Multer.File,
     @Body() dto: CreateSubmissionDto,
     @Req() req: any,
   ) {
-    try {
-      const fileUrl = file?.path;
-      if (!fileUrl) {
-        throw new InternalServerErrorException('Archivo no válido o no se pudo subir');
-      }
-
-      return await this.submissionsService.create(
-        { ...dto, content: fileUrl },
-        req.user.sub,
-      );
-    } catch (error) {
-      console.error('❌ Error al crear entrega:', error);
-      throw new InternalServerErrorException('Error al crear la entrega');
+    if (!file) {
+      throw new BadRequestException('Archivo es obligatorio');
     }
+    console.log(file)
+    // Subir archivo y obtener URL
+    const uploadResult = await this.cloudinaryService.uploadFile(file.buffer, {
+      folder: `mentorhub/entregas`,
+    });
+  
+    // Pasar sólo la URL al servicio
+    return this.submissionsService.createSubmission(dto, uploadResult.secure_url, req.user.sub);
   }
+  
 
   @Get()
   @Roles(Role.Teacher, Role.Admin)
