@@ -1,4 +1,3 @@
-// ✅ Código completo actualizado — con roles agregados, sin alterar la lógica
 
 import {
   Controller,
@@ -221,3 +220,4 @@ async createPaypalPayment(@Body() dto: CreatePaymentDto) {
     }
   }
 }
+ 
