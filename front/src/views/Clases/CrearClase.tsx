@@ -51,6 +51,7 @@ export default function CrearClase() {
     formData.append("categoryId", categoryId);
     formData.append("materiaId", materiaId);
     
+    console.log(archivos);
     archivos.forEach((file) => {
       formData.append("multimedia", file);
     });

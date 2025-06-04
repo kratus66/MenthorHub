@@ -36,7 +36,7 @@ import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { extname } from 'path';
 import { EnrollStudentDto } from './dto/enroll-student.dto';
-/* import { CloudinaryFileInterceptor, CloudinaryMultipleFilesInterceptor } from '../common/interceptors/cloudinary.interceptor'; */
+import { CloudinaryFileInterceptor, CloudinaryMultipleFilesInterceptor } from '../common/interceptors/cloudinary.interceptor'; 
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RoleGuard } from '../common/guards/role.guard';
 import { Role } from '../common/constants/roles.enum';
@@ -53,7 +53,7 @@ export class ClassesController {
   @Post()
   @Roles(Role.Admin, Role.Teacher)
   @Post()
-  // @UseInterceptors(CloudinaryMultipleFilesInterceptor('multimedia'))
+  @UseInterceptors(CloudinaryMultipleFilesInterceptor('multimedia'))
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Crear una nueva clase con multimedia' })
   @ApiBody({ description: 'Datos para crear una clase con archivos multimedia', type: CreateClassDto })

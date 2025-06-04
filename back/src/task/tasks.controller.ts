@@ -44,11 +44,19 @@ export class TasksController {
   @ApiBody({ type: CreateTaskDto })
   @ApiResponse({ status: 201, description: 'Tarea creada exitosamente', type: Task })
   async create(@Body() dto: CreateTaskDto, @CurrentUser() user: User) {
+    console.log('👤 Usuario autenticado:', user);
+    console.log('📥 DTO recibido:', dto);
+ 
     try {
       return await this.tasksService.createByTeacher(user.id, dto);
     } catch (error) {
       throw new InternalServerErrorException('Error al crear la tarea');
     }
+  }
+
+  @Get('class/:classId')
+  getTasksByClassId(@Param('classId') classId: string) {
+    return this.tasksService.getTasksByClassId(classId);
   }
 
   @Get('eliminadas')
