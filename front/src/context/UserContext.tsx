@@ -9,7 +9,6 @@ interface UserContextType {
    login: (userData: User, token: string) => void;
    logout: () => void;
    setUser: React.Dispatch<React.SetStateAction<User | null>>;
-   refreshUser: () => Promise<void>;
 } 
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -20,7 +19,6 @@ interface UserProviderProps {
 export const UserProvider = ({ children }: UserProviderProps) => {
    const [user, setUser] = useState<User | null>(null);
    const [token, setToken] = useState<string | null>(null);
-
    // Recuperar usuario y token desde localStorage al iniciar
    useEffect(() => {
       const storedUser = localStorage.getItem('user');
@@ -42,31 +40,9 @@ export const UserProvider = ({ children }: UserProviderProps) => {
       localStorage.removeItem('user');
       localStorage.removeItem('token');
    };
-const refreshUser = async () => {
-  try {
-    const res = await fetch('/api/users/me', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (res.ok) {
-      const updatedUser = await res.json();
-
-      // Forzar valor default si no existe
-      if (updatedUser.isPaid === undefined) {
-        updatedUser.isPaid = false;
-      }
-
-      setUser(updatedUser);
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-    }
-  } catch (err) {
-    console.error('Error al refrescar el usuario:', err);
-  }
-};
 
    return (
-      <UserContext.Provider value={{ user, setUser, token, login, logout, refreshUser }}>
+      <UserContext.Provider value={{ user, setUser, token, login, logout }}>
          {children}
       </UserContext.Provider>
    );
