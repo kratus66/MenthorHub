@@ -1,5 +1,5 @@
 import type { clasesType } from '../types/ClassType';
-import type { User } from '../types/entities';
+import type { User } from './User';
 
 export type Review = {
    id: string;

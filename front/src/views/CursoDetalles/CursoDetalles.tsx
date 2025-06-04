@@ -5,18 +5,27 @@ import type { clasesType } from '../../types/ClassType';
 import Chatbot from '../../components/Chatbot/Chatbot';
 import RatingEstrellas from '../../components/RatingEstrellas/RatingEstrellas';
 import NewReviewForm from '../../components/NewReviewForm/NewReviewForm';
+import RatingPromedio from '../../components/RatingPromedio/RatingPromedio';
+import type { Review } from '../../interfaces/Review';
+import ReviewCard from '../../components/ReviewCard/ReviewCard';
 
 const CursoDetalle = () => {
    const { id } = useParams<{ id: string }>();
    const [curso, setCurso] = useState<clasesType>();
    const [tareas, setTareas] = useState<any[]>([]);
    const [activeTab, setActiveTab] = useState('general');
-   const [user, setUser] = useState<{ id: string; role: string } | null>(null);
+   const [user, setUser] = useState<{
+      id: string;
+      role: string;
+      name: string;
+   } | null>(null);
    const [isModalOpen, setIsModalOpen] = useState(false); // para crear tarea (profesor)
    const [taskDetailModalOpen, setTaskDetailModalOpen] = useState(false); // para ver detalle tarea (estudiante)
    const [selectedTask, setSelectedTask] = useState<any>(null);
    const [submissionFile, setSubmissionFile] = useState<File | null>(null);
    const [submissionLoading, setSubmissionLoading] = useState(false);
+   const [reviews, setReviews] = useState<Review[]>([]);
+   const [reviewSent, setReviewSent] = useState(false);
 
    const [title, setTitle] = useState('');
    const [instructions, setInstructions] = useState('');
@@ -34,6 +43,7 @@ const CursoDetalle = () => {
    useEffect(() => {
       axiosInstance.get(`classes/${id}`).then((res) => {
          setCurso(res.data);
+         setReviews(res.data.reviews);
          console.log('Data del curso:', res.data);
       });
 
@@ -45,7 +55,7 @@ const CursoDetalle = () => {
       if (storedUser) {
          setUser(JSON.parse(storedUser));
       }
-   }, [id]);
+   }, [id, reviewSent]);
 
    // Determinar si el usuario es estudiante y si está inscrito en la clase
    const userIsStudent = user?.role === 'student';
@@ -111,8 +121,6 @@ const CursoDetalle = () => {
             studentId: user.id,
          });
 
-         alert('Inscripción realizada con éxito');
-
          // Refrescar la info del curso para actualizar lista de estudiantes
          const updatedCourse = await axiosInstance.get(`classes/${id}`);
          setCurso(updatedCourse.data);
@@ -176,6 +184,12 @@ const CursoDetalle = () => {
       return <div className="p-4">Cargando datos...</div>;
    }
 
+   const promedioRating =
+      curso.reviews.length > 0
+         ? curso.reviews.reduce((acc, review) => acc + review.rating, 0) /
+           curso.reviews.length
+         : 0;
+
    return (
       <div className="flex justify-center items-center min-h-screen bg-gray-200">
          <div className="max-w-6xl w-full h-screen bg-gray-100 shadow-lg rounded-lg p-8 px-0 m-4 lg:m-0 flex flex-col gap-6">
@@ -196,19 +210,7 @@ const CursoDetalle = () => {
                   <strong>Profesor:</strong> {curso.teacher.name}
                </p>
 
-               {id && (
-                  <RatingEstrellas
-                     classId={id}
-                     initialAverage={
-                        curso.reviews.length
-                           ? curso.reviews.reduce(
-                                (acc, r) => acc + r.rating,
-                                0
-                             ) / curso.reviews.length
-                           : 0
-                     }
-                  ></RatingEstrellas>
-               )}
+               {id && <RatingPromedio promedio={promedioRating} />}
 
                <button
                   className="mt-2 w-1/6 bg-blue-400 text-white py-2 rounded-lg font-semibold text-md disabled:opacity-50"
@@ -488,10 +490,22 @@ const CursoDetalle = () => {
                )}
 
                {activeTab === 'reviews' && (
-                  <div className="w-full h-full flex">
-                     <div className="flex flex-col"></div>
-                     <div className="">
-                        <NewReviewForm />
+                  <div className="w-full h-full flex gap-4">
+                     <div className="flex flex-col w-1/2 gap-2 overflow-y-auto">
+                        {reviews.map((review) => {
+                           return (
+                              <div key={review.id}>
+                                 <ReviewCard review={review} />
+                              </div>
+                           );
+                        })}
+                     </div>
+                     <div className="w-1/2 bg-gray-200 me-6 rounded-md p-4">
+                        <NewReviewForm
+                           targetStudentId={user.id}
+                           courseId={curso.id}
+                           setReviewSent={setReviewSent}
+                        />
                      </div>
                   </div>
                )}

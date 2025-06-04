@@ -1,64 +1,81 @@
 import React from 'react';
 import { Formik, Form, Field } from 'formik';
 import axios from 'axios';
+import RatingEstrellas from '../RatingEstrellas/RatingEstrellas';
+import axiosInstance from '../../services/axiosInstance';
 
 interface ReviewFormProps {
-   rating: number; // Este viene de tu componente de estrellas
-   userId: string; // Ya cargado en tu vista
-   courseId: string; // Id del curso actual
-   userName: string; // Nombre del usuario
+   courseId: string;
+   targetStudentId: string;
+   setReviewSent: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const NewReviewForm: React.FC<ReviewFormProps> = ({
-   rating,
-   userId,
    courseId,
-   userName,
+   targetStudentId,
+   setReviewSent,
 }) => {
    const initialValues = {
+      rating: 0,
       comment: '',
    };
 
    const handleSubmit = async (values: typeof initialValues) => {
       try {
-         const reviewData = {
-            rating, // desde props
+         const payload = {
+            rating: values.rating,
             comment: values.comment,
-            userId, // dinámico
-            courseId, // dinámico
-            userName, // dinámico
+            courseId,
+            targetStudentId,
+            type: 'review',
          };
 
-         await axios.post('/api/reviews', reviewData);
-         alert('¡Review enviada!');
+         await axiosInstance.post('/reviews', payload);
+         console.log('Payload enviado:', payload);
+         alert('¡Review enviada con éxito!');
+         setReviewSent(true);
+         setTimeout(() => {
+            setReviewSent(false);
+         }, 200);
       } catch (error) {
-         console.error('Error al enviar review', error);
-         alert('Ocurrió un error al enviar tu review');
+         console.error('Error al enviar la review:', error);
+         alert('Hubo un error al enviar tu review.');
       }
    };
 
    return (
-      <Formik initialValues={initialValues} onSubmit={handleSubmit}>
-         <Form className="flex flex-col gap-4">
-            <div>
-               <label htmlFor="comment">Tu comentario:</label>
-               <br />
-               <Field
-                  as="textarea"
-                  name="comment"
-                  rows={4}
-                  className="border p-2 w-full"
-               />
-            </div>
+      <div className="w-3/4 mx-auto">
+         <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+            {({ setFieldValue, values }) => (
+               <Form className="flex flex-col gap-4">
+                  <div>
+                     <label>Tu puntuación:</label>
+                     <RatingEstrellas
+                        value={values.rating}
+                        onChange={(val) => setFieldValue('rating', val)}
+                     />
+                  </div>
 
-            <button
-               type="submit"
-               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-               Enviar review
-            </button>
-         </Form>
-      </Formik>
+                  <div>
+                     <label htmlFor="comment">Tu comentario:</label>
+                     <Field
+                        as="textarea"
+                        name="comment"
+                        rows={4}
+                        className="border p-2 w-full"
+                     />
+                  </div>
+
+                  <button
+                     type="submit"
+                     className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  >
+                     Enviar review
+                  </button>
+               </Form>
+            )}
+         </Formik>
+      </div>
    );
 };
 
