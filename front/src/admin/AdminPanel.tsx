@@ -25,17 +25,6 @@ const AdminPanel = () => {
       }
    }, [navigate]);
 
-   useEffect(() => {
-      axiosInstance
-         .get('/tasks/student')
-         .then((res) => {
-            console.log(res);
-         })
-         .catch((err) => {
-            alert(`Error al cargar las tareas: ${err}`);
-         });
-   }, []);
-
    return (
       <>
          <AdminNavBar />

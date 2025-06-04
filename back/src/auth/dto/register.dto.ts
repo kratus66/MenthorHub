@@ -51,7 +51,7 @@ export class RegisterDto {
 
   @ApiProperty()
   @IsString()
-  @MinLength(8)
+  @MinLength(6)
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/, {
     message: 'Contraseña débil',
   })

@@ -24,11 +24,28 @@ export class TasksService {
   ) {}
 
   async createByTeacher(teacherId: string, dto: CreateTaskDto): Promise<Task> {
-    console.log('📥 DTO recibido:', dto);
-    console.log('👤 ID del profesor autenticado:', teacherId);
 
-    // 🔐 Validar pago del mes actual
-    await this.paymentsService.validateUserPaid(teacherId, this.getCurrentMonth());
+
+    // Contar cuántas tareas activas tiene el profesor
+    const taskCount = await this.taskRepository
+      .createQueryBuilder('task')
+      .leftJoin('task.classRef', 'class')
+      .where('class.teacherId = :teacherId', { teacherId })
+      .andWhere('task.estado = true')
+      .getCount();
+
+    // Permitir solo una tarea gratis si no es usuario pago
+    const teacher = await this.classRepository.manager.getRepository('User').findOne({ where: { id: teacherId } });
+    if (!teacher) throw new NotFoundException('Profesor no encontrado');
+
+    if (!teacher.isPaid && taskCount >= 1) {
+      throw new ForbiddenException('Debes pagar la suscripción para crear más de una tarea.');
+    }
+
+    // Validar pago solo si ya tiene una tarea y quiere crear más
+    if (teacher.isPaid) {
+      await this.paymentsService.validateUserPaid(teacherId, this.getCurrentMonth());
+    }
 
     const classRef = await this.classRepository.findOne({
       where: { id: dto.classId },
@@ -63,6 +80,13 @@ export class TasksService {
     return `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
   }
 
+   async getTasksByClassId(classId: string): Promise<Task[]> {
+    return this.taskRepository.find({
+      where: { classRef : { id: classId } },
+      relations: ['classRef'], // agrega otras relaciones si las necesitás
+      order: { dueDate: 'ASC' }, // opcional: ordenar por fecha de entrega
+    });
+  }
   async findByTeacher(teacherId: string, page = 1, limit = 10): Promise<Task[]> {
     return this.taskRepository
       .createQueryBuilder('task')

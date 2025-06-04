@@ -61,7 +61,7 @@ const AdminNavBar: React.FC = () => {
                   Home
                </Link>
 
-               {user?.role === 'Profesor' && (
+               {user?.role === 'teacher' && (
                   <Link
                      to="/clases/crear"
                      onClick={() => setMenuOpen(false)}
@@ -70,7 +70,7 @@ const AdminNavBar: React.FC = () => {
                      Crear una clase
                   </Link>
                )}
-               {user?.role === 'Alumno' && (
+               {user?.role === 'student' && (
                   <Link
                      to="/clases/unirme"
                      onClick={() => setMenuOpen(false)}

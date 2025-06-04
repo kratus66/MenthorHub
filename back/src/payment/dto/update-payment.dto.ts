@@ -26,12 +26,12 @@ export class UpdatePaymentDto {
 
   @ApiPropertyOptional({
     example: 'paypal',
-    description: 'Método de pago (paypal o card)',
-    enum: ['paypal', 'card'],
+    description: 'Método de pago (solo paypal permitido)',
+    enum: ['paypal'],
   })
   @IsOptional()
-  @IsEnum(['paypal', 'card'])
-  paymentMethod?: 'paypal' | 'card';
+  @IsEnum(['paypal'])
+  paymentMethod?: 'paypal';
 
   @ApiPropertyOptional({
     example: '2025-05',

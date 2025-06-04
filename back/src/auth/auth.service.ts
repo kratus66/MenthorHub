@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { And, Repository } from 'typeorm';
 import { compare, hash } from 'bcrypt';
-
+import * as bcrypt from 'bcrypt';
 import { User } from '../users/user.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -55,10 +55,11 @@ export class AuthService {
   }
   
   private async registerOAuth(dto: RegisterDto, profileImagePathOrURL?: string): Promise<any> {
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
     const newUser = this.usersRepository.create({
       name: dto.name,
       email: dto.email,
-      password: dto.password || '',
+      password: hashedPassword,
       phoneNumber: dto.phoneNumber,
       avatarId: dto.avatarId,
       profileImage: profileImagePathOrURL || dto.profileImage,
@@ -122,7 +123,8 @@ export class AuthService {
       throw new BadRequestException('Las contraseñas no coinciden');
     }
   
-    const hashedPassword = await hash(dto.password, 10);
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
+
   
     const newUser = this.usersRepository.create({
       name: dto.name,
@@ -228,11 +230,11 @@ export class AuthService {
       throw new BadRequestException('Credenciales incorrectas');
     }
 
-     if (!user.isEmailConfirmed) {
-      throw new UnauthorizedException(
-        'Debes confirmar tu correo antes de iniciar sesión',
-      );
-    }
+    //  if (!user.isEmailConfirmed) {
+    //   throw new UnauthorizedException(
+    //     'Debes confirmar tu correo antes de iniciar sesión',
+    //   );
+    // }
 
     const token = this.generateToken(user);
 
@@ -251,28 +253,12 @@ export class AuthService {
 // auth.service.ts
 
 async handleOAuthProcess(profile: any, provider: 'google' | 'github') {
-  // Buscar usuario por email sin importar el proveedor
-  const userByEmail = await this.usersRepository.findOne({
-    where: { email: profile.email },
-  });
-
-  // Si ya existe con otro proveedor
-  if (
-    userByEmail &&
-    userByEmail.isOauth &&
-    userByEmail.oauthProvider !== provider
-  ) {
-    return {
-      redirectToProvider: userByEmail.oauthProvider, // 'google' o 'github'
-      originalEmail: userByEmail.email,
-    };
-  }
+  
 
   // Buscar usuario con este email Y este proveedor
   const user = await this.usersRepository.findOne({
     where: {
       email: profile.email,
-      oauthProvider: provider,
     },
   });
 
@@ -329,6 +315,47 @@ async handleOAuthProcess(profile: any, provider: 'google' | 'github') {
   };
 }
 
+// 1. Generar token de restablecimiento
+async generatePasswordResetToken(user: User): Promise<string> {
+  const payload = { sub: user.id };
+  return this.jwtService.sign(payload, {
+    secret: process.env.JWT_RESET_SECRET,
+    expiresIn: '15m', // duración corta por seguridad
+  });
+}
+
+// 2. Verificar el token
+async verifyPasswordResetToken(token: string): Promise<User> {
+  try {
+    const payload = await this.jwtService.verifyAsync(token, {
+      secret: process.env.JWT_RESET_SECRET,
+    });
+
+    const user = await this.usersRepository.findOne({ where: { id: payload.sub } });
+
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    return user;
+  } catch (error) {
+    throw new BadRequestException('Token inválido o expirado');
+  }
+}
+
+// 3. Actualizar contraseña
+async updatePassword(userId: string, newPassword: string): Promise<void> {
+  const user = await this.usersRepository.findOne({ where: { id: userId } });
+
+  if (!user) {
+    throw new NotFoundException('Usuario no encontrado');
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  user.password = hashedPassword;
+
+  await this.usersRepository.save(user);
+}
 
 
   generateToken(user: User): string {

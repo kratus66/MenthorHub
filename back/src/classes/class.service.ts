@@ -19,46 +19,64 @@ import { PaymentsService } from '../payment/payment.service';
 @Injectable()
 export class ClassesService {
   constructor(
-    @InjectRepository(Class) private readonly classRepository: Repository<Class>,
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
-    @InjectRepository(Category) private readonly categoryRepository: Repository<Category>,
-    @InjectRepository(Materias) private readonly materiaRepository: Repository<Materias>,
-    @InjectRepository(Payment) private readonly paymentRepository: Repository<Payment>,
+    @InjectRepository(Class)
+    private readonly classRepository: Repository<Class>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
+    @InjectRepository(Materias)
+    private readonly materiaRepository: Repository<Materias>,
+    @InjectRepository(Payment)
+    private readonly paymentRepository: Repository<Payment>,
     private readonly paymentsService: PaymentsService,
   ) {}
 
-  async create(createDto: CreateClassDto, files?: Express.Multer.File[], userId?: string): Promise<Class> {
+  async create(
+    createDto: CreateClassDto,
+    files?: Express.Multer.File[],
+    userId?: string,
+  ): Promise<Class> {
     console.log('📥 Datos recibidos en create:', createDto);
 
-    // 🔐 Validación de seguridad para evitar uso de teacherId ajeno
+    // 🔐 Validación para evitar uso de otro teacherId
     if (userId && createDto.teacherId !== userId) {
       console.log('⛔ Intento de crear clase con teacherId ajeno');
-      throw new ForbiddenException('No puedes crear clases a nombre de otro profesor');
+      throw new ForbiddenException(
+        'No puedes crear clases a nombre de otro profesor',
+      );
     }
 
-    const { title, description, teacherId, categoryId, materiaId, sector } = createDto;
+    const { title, description, teacherId, categoryId, materiaId } = createDto;
 
     const teacher = await this.userRepository.findOne({
       where: { id: teacherId, role: 'teacher' },
     });
+    console.log('👨‍🏫 teacher:', teacher); // <-- LOG SOLICITADO
     if (!teacher) throw new NotFoundException('Profesor no encontrado');
 
-    // 🔐 Validación con validateUserPaid del PaymentsService
+    // 🔐 Validación de suscripción al día
     await this.paymentsService.validateUserPaid(teacherId, this.getCurrentMonth());
 
-    // 🚫 Validación para limitar a 1 clase antes del pago
+    // 🚫 Si no ha pagado y ya tiene 1 clase, no puede crear más
     const teacherClassesCount = await this.classRepository.count({
       where: { teacher: { id: teacherId }, estado: true },
     });
     if (!teacher.isPaid && teacherClassesCount >= 1) {
       console.log('⛔ Profesor sin plan pago intentó crear más de 1 clase');
-      throw new ForbiddenException('Debes pagar el plan mensual para crear más de 1 clase');
+      throw new ForbiddenException(
+        'Debes pagar el plan mensual para crear más de 1 clase',
+      );
     }
 
-    const category = await this.categoryRepository.findOne({ where: { id: categoryId } });
+    const category = await this.categoryRepository.findOne({
+      where: { id: categoryId },
+    });
     if (!category) throw new NotFoundException('Categoría no encontrada');
 
-    const materia = await this.materiaRepository.findOne({ where: { id: materiaId } });
+    const materia = await this.materiaRepository.findOne({
+      where: { id: materiaId },
+    });
     if (!materia) throw new NotFoundException('Materia no encontrada');
 
     const multimediaUrls = files?.map((file) => file.path) ?? [];
@@ -66,7 +84,7 @@ export class ClassesService {
     const newClass = this.classRepository.create({
       title,
       description,
-      sector,
+      
       materia,
       multimedia: multimediaUrls,
       teacher,
@@ -77,10 +95,14 @@ export class ClassesService {
     console.log('✅ Clase guardada con ID:', savedClass.id);
 
     try {
-      await cloudinary.api.create_folder(`classes/${savedClass.title.replace(/ /g, '_')}-${savedClass.id}`);
+      await cloudinary.api.create_folder(
+        `classes/${savedClass.title.replace(/ /g, '_')}-${savedClass.id}`
+      );
     } catch (error) {
       if (error instanceof Error) {
-        console.warn(`⚠️ No se pudo crear la carpeta: ${savedClass.title}-${savedClass.id}`, error.message);
+        console.warn(
+          `⚠️ No se pudo crear la carpeta: ${savedClass.title}-${savedClass.id}, ${error.message}`,
+        );
       } else {
         console.warn('⚠️ No se pudo crear la carpeta (error desconocido)');
       }
@@ -91,12 +113,16 @@ export class ClassesService {
 
   private getCurrentMonth(): string {
     const now = new Date();
-    return `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+    return `${now.getFullYear()}-${(now.getMonth() + 1)
+      .toString()
+      .padStart(2, '0')}`;
   }
 
   async update(id: string, updateDto: UpdateClassDto): Promise<Class> {
     console.log('🛠️ Actualizando clase:', id);
-    const classToUpdate = await this.classRepository.findOne({ where: { id } });
+    const classToUpdate = await this.classRepository.findOne({
+      where: { id },
+    });
     if (!classToUpdate) throw new NotFoundException('Clase no encontrada');
 
     Object.assign(classToUpdate, updateDto);
@@ -123,7 +149,9 @@ export class ClassesService {
 
   async remove(id: string): Promise<void> {
     console.log('🕵️ Buscando clase con ID:', id);
-    const classToRemove = await this.classRepository.findOne({ where: { id } });
+    const classToRemove = await this.classRepository.findOne({
+      where: { id },
+    });
     if (!classToRemove) throw new NotFoundException('Clase no encontrada');
     classToRemove.estado = false;
     classToRemove.fechaEliminado = new Date();
@@ -132,7 +160,9 @@ export class ClassesService {
 
   async restore(id: string): Promise<Class> {
     console.log('♻️ Restaurando clase ID:', id);
-    const classToRestore = await this.classRepository.findOne({ where: { id } });
+    const classToRestore = await this.classRepository.findOne({
+      where: { id },
+    });
     if (!classToRestore) throw new NotFoundException('Clase no encontrada');
     classToRestore.estado = true;
     classToRestore.fechaEliminado = undefined;
@@ -162,7 +192,8 @@ export class ClassesService {
     const teacher = await this.userRepository.findOne({
       where: { id: teacherId, role: 'teacher' },
     });
-    if (!teacher) throw new NotFoundException(`Profesor con ID ${teacherId} no encontrado`);
+    if (!teacher)
+      throw new NotFoundException(`Profesor con ID ${teacherId} no encontrado`);
 
     const [data, total] = await this.classRepository.findAndCount({
       where: { teacher: { id: teacherId }, estado: true },
@@ -179,7 +210,10 @@ export class ClassesService {
     const student = await this.userRepository.findOne({
       where: { id: studentId, role: 'student' },
     });
-    if (!student) throw new NotFoundException(`Estudiante con ID ${studentId} no encontrado`);
+    if (!student)
+      throw new NotFoundException(
+        `Estudiante con ID ${studentId} no encontrado`,
+      );
 
     return this.classRepository
       .createQueryBuilder('class')
@@ -192,81 +226,78 @@ export class ClassesService {
       .getMany();
   }
 
-async enrollStudent(classId: string, studentId: string): Promise<Class> {
-  console.log('➕ Inscribiendo estudiante ID:', studentId, 'a clase ID:', classId);
+  async enrollStudent(classId: string, studentId: string): Promise<Class> {
+    console.log(
+      '➕ Inscribiendo estudiante ID:',
+      studentId,
+      'a clase ID:',
+      classId,
+    );
 
-  const clase = await this.classRepository.findOne({
-    where: { id: classId, estado: true },
-    relations: ['students', 'teacher'],
-  });
-  if (!clase) throw new NotFoundException('Clase no encontrada o inactiva');
+    const clase = await this.classRepository.findOne({
+      where: { id: classId, estado: true },
+      relations: ['students', 'teacher'],
+    });
+    if (!clase) throw new NotFoundException('Clase no encontrada o inactiva');
 
-  const student = await this.userRepository.findOne({ where: { id: studentId, role: 'student' } });
-  if (!student) throw new NotFoundException('Estudiante no encontrado');
+    const student = await this.userRepository.findOne({
+      where: { id: studentId, role: 'student' },
+    });
+    if (!student) throw new NotFoundException('Estudiante no encontrado');
 
-  const alreadyEnrolled = clase.students.some((s) => s.id === studentId);
-  if (alreadyEnrolled) throw new Error('El estudiante ya está inscrito en esta clase');
+    const alreadyEnrolled = clase.students.some((s) => s.id === studentId);
+    if (alreadyEnrolled) throw new Error('El estudiante ya está inscrito en esta clase');
 
-  const latestPayment = await this.paymentRepository.findOne({
-    where: {
-      user: { id: studentId },
-      type: PaymentType.STUDENT_SUBSCRIPTION,
-      status: PaymentStatus.COMPLETED,
-    },
-    order: { createdAt: 'DESC' },
-  });
+    // ✅ Si es usuario pago, acceso ilimitado
+    if (student.isPaid) {
+      clase.students.push(student);
+      await this.classRepository.save(clase);
+      return clase;
+    }
 
-  if (!latestPayment) {
-    console.log('⛔ Estudiante sin historial de pago mensual');
-    // 🚫 Validación para limitar a 2 clases antes del pago
+    // 🚫 Si NO es pago, validar límite de 2 clases
     const enrolledCount = await this.classRepository
       .createQueryBuilder('class')
       .leftJoin('class.students', 'student')
       .where('student.id = :studentId', { studentId })
       .getCount();
 
-    if (!student.isPaid && enrolledCount >= 2) {
-      console.log('⛔ Estudiante excedió el límite sin plan mensual premium');
-      throw new ForbiddenException('Debes pagar la suscripción mensual Premium para unirte a más de 2 clases');
+    if (enrolledCount >= 2) {
+      console.log(
+        '⛔ Estudiante excedió el límite sin plan mensual premium',
+      );
+      throw new ForbiddenException(
+        'Debes pagar la suscripción mensual Premium para unirte a más de 2 clases',
+      );
     }
 
-    console.log('✅ Estudiante sin pago pero dentro del límite de clases permitidas');
-  } else {
-    const paymentDate = new Date(latestPayment.createdAt);
-    const now = new Date();
-    const diffInMs = now.getTime() - paymentDate.getTime();
-    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-
-    if (diffInDays > 30) {
-      console.log('⛔ Suscripción del estudiante expirada hace', Math.floor(diffInDays), 'días');
-      throw new ForbiddenException('La suscripción mensual ha expirado. Por favor, renueva tu suscripción para unirte a más clases.');
-    }
+    // Permitir inscribir dentro del límite
+    clase.students.push(student);
+    await this.classRepository.save(clase);
+    return clase;
   }
 
-  // Add the student to the class and save
-  clase.students.push(student);
-  await this.classRepository.save(clase);
+  async unenrollStudent(classId: string, studentId: string): Promise<Class> {
+    console.log(
+      '➖ Desinscribiendo estudiante ID:',
+      studentId,
+      'de clase ID:',
+      classId,
+    );
 
-  // Return the updated class
-  return clase;
+    const clase = await this.classRepository.findOne({
+      where: { id: classId, estado: true },
+      relations: ['students'],
+    });
+    if (!clase) throw new NotFoundException('Clase no encontrada o inactiva');
+
+    const studentIndex = clase.students.findIndex((s) => s.id === studentId);
+    if (studentIndex === -1)
+      throw new NotFoundException(
+        'El estudiante no está inscrito en esta clase',
+      );
+
+    clase.students.splice(studentIndex, 1);
+    return this.classRepository.save(clase);
+  }
 }
-
-async unenrollStudent(classId: string, studentId: string): Promise<Class> {
-  console.log('➖ Desinscribiendo estudiante ID:', studentId, 'de clase ID:', classId);
-
-  const clase = await this.classRepository.findOne({
-    where: { id: classId, estado: true },
-    relations: ['students'],
-  });
-  if (!clase) throw new NotFoundException('Clase no encontrada o inactiva');
-
-  const studentIndex = clase.students.findIndex((s) => s.id === studentId);
-  if (studentIndex === -1) throw new NotFoundException('El estudiante no está inscrito en esta clase');
-
-  clase.students.splice(studentIndex, 1);
-  return this.classRepository.save(clase);
-}
-
- 
-}
- 

@@ -23,13 +23,12 @@ import CursoDetalle from "./views/CursoDetalles/CursoDetalles";
 import AdminPanel from "./admin/AdminPanel";
 import { useUser } from "./context/UserContext";
 import Oauthlogin from "./views/oauthlogin/oauthlogin";
+import Suscripcion from "./views/Suscripcion/suscripcion";
 // import CursoDetalle from './views/CursoDetalles/CursoDetalles';
 
-const AppWrapper = () => {
-  //esto es de prueba , cambia role a 'profesor' o 'alumno'
-  // const [user, setUser] = useState<{
-  // Solo para evitar "'setUser' is declared but its value is never read." en el deploy
+import ResetPassword from "./views/PasswordRecovery/ResetPassword";
 
+const AppWrapper = () => {
   const location = useLocation();
   const noNavFooter = [
     "/login",
@@ -37,6 +36,7 @@ const AppWrapper = () => {
     "/",
     "/admin",
     "/oauthlogin",
+    "/reset-password",     
   ].includes(location.pathname);
   const { user } = useUser(); //
 
@@ -56,6 +56,8 @@ const AppWrapper = () => {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          {/* <Route path="/forgot-password" element={<ForgotPassword />} />   {/* Nueva ruta */}
+          <Route path="/reset-password" element={<ResetPassword />} />     {/* Nueva ruta */}
           <Route path="/oauthlogin" element={<Oauthlogin />} />
           <Route path="/admin" element={<AdminPanel />} />
         </Routes>
@@ -65,10 +67,10 @@ const AppWrapper = () => {
             <Route path="/home" element={<Home />} />
             <Route path="/usuario" element={<Usuario />} />
 
-            {user?.role === "profesor" && (
+            {user?.role === "teacher" && (
               <Route path="/clases/crear" element={<CrearClase />} />
             )}
-            {user?.role === "alumno" && (
+            {user?.role === "student" && (
               <Route path="/clases/unirme" element={<UnirmeClase />} />
             )}
 
@@ -79,6 +81,7 @@ const AppWrapper = () => {
             <Route path="/cursos/:id" element={<CursoDetalle />} />
             <Route path="/about-us" element={<AboutUs />} />
             <Route path="/conoce-mas" element={<ConoceMas />} />
+            <Route path="/suscripcion" element={<Suscripcion />} />
             <Route path="/terminos" element={<Terminos />} />
           </Routes>
         </Layout>

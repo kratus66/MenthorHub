@@ -22,13 +22,8 @@ export class PaymentsService {
     const user = await this.userRepo.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('Usuario no encontrado');
 
-    const existing = await this.paymentRepo.findOne({
-      where: {
-        user: { id: userId },
-        month: dto.month,
-      },
-    });
-    if (existing) throw new Error(`Ya existe un pago para el mes ${dto.month}`);
+    const amount = 5.99;
+    const currency = 'USD';
 
     const type: PaymentType =
       user.role === 'student'
@@ -42,8 +37,8 @@ export class PaymentsService {
     endDate.setMonth(endDate.getMonth() + 1);
 
     const payment = this.paymentRepo.create({
-      amount: dto.amount,
-      currency: dto.currency,
+      amount,
+      currency,
       type,
       paymentMethod: dto.paymentMethod,
       status: PaymentStatus.COMPLETED,
@@ -73,6 +68,9 @@ export class PaymentsService {
       },
     );
 
+    const amount = 5.99;
+    const currency = 'USD';
+
     const { data: paymentRes } = await axios.post(
       `${process.env.PAYPAL_API_URL}/v2/checkout/orders`,
       {
@@ -80,14 +78,14 @@ export class PaymentsService {
         purchase_units: [
           {
             amount: {
-              currency_code: dto.currency || 'USD',
-              value: dto.amount.toFixed(2),
+              currency_code: currency,
+              value: amount.toFixed(2),
             },
           },
         ],
         application_context: {
-          return_url: 'http://localhost:3000/payment-success',
-          cancel_url: 'http://localhost:3000/payment-cancelled',
+          return_url: 'http://localhost:4173/suscripcion',
+          cancel_url: 'http://localhost:4173/suscripcion?cancel=true',
         },
       },
       {
@@ -124,6 +122,12 @@ export class PaymentsService {
       month,
       user,
     });
+    const savedPayment = await this.paymentRepo.save(payment);
+
+    console.log(
+      `🎉 Pago guardado en BD: user=${user.email}, ` +
+        `monto=${savedPayment.amount} ${savedPayment.currency}, mes=${savedPayment.month}`
+    );
 
     await this.paymentRepo.save(payment);
 
@@ -135,6 +139,10 @@ export class PaymentsService {
     const user = await this.userRepo.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('Usuario no encontrado');
 
+    // Permite si el usuario tiene isPaid (flag global después de un pago)
+    if (user.isPaid) return;
+
+    // O si existe pago completado del mes
     const payment = await this.paymentRepo.findOne({
       where: {
         user: { id: userId },
@@ -187,5 +195,8 @@ export class PaymentsService {
 
   async saveUser(user: User) {
     return await this.userRepo.save(user);
+  }
+  async getUserById(id: string): Promise<User | null> {
+    return this.userRepo.findOne({ where: { id } });
   }
 }

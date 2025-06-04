@@ -1,4 +1,3 @@
-// ✅ Código completo actualizado — con roles agregados, sin alterar la lógica
 
 import {
   Controller,
@@ -127,18 +126,23 @@ export class PaymentsController {
     };
   }
 
-  @Post('create-paypal-payment')
-  @Roles(Role.Teacher, Role.Student)
-  @ApiOperation({ summary: 'Simular creación de pago con PayPal (sandbox)' })
-  @ApiResponse({ status: 201, description: 'URL de aprobación de PayPal devuelta' })
-  async createPaypalPayment(@Body() dto: CreatePaymentDto) {
-    try {
-      const approvalUrl = await this.paymentsService.simulatePaypal(dto);
-      return { url: approvalUrl };
-    } catch (error) {
-      throw new InternalServerErrorException('Error al simular pago PayPal');
-    }
+ @Post('create-paypal-payment')
+@Roles(Role.Teacher, Role.Student)
+@ApiOperation({ summary: 'Simular creación de pago con PayPal (sandbox)' })
+@ApiResponse({ status: 201, description: 'URL de aprobación de PayPal devuelta' })
+async createPaypalPayment(@Body() dto: CreatePaymentDto) {
+  console.log('✅ [POST] /create-paypal-payment');
+  console.log('📦 DTO recibido:', dto);
+
+  try {
+    const approvalUrl = await this.paymentsService.simulatePaypal(dto);
+    console.log('🔗 URL de aprobación generada:', approvalUrl);
+    return { url: approvalUrl };
+  } catch (error) {
+    console.error('❌ Error al simular pago con PayPal:', error);
+    throw new InternalServerErrorException('Error al simular pago PayPal');
   }
+}
 
   @Post('paypal/capture/:orderId')
   @Roles(Role.Teacher, Role.Student)
@@ -196,7 +200,14 @@ export class PaymentsController {
       user.isPaid = true;
       await this.paymentsService.saveUser(user);
 
-      return { message: 'Pago registrado y orden capturada correctamente', captureRes };
+      return {
+        message: 'Pago registrado y orden capturada correctamente',
+        startDate,
+        endDate,
+        amount,
+        currency,
+        captureRes
+      };
     } catch (error) {
       console.log('❌ Error en capturePaypalOrder:', error);
       if (typeof error === 'object' && error !== null) {
@@ -209,3 +220,4 @@ export class PaymentsController {
     }
   }
 }
+ 

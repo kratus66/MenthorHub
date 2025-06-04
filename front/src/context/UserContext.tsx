@@ -9,7 +9,7 @@ interface UserContextType {
    login: (userData: User, token: string) => void;
    logout: () => void;
    setUser: React.Dispatch<React.SetStateAction<User | null>>;
-} // Crear el contexto
+} 
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 interface UserProviderProps {
