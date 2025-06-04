@@ -4,11 +4,9 @@ import Stats from './Stats/Stats';
 import ClassesTable from './ClassesTable/ClassesTable';
 import UsersTable from './UsersTable/UsersTable';
 import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../services/axiosInstance';
 
 const AdminPanel = () => {
    const [activeTab, setActiveTab] = useState('estadisticas');
-   const [tareasDelAlumno, setTareasDelALumno] = useState();
 
    const adminTabs = [
       { id: 'estadisticas', label: 'Estadísticas' },

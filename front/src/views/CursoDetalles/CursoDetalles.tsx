@@ -528,7 +528,10 @@ const CursoDetalle = () => {
                             min="0"
                             max="100" // Assuming a grading scale up to 100
                             value={submission.grade ?? ''} // Use ?? '' to handle null/undefined grades
-                            onChange={(e) => handleGradeChange(submission.id, e.target.value)}
+                            onChange={(e) => {
+                              const value = e.target.value === "" ? "" : Number(e.target.value);
+                              handleGradeChange(submission.id, value);
+                            }}
                             className="border border-gray-300 p-1 rounded w-20 text-center"
                           />
                         </div>

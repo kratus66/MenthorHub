@@ -1,6 +1,6 @@
 type Props = {
    id: string;
-   nombre: string;
+   nombre?: string;
    imagen?: string;
    seleccionada?: boolean;
 };
