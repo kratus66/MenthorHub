@@ -67,7 +67,7 @@ const ConoceMas: React.FC = () => {
       <section className="text-center">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">¿Estás listo para empezar?</h2>
         <p className="text-gray-700 mb-6">Suscribete y sumate a nuestra comunidad de aprendizaje colaborativo.</p>
-        <Link to="/login">
+        <Link to="/suscripcion">
         <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-full transition duration-300">
 
           Suscribirme ahora
