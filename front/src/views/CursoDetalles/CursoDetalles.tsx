@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'; // Removed useCallback
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axiosInstance from '../../services/axiosInstance';
 import type { clasesType } from '../../types/ClassType';
@@ -54,6 +54,70 @@ async function fetchSubmissions(
   }
 }
 
+// Helper function to determine media type and icon
+const getMediaInfo = (mediaItem: any) => {
+  const url = typeof mediaItem === 'string' ? mediaItem : mediaItem.url;
+  let type = typeof mediaItem === 'string' ? '' : mediaItem.type || '';
+  let icon = '🔗'; // Default icon for a general link
+
+  if (!type && url) {
+    const extension = url.split('.').pop()?.toLowerCase();
+    if (['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'].includes(extension)) {
+      type = 'image';
+    } else if (['mp4', 'webm', 'ogg', 'mov'].includes(extension)) {
+      type = 'video';
+    } else if (extension === 'pdf') {
+      type = 'pdf';
+    } else if (['doc', 'docx'].includes(extension)) {
+      type = 'document';
+    } else if (['zip', 'rar', 'tar', 'gz'].includes(extension)) {
+      type = 'archive';
+    } else if (['mp3', 'wav', 'ogg'].includes(extension)) {
+      type = 'audio';
+    }
+  }
+
+  switch (type) {
+    case 'image':
+      icon = '🖼️'; // Placeholder for image icon
+      break;
+    case 'video':
+      icon = '🎞️'; // Placeholder for video icon
+      break;
+    case 'pdf':
+      icon = '📄'; // Placeholder for PDF icon
+      break;
+    case 'document':
+      icon = '📝'; // Placeholder for document icon
+      break;
+    case 'archive':
+      icon = '📦'; // Placeholder for archive icon
+      break;
+    case 'audio':
+      icon = '🎵'; // Placeholder for audio icon
+      break;
+  }
+  
+  // Extract filename from URL
+  let filename = 'Enlace multimedia';
+  try {
+    const urlObj = new URL(url);
+    const pathSegments = urlObj.pathname.split('/');
+    filename = pathSegments.pop() || filename;
+    // Decode URI component for better readability if filename is encoded
+    filename = decodeURIComponent(filename);
+  } catch (e) {
+    // If URL is not valid or relative, try a simpler split
+    const pathSegments = url.split('/');
+    const potentialFilename = pathSegments.pop();
+    if (potentialFilename && potentialFilename.includes('.')) { // Basic check for an extension
+         filename = decodeURIComponent(potentialFilename);
+    }
+  }
+
+  return { url, type, icon, filename };
+};
+
 
 const CursoDetalle = () => {
    const { id } = useParams<{ id: string }>();
@@ -92,26 +156,21 @@ const CursoDetalle = () => {
 
    const tabs = [
       { id: 'general', label: 'General' },
+      { id: 'multimedia', label: 'Multimedia' },
       { id: 'tareas', label: 'Tareas' },
       { id: 'profesor', label: 'Profesor' },
       { id: 'reviews', label: 'Reviews' },
    ];
 
-   // Use useCallback for the fetch function if it were inside,
-   // but since it's outside, we just call it directly in useEffect and handler.
-
    // Effect to load submissions when the task detail modal opens
    useEffect(() => {
       if (user && classId && taskDetailModalOpen && selectedTask) {
-        // Call the external fetchSubmissions function
-        // Removed classId from arguments here to match the function definition
         fetchSubmissions(user, selectedTask, setLoadingSubmissions, setSubmissions, setTeacherSubmissions);
       } else if (!taskDetailModalOpen) {
-        // Clear submissions when modal closes
         setSubmissions([]);
         setTeacherSubmissions([]);
       }
-    }, [classId, user, taskDetailModalOpen, selectedTask]); // Dependencies remain the same
+    }, [classId, user, taskDetailModalOpen, selectedTask]);
 
 
    const [minDate, setMinDate] = useState('');
@@ -128,13 +187,11 @@ const CursoDetalle = () => {
    }, [isModalOpen]);
 
    useEffect(() => {
-      // Use classId instead of id
       axiosInstance.get(`classes/${classId}`).then((res) => {
          setCurso(res.data);
-         setReviews(res.data.reviews); // Set reviews from course data
+         setReviews(res.data.reviews);
       });
 
-      // Use classId instead of id
       axiosInstance.get(`/tasks/class/${classId}`).then((res) => {
          setTareas(res.data);
       });
@@ -144,15 +201,12 @@ const CursoDetalle = () => {
          const parsedUser = JSON.parse(storedUser);
          setUser(parsedUser);
       }
-   }, [classId, reviewSent]); // Add reviewSent to dependencies to refresh reviews
+   }, [classId, reviewSent]);
 
 
-   // Determinar si el usuario es estudiante y si está inscrito en la clase
    const userIsStudent = user?.role === 'student';
-   // Add type assertion for student to ensure it has an id property
    const userIsEnrolled = curso?.students?.some((student: { id: string }) => student.id === user?.id);
 
-   // Filtrar pestañas para ocultar "Tareas" si el estudiante no está inscrito
    const filteredTabs = tabs.filter(tab => {
       if (tab.id === 'tareas' && userIsStudent && !userIsEnrolled) {
          return false;
@@ -160,7 +214,6 @@ const CursoDetalle = () => {
       return true;
    });
 
-   // Crear nueva tarea (profesor)
    const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       const dueDate = `${deliveryDate}T${deliveryTime}:00`;
@@ -178,7 +231,7 @@ const CursoDetalle = () => {
          instructions,
          dueDate,
          estado: true,
-         classId: classId, // Use classId
+         classId: classId,
          teacherId,
       };
 
@@ -186,8 +239,6 @@ const CursoDetalle = () => {
          await axiosInstance.post('/tasks', newTask);
          alert('Tarea creada exitosamente');
          setIsModalOpen(false);
-
-         // Refrescar lista de tareas
          const res = await axiosInstance.get(`/tasks/class/${classId}`);
          setTareas(res.data);
       } catch (error) {
@@ -196,23 +247,17 @@ const CursoDetalle = () => {
       }
    };
 
-   // Inscribirse a clase
    const handleEnroll = async () => {
       if (!user) {
          alert('Debes iniciar sesión para inscribirte');
          return;
       }
-
       setLoadingEnroll(true);
-
       try {
          await axiosInstance.post(`/classes/${classId}/enroll`, {
             studentId: user.id,
          });
-
          alert('Inscripción realizada con éxito');
-
-         // Refrescar la info del curso para actualizar lista de estudiantes
          const updatedCourse = await axiosInstance.get(`classes/${classId}`);
          setCurso(updatedCourse.data);
       } catch (error) {
@@ -223,46 +268,36 @@ const CursoDetalle = () => {
       }
    };
 
-   // Abrir modal detalle tarea al clickear tarea
    const handleTaskClick = (task: any) => {
       setSelectedTask(task);
       setTaskDetailModalOpen(true);
    };
 
-   // Enviar entrega (submission) de tarea (Student)
    const handleSubmitTask = async (e: React.FormEvent) => {
       e.preventDefault();
-
       if (!user || !selectedTask) {
         alert('Error al enviar la entrega.');
         return;
       }
-
       if (!submissionFile) {
         alert('Por favor, selecciona un archivo para la entrega.');
         return;
       }
-
       setSubmissionLoading(true);
-
       try {
         const formData = new FormData();
         formData.append('file', submissionFile);
         formData.append('taskId', selectedTask.id);
-        formData.append('classId', classId); // Use classId
+        formData.append('classId', classId);
         formData.append('studentId', user.id);
 
         const response = await axiosInstance.post('/submissions', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-
-        // Actualizar el estado de submissions con la nueva entrega
         setSubmissions(prev => [...prev, response.data as SubmissionType]);
-
         alert('Entrega realizada con éxito');
         setTaskDetailModalOpen(false);
         setSubmissionFile(null);
-
       } catch (error) {
         console.error('Error al enviar la entrega:', error);
         alert('Error al enviar la entrega');
@@ -271,23 +306,15 @@ const CursoDetalle = () => {
       }
     };
 
-    // Handle grade change for a specific submission (Teacher)
-    // Changed parameter type to string to match e.target.value
-    // Handle grade change for a specific submission (Teacher)
-    // Changed parameter type to string to match e.target.value
     const handleGradeChange = (submissionId: string, value: string) => {
-      // Convert the string value to number or null
       const grade = value === '' ? null : Number(value);
-
       setTeacherSubmissions(prevSubmissions =>
         prevSubmissions.map(sub =>
-          // Use the converted grade (number | null)
           sub.id === submissionId ? { ...sub, grade: grade } : sub
         )
       );
     };
 
-    // Save grades for all submissions of the task (Teacher)
     const handleSaveGrades = async () => {
       setGradingLoading(true);
       try {
@@ -298,8 +325,6 @@ const CursoDetalle = () => {
           })),
         });
         alert('Calificaciones guardadas exitosamente');
-        // Refetch submissions to confirm changes and update UI
-        // Call the external fetchSubmissions function after saving
         await fetchSubmissions(user, selectedTask, setLoadingSubmissions, setSubmissions, setTeacherSubmissions);
       } catch (error) {
         console.error('Error al guardar calificaciones:', error);
@@ -308,27 +333,24 @@ const CursoDetalle = () => {
         setGradingLoading(false);
       }
     };
+
    if (!curso || !user) {
       return <div className="p-4">Cargando datos...</div>;
    }
 
-   // Find the submission for the selected task outside of the JSX (Student view)
    const foundSubmission = submissions.find(sub =>
      String(sub.task?.id) === String(selectedTask?.id)
    );
 
-   // Check if the due date has passed
    const now = new Date();
    const dueDate = selectedTask ? new Date(selectedTask.dueDate) : null;
    const isPastDue = dueDate ? now > dueDate : false;
-
 
    const promedioRating =
       curso.reviews.length > 0
          ? curso.reviews.reduce((acc, review) => acc + review.rating, 0) /
            curso.reviews.length
          : 0;
-
 
    return (
       <div className="flex justify-center items-center min-h-screen bg-gray-200">
@@ -350,7 +372,6 @@ const CursoDetalle = () => {
 
                {classId && <RatingPromedio promedio={promedioRating} />}
 
-
                {userIsStudent && !userIsEnrolled && (
                  <button
                     className="mt-2 w-1/6 bg-blue-400 text-white py-2 rounded-lg font-semibold text-md disabled:opacity-50"
@@ -360,7 +381,6 @@ const CursoDetalle = () => {
                  {loadingEnroll ? 'Inscribiendo...' : 'Inscribirme'}
                  </button>
                )}
-
 
                {user.role === 'teacher' && user.id === curso.teacher.id && (
                   <button
@@ -373,219 +393,200 @@ const CursoDetalle = () => {
             </div>
 
             {isModalOpen && (
-   <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
-         <h2 className="text-xl font-bold mb-4">Crear nueva tarea</h2>
-         <form onSubmit={handleSubmit}>
-            <label className="block mb-2">Título:</label>
-            <input
-               type="text"
-               className="border border-gray-300 p-2 w-full rounded mb-4"
-               value={title}
-               onChange={(e) => setTitle(e.target.value)}
-               required
-            />
-
-            <label className="block mb-2">Instrucciones:</label>
-            <textarea
-               className="border border-gray-300 p-2 w-full rounded mb-4"
-               value={instructions}
-               onChange={(e) => setInstructions(e.target.value)}
-               required
-            ></textarea>
-
-            <label className="block mb-2">Fecha de entrega:</label>
-            <input
-               type="date"
-               min={minDate}
-               className="border border-gray-300 p-2 w-full rounded mb-4"
-               value={deliveryDate}
-               onChange={(e) => setDeliveryDate(e.target.value)}
-               required
-            />
-
-            <label className="block mb-2">Hora de entrega:</label>
-            <select
-               className="border border-gray-300 p-2 w-full rounded mb-4"
-               value={deliveryTime}
-               onChange={(e) => setDeliveryTime(e.target.value)}
-               required
-            >
-               <option value="" disabled>Selecciona la hora</option>
-               {[...Array(24)].map((_, hour) => {
-                  const hourStr = `${String(hour).padStart(2, '0')}:00`;
-                  const isToday = deliveryDate === minDate;
-                  const shouldDisable = isToday && hour < parseInt(minTime.slice(0, 2));
-                  return (
-                     <option
-                        key={hour}
-                        value={hourStr}
-                        disabled={shouldDisable}
-                     >
-                        {hourStr}
-                     </option>
-                  );
-               })}
-            </select>
-
-            <label className="block mb-2 flex items-center">
-               <input type="checkbox" className="mr-2" checked={true} disabled />
-               Activa
-            </label>
-
-            <div className="flex justify-end gap-4">
-               <button
-                  type="button"
-                  className="bg-gray-400 px-4 py-2 rounded text-white"
-                  onClick={() => setIsModalOpen(false)}
-               >
-                  Cancelar
-               </button>
-               <button type="submit" className="bg-blue-500 px-4 py-2 rounded text-white">
-                  Crear tarea
-               </button>
-            </div>
-         </form>
-      </div>
-   </div>
-)}
-
-
-{taskDetailModalOpen && selectedTask && (
-  <div className="fixed inset-0 bg-gray-900 bg-opacity-60 flex justify-center items-center z-50">
-    <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative max-h-[90vh] overflow-y-auto"> {/* Adjusted width and added max height/overflow */}
-      <button
-        className="absolute top-3 right-3 text-gray-600 hover:text-gray-900 text-2xl"
-        onClick={() => setTaskDetailModalOpen(false)}
-      >
-        &times;
-      </button>
-      <h3 className="text-2xl font-bold mb-4">{selectedTask.title}</h3>
-      <p className="text-gray-700 mb-4">{selectedTask.instructions}</p>
-      <p className="text-gray-600 text-sm mb-4">
-        Fecha de entrega: {new Date(selectedTask.dueDate).toLocaleDateString()} {new Date(selectedTask.dueDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-      </p>
-
-      {loadingSubmissions ? (
-        <div className="mt-4 p-4 bg-blue-50 rounded border border-blue-200 text-blue-600 font-semibold">
-          Cargando entregas...
-        </div>
-      ) : (
-        <>
-          {user?.role === 'student' ? (
-            /* SECCIÓN ESTUDIANTE */
-            foundSubmission ? (
-              <div className="mt-4 p-4 bg-green-50 rounded border border-green-200">
-                <p className="text-green-600 font-semibold">✅ Entrega realizada</p>
-                {/* Mostrar detalles de la entrega si se encuentra */}
-                <>
-                  {/* Mostrar la URL del archivo subido */}
-                  <p className="text-sm text-gray-600 mt-1">
-                    Archivo: <a href={foundSubmission.content} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{foundSubmission.content}</a>
-                  </p>
-                  {/* Mostrar la fecha y hora de subida */}
-                  <p className="text-sm text-gray-600">
-                    Fecha de subida: {new Date(foundSubmission.createdAt).toLocaleString()}
-                  </p>
-                   {/* Mostrar la calificación si existe */}
-                   {foundSubmission.grade !== undefined && foundSubmission.grade !== null && (
-                     <p className="text-sm text-gray-800 font-semibold mt-2">
-                       Calificación: {foundSubmission.grade}
-                     </p>
-                   )}
-                </>
-              </div>
-            ) : (
-              // Si no hay entrega y no está cargando, mostrar el formulario
-              <form onSubmit={handleSubmitTask} className="flex flex-col gap-4">
-                {/* Formulario de entrega */}
-                <label className="block">
-                  <span className="text-gray-700">Adjuntar archivo de entrega:</span>
-                  <input
-                    type="file"
-                    accept=".pdf,.doc,.docx,.txt,.zip"
-                    onChange={(e) => setSubmissionFile(e.target.files?.[0] || null)}
-                    className="mt-1 block w-full text-sm text-gray-500
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-md file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-blue-50 file:text-blue-700
-                      hover:file:bg-blue-100"
-                    required
-                    disabled={isPastDue} // Disable file input if past due
-                  />
-                </label>
-                {isPastDue && (
-                   <p className="text-red-600 text-sm font-semibold">El plazo de entrega ha finalizado.</p>
-                )}
-                <button
-                  type="submit"
-                  disabled={submissionLoading || isPastDue} // Disable button if loading or past due
-                  className={`bg-blue-600 text-white px-4 py-2 rounded ${
-                    submissionLoading || isPastDue ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
-                  }`}
-                >
-                  {submissionLoading ? 'Enviando...' : (isPastDue ? 'Plazo finalizado' : 'Enviar entrega')}
-                </button>
-              </form>
-            )
-          ) : (
-            /* SECCIÓN PROFESOR */
-            user?.role === 'teacher' && (
-              <div className="mt-4">
-                <h4 className="text-xl font-semibold mb-3">Entregas de estudiantes:</h4>
-                {teacherSubmissions.length === 0 ? (
-                  <p className="text-gray-600">Aún no hay entregas para esta tarea.</p>
-                ) : (
-                  <ul className="space-y-4">
-                    {teacherSubmissions.map(submission => (
-                      <li key={submission.id} className="border border-gray-300 rounded-md p-4 bg-gray-50">
-                        <p className="font-semibold text-gray-800">Estudiante: {submission.student.name}</p> {/* Display student name */}
-                        <p className="text-sm text-gray-600 mt-1">
-                          Archivo: <a href={submission.content} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{submission.content}</a>
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Fecha de subida: {new Date(submission.createdAt).toLocaleString()}
-                        </p>
-                        <div className="mt-3 flex items-center gap-2">
-                          <label htmlFor={`grade-${submission.id}`} className="text-gray-700">Calificación:</label>
-                          <input
-                            id={`grade-${submission.id}`}
-                            type="number"
-                            min="1" // Cambiado de "0" a "1"
-                            max="10" // Cambiado de "100" a "10"
-                            step="0.1" // Añadido para permitir decimales
-                            value={submission.grade ?? ''} // Use ?? '' to handle null/undefined grades
-                            onChange={(e) => handleGradeChange(submission.id, e.target.value)}
-                            className="border border-gray-300 p-1 rounded w-20 text-center"
-                          />
+               <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
+                  <div className="bg-white p-6 rounded-lg shadow-lg w-1/3">
+                     <h2 className="text-xl font-bold mb-4">Crear nueva tarea</h2>
+                     <form onSubmit={handleSubmit}>
+                        <label className="block mb-2">Título:</label>
+                        <input
+                           type="text"
+                           className="border border-gray-300 p-2 w-full rounded mb-4"
+                           value={title}
+                           onChange={(e) => setTitle(e.target.value)}
+                           required
+                        />
+                        <label className="block mb-2">Instrucciones:</label>
+                        <textarea
+                           className="border border-gray-300 p-2 w-full rounded mb-4"
+                           value={instructions}
+                           onChange={(e) => setInstructions(e.target.value)}
+                           required
+                        ></textarea>
+                        <label className="block mb-2">Fecha de entrega:</label>
+                        <input
+                           type="date"
+                           min={minDate}
+                           className="border border-gray-300 p-2 w-full rounded mb-4"
+                           value={deliveryDate}
+                           onChange={(e) => setDeliveryDate(e.target.value)}
+                           required
+                        />
+                        <label className="block mb-2">Hora de entrega:</label>
+                        <select
+                           className="border border-gray-300 p-2 w-full rounded mb-4"
+                           value={deliveryTime}
+                           onChange={(e) => setDeliveryTime(e.target.value)}
+                           required
+                        >
+                           <option value="" disabled>Selecciona la hora</option>
+                           {[...Array(24)].map((_, hour) => {
+                              const hourStr = `${String(hour).padStart(2, '0')}:00`;
+                              const isToday = deliveryDate === minDate;
+                              const shouldDisable = isToday && hour < parseInt(minTime.slice(0, 2));
+                              return (
+                                 <option
+                                    key={hour}
+                                    value={hourStr}
+                                    disabled={shouldDisable}
+                                 >
+                                    {hourStr}
+                                 </option>
+                              );
+                           })}
+                        </select>
+                        <label className="block mb-2 flex items-center">
+                           <input type="checkbox" className="mr-2" checked={true} disabled />
+                           Activa
+                        </label>
+                        <div className="flex justify-end gap-4">
+                           <button
+                              type="button"
+                              className="bg-gray-400 px-4 py-2 rounded text-white"
+                              onClick={() => setIsModalOpen(false)}
+                           >
+                              Cancelar
+                           </button>
+                           <button type="submit" className="bg-blue-500 px-4 py-2 rounded text-white">
+                              Crear tarea
+                           </button>
                         </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                 {teacherSubmissions.length > 0 && (
-                   <button
-                     onClick={handleSaveGrades}
-                     disabled={gradingLoading}
-                     className={`mt-6 bg-green-600 text-white px-4 py-2 rounded w-full ${
-                       gradingLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-700'
-                     }`}
-                   >
-                     {gradingLoading ? 'Guardando...' : 'Guardar Calificaciones'}
-                   </button>
-                 )}
+                     </form>
+                  </div>
+               </div>
+            )}
+
+            {taskDetailModalOpen && selectedTask && (
+              <div className="fixed inset-0 bg-gray-900 bg-opacity-60 flex justify-center items-center z-50">
+                <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative max-h-[90vh] overflow-y-auto">
+                  <button
+                    className="absolute top-3 right-3 text-gray-600 hover:text-gray-900 text-2xl"
+                    onClick={() => setTaskDetailModalOpen(false)}
+                  >
+                    &times;
+                  </button>
+                  <h3 className="text-2xl font-bold mb-4">{selectedTask.title}</h3>
+                  <p className="text-gray-700 mb-4">{selectedTask.instructions}</p>
+                  <p className="text-gray-600 text-sm mb-4">
+                    Fecha de entrega: {new Date(selectedTask.dueDate).toLocaleDateString()} {new Date(selectedTask.dueDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+
+                  {loadingSubmissions ? (
+                    <div className="mt-4 p-4 bg-blue-50 rounded border border-blue-200 text-blue-600 font-semibold">
+                      Cargando entregas...
+                    </div>
+                  ) : (
+                    <>
+                      {user?.role === 'student' ? (
+                        foundSubmission ? (
+                          <div className="mt-4 p-4 bg-green-50 rounded border border-green-200">
+                            <p className="text-green-600 font-semibold">✅ Entrega realizada</p>
+                            <p className="text-sm text-gray-600 mt-1">
+                              Archivo: <a href={foundSubmission.content} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{foundSubmission.content}</a>
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              Fecha de subida: {new Date(foundSubmission.createdAt).toLocaleString()}
+                            </p>
+                               {foundSubmission.grade !== undefined && foundSubmission.grade !== null && (
+                                 <p className="text-sm text-gray-800 font-semibold mt-2">
+                                   Calificación: {foundSubmission.grade}
+                                 </p>
+                               )}
+                          </div>
+                        ) : (
+                          <form onSubmit={handleSubmitTask} className="flex flex-col gap-4">
+                            <label className="block">
+                              <span className="text-gray-700">Adjuntar archivo de entrega:</span>
+                              <input
+                                type="file"
+                                accept=".pdf,.doc,.docx,.txt,.zip"
+                                onChange={(e) => setSubmissionFile(e.target.files?.[0] || null)}
+                                className="mt-1 block w-full text-sm text-gray-500
+                                  file:mr-4 file:py-2 file:px-4
+                                  file:rounded-md file:border-0
+                                  file:text-sm file:font-semibold
+                                  file:bg-blue-50 file:text-blue-700
+                                  hover:file:bg-blue-100"
+                                required
+                                disabled={isPastDue}
+                              />
+                            </label>
+                            {isPastDue && (
+                               <p className="text-red-600 text-sm font-semibold">El plazo de entrega ha finalizado.</p>
+                            )}
+                            <button
+                              type="submit"
+                              disabled={submissionLoading || isPastDue}
+                              className={`bg-blue-600 text-white px-4 py-2 rounded ${
+                                submissionLoading || isPastDue ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
+                              }`}
+                            >
+                              {submissionLoading ? 'Enviando...' : (isPastDue ? 'Plazo finalizado' : 'Enviar entrega')}
+                            </button>
+                          </form>
+                        )
+                      ) : (
+                        user?.role === 'teacher' && (
+                          <div className="mt-4">
+                            <h4 className="text-xl font-semibold mb-3">Entregas de estudiantes:</h4>
+                            {teacherSubmissions.length === 0 ? (
+                              <p className="text-gray-600">Aún no hay entregas para esta tarea.</p>
+                            ) : (
+                              <ul className="space-y-4">
+                                {teacherSubmissions.map(submission => (
+                                  <li key={submission.id} className="border border-gray-300 rounded-md p-4 bg-gray-50">
+                                    <p className="font-semibold text-gray-800">Estudiante: {submission.student.name}</p>
+                                    <p className="text-sm text-gray-600 mt-1">
+                                      Archivo: <a href={submission.content} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{submission.content}</a>
+                                    </p>
+                                    <p className="text-sm text-gray-600">
+                                      Fecha de subida: {new Date(submission.createdAt).toLocaleString()}
+                                    </p>
+                                    <div className="mt-3 flex items-center gap-2">
+                                      <label htmlFor={`grade-${submission.id}`} className="text-gray-700">Calificación:</label>
+                                      <input
+                                        id={`grade-${submission.id}`}
+                                        type="number"
+                                        min="1"
+                                        max="10"
+                                        step="0.1"
+                                        value={submission.grade ?? ''}
+                                        onChange={(e) => handleGradeChange(submission.id, e.target.value)}
+                                        className="border border-gray-300 p-1 rounded w-20 text-center"
+                                      />
+                                    </div>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                             {teacherSubmissions.length > 0 && (
+                               <button
+                                 onClick={handleSaveGrades}
+                                 disabled={gradingLoading}
+                                 className={`mt-6 bg-green-600 text-white px-4 py-2 rounded w-full ${
+                                   gradingLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-700'
+                                 }`}
+                               >
+                                 {gradingLoading ? 'Guardando...' : 'Guardar Calificaciones'}
+                               </button>
+                             )}
+                          </div>
+                        )
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
-            )
-          )}
-        </>
-      )}
-
-    </div>
-  </div>
-)}
-
-
+            )}
 
             <div className="flex flex-col gap-6 overflow-y-auto">
                <nav className="w-full flex justify-center gap-6 border-b border-gray-400 pb-2">
@@ -603,26 +604,39 @@ const CursoDetalle = () => {
                </nav>
 
                {activeTab === 'general' && (
-  <section className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-    {/* Imagen representativa de la clase */}
-    <div>
-      <img
-        src={curso.category.imageUrl} // Asegúrate de que `curso.image` contenga la URL correcta
-        alt="Imagen de la clase"
-        className="w-full h-auto rounded-lg shadow-md object-cover"
-      />
-    </div>
+                  <section className="p-4">
+                     <h3 className="text-xl font-semibold mb-4">Descripción</h3>
+                     <p className="text-gray-800 mb-4">{curso.description}</p>
+                  </section>
+               )}
 
-    {/* Contenido descriptivo y multimedia */}
-    <div>
-      <h3 className="text-xl font-semibold mb-4">Descripción</h3>
-      <p className="text-gray-800 mb-4">{curso.description}</p>
-
-      {/* Aquí podrías incluir un video o enlace a contenido multimedia si lo tienes */}
-      {/* Removed video tag as imageUrl is unlikely to be a video */}
-    </div>
-  </section>
-)}
+               {activeTab === 'multimedia' && (
+                  <section className="p-4">
+                     <h3 className="text-xl font-semibold mb-4">Contenido Multimedia</h3>
+                     {curso.multimedia && curso.multimedia.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                           {curso.multimedia.map((mediaItem, index) => {
+                              const { url, icon, filename } = getMediaInfo(mediaItem);
+                              return (
+                                 <a
+                                    key={index}
+                                    href={url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex flex-col items-center justify-center p-4 border border-gray-300 rounded-lg shadow hover:shadow-md transition-shadow bg-white hover:bg-gray-50 text-center"
+                                    title={`Abrir ${filename}`}
+                                 >
+                                    <span className="text-4xl mb-2">{icon}</span>
+                                    <span className="text-sm text-gray-700 truncate w-full px-1">{filename}</span>
+                                 </a>
+                              );
+                           })}
+                        </div>
+                     ) : (
+                        <p className="text-center text-gray-600">No hay contenido multimedia disponible para esta clase.</p>
+                     )}
+                  </section>
+               )}
 
                {activeTab === 'tareas' && (
                   <section className="p-4 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -682,14 +696,14 @@ const CursoDetalle = () => {
                         })}
                      </div>
                      <div className="w-1/2 bg-gray-200 me-6 rounded-md p-4">
-                        {userIsStudent && userIsEnrolled && ( // Only show review form to enrolled students
+                        {userIsStudent && userIsEnrolled && (
                            <NewReviewForm
                               targetStudentId={user.id}
                               courseId={curso.id}
                               setReviewSent={setReviewSent}
                            />
                         )}
-                        {!userIsStudent || !userIsEnrolled && ( // Message for non-students or non-enrolled students
+                        {(!userIsStudent || !userIsEnrolled) && (
                            <p className="text-center text-gray-600">
                               Debes ser un estudiante inscrito para dejar una reseña.
                            </p>
