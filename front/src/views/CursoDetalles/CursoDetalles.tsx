@@ -523,7 +523,7 @@ const CursoDetalle = () => {
                               );
                            })}
                         </select>
-                        <label className="block mb-2 flex items-center">
+                        <label className="block mb-2 items-center">
                            <input
                               type="checkbox"
                               className="mr-2"
