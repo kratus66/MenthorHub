@@ -81,7 +81,7 @@ const ClassesTable = () => {
 
    useEffect(() => {
       axiosInstance
-         .post(`/filters`, filters)
+         .post(`/filters?page=${currentPage}`, filters)
          .then((res) => {
             console.log(res.data);
             setClases(res.data);
