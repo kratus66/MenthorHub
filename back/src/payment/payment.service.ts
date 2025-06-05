@@ -35,11 +35,13 @@ export class PaymentsService {
         : (dto.type as PaymentType);
 
     // ✅ BLOQUE NUEVO
-    const startDate = new Date();          // hoy mismo
-    startDate.setUTCHours(12, 0, 0, 0);    // evita desfase horario
+    const startDate = new Date();          // instante exacto en UTC
+    const endDate = new Date(startDate);   // copia
+    endDate.setMonth(endDate.getMonth() + 1);
 
-    const endDate = new Date(startDate);
-    endDate.setUTCMonth(endDate.getUTCMonth() + 1);  // +1 mes exacto
+    const month = `${startDate.getUTCFullYear()}-${String(
+      startDate.getUTCMonth() + 1
+    ).padStart(2, '0')}`;
 
     const payment = this.paymentRepo.create({
       amount,
@@ -47,7 +49,7 @@ export class PaymentsService {
       type,
       paymentMethod: dto.paymentMethod,
       status: PaymentStatus.COMPLETED,
-      month: dto.month,
+      month, // <--- aquí usas el mes calculado
       user,
       startDate,
       endDate,
@@ -148,6 +150,15 @@ export class PaymentsService {
     const user = await this.userRepo.findOne({ where: { email: realEmail } });
     if (!user) throw new NotFoundException('Usuario no encontrado para el pago PayPal');
 
+    // 1️⃣  FECHAS REALES
+    const startDate = new Date();           // ahora UTC
+    const endDate   = new Date(startDate);
+    endDate.setMonth(endDate.getMonth() + 1);
+
+    // 2️⃣  RECALCULA MES
+    month = `${startDate.getUTCFullYear()}-${String(startDate.getUTCMonth()+1).padStart(2,'0')}`;
+
+    // 3️⃣  CREA PAGO (mantén user)
     const payment = this.paymentRepo.create({
       amount,
       currency,
@@ -155,23 +166,19 @@ export class PaymentsService {
       paymentMethod: 'paypal',
       status: PaymentStatus.COMPLETED,
       month,
-      user,
+      user,         // necesario para la FK
+      startDate,    // fechas reales
+      endDate,
     });
-    const savedPayment = await this.paymentRepo.save(payment);
-    
-    console.log(
-      `🎉 Pago guardado en BD: user=${user.email}, ` +
-        `monto=${savedPayment.amount} ${savedPayment.currency}, mes=${savedPayment.month}`
-    );
 
-    await this.paymentRepo.save(payment);
+    // 4️⃣  GUARDA SOLO UNA VEZ
+    const savedPayment = await this.paymentRepo.save(payment);
+    console.log(`🎉 Pago guardado: ${savedPayment.startDate}–${savedPayment.endDate}`);
 
     user.isPaid = true;
     await this.userRepo.save(user);
 
-      // Enviar correo de confirmación
-   
-    
+    // Enviar correo de confirmación (si aplica)
   }
 
   async validateUserPaid(userId: string, month: string): Promise<void> {

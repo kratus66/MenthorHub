@@ -1,4 +1,3 @@
-
 import {
   Controller,
   Post,
@@ -198,11 +197,13 @@ async sendPaymentEmail(
 
       const amount = parseFloat((captureRes as any).purchase_units[0].payments.captures[0].amount.value);
       const currency = (captureRes as any).purchase_units[0].payments.captures[0].amount.currency_code;
-      const month = new Date().toISOString().slice(0, 7); // 'YYYY-MM'
+      // const month = new Date().toISOString().slice(0, 7); // 'YYYY-MM'
 
       // Define startDate and endDate (example: subscription for 1 month)
-     const startDate = new Date(month + '-01');
-     const endDate = new Date(startDate);
+     const now       = new Date();                                 // hoy
+     const month     = `${now.getUTCFullYear()}-${String(now.getUTCMonth()+1).padStart(2,'0')}`;
+     const startDate = now;                                        // fecha real
+     const endDate   = new Date(now);
      endDate.setMonth(endDate.getMonth() + 1);
 
       console.log('🎯 Usuario logueado para asociar pago:', user.email);
@@ -243,4 +244,3 @@ async sendPaymentEmail(
     }
   }
 }
- 

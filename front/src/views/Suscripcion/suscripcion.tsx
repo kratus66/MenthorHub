@@ -36,9 +36,15 @@ const Suscripcion: React.FC = () => {
       .then((res) => {
         console.log("Respuesta de pagos:", res.data);
         const pagos: any[] = Array.isArray(res.data.data) ? res.data.data : [];
-        const pagoEsteMes = pagos.find(
-          (p) => p.month === month && p.status === "completed"
-        );
+
+        // 🔁 Ordena los pagos por fecha descendente y filtra solo los completados
+        const pagosOrdenados = pagos
+          .filter(p => p.status === "completed" && p.status !== "sandbox_deleted")
+          .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+
+        const month = getCurrentMonth();
+        const pagoEsteMes = pagosOrdenados.find(p => p.month === month);
+
         if (pagoEsteMes) {
           setAlreadyPaid(true);
           const fmtUTC = new Intl.DateTimeFormat(undefined, {
@@ -92,6 +98,10 @@ const Suscripcion: React.FC = () => {
             paymentInfo: response.data,
           });
           console.log("Correo de confirmación enviado.");
+
+          // --- NUEVO: Refetch de pagos para actualizar fechas ---
+          await loadPagos(); // ✅ actualiza la vista con las fechas reales
+
         } else if (response.data?.message === "ORDER_ALREADY_CAPTURED") {
           toast.info("ℹ️ Este pago ya fue registrado anteriormente.");
           console.log("Orden ya capturada anteriormente.");
@@ -108,6 +118,51 @@ const Suscripcion: React.FC = () => {
       }
     })();
   }, [location.search, navigate, user]);
+
+  const loadPagos = async () => {
+    if (!user) return; // ⛔ Previene el error si user es null
+
+    const month = getCurrentMonth();
+    try {
+      const res = await axiosInstance.get(`/payments/user/${user.id}?page=1&limit=10`);
+      console.log("🔁 Pagos cargados:", res.data);
+      const pagos: any[] = Array.isArray(res.data.data) ? res.data.data : [];
+
+      const pagosOrdenados = pagos
+        .filter(p => p.status === "completed" && p.status !== "sandbox_deleted")
+        .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+
+      const pagoEsteMes = pagosOrdenados.find(p => p.month === month);
+
+      if (pagoEsteMes) {
+        setAlreadyPaid(true);
+        const fmtUTC = new Intl.DateTimeFormat(undefined, {
+          timeZone: 'UTC',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        });
+        setStartDate(fmtUTC.format(new Date(pagoEsteMes.startDate)));
+        setEndDate(fmtUTC.format(new Date(pagoEsteMes.endDate)));
+        console.log("✅ Pago aplicado:", pagoEsteMes);
+      } else {
+        console.log("❌ No se encontró pago para este mes.");
+        setAlreadyPaid(false);
+        setStartDate(null);
+        setEndDate(null);
+      }
+    } catch (err) {
+      console.error("Error al cargar pagos:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (!user) {
+      console.log("No hay usuario logueado.");
+      return;
+    }
+    loadPagos(); // ✅ se usa aquí
+  }, [user]);
 
   if (!user) {
     console.log("No hay usuario logueado, mostrando mensaje.");
