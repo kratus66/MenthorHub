@@ -152,6 +152,7 @@ export class UsersController {
     try {
       return await this.usersService.findById(id);
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException('Error al buscar el usuario');
     }
   }

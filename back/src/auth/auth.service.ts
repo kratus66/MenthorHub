@@ -247,6 +247,10 @@ export class AuthService {
         email: user.email,
         role: user.role,
         profileImage: user.profileImage,
+        isOauth: user.isOauth,
+        OauthProvider: user.oauthProvider,
+        
+       
       },
     };
   }
@@ -293,6 +297,7 @@ async handleOAuthProcess(profile: any, provider: 'google' | 'github') {
             isOauth: true,
             oauthProvider: user.oauthProvider,
             isEmailConfirmed: true,
+            isPaid: user.isPaid,
           },
         },
       };
