@@ -41,7 +41,6 @@ const Suscripcion: React.FC = () => {
           setAlreadyPaid(true);
 
           // Asumimos que el backend incluye startDate y endDate en el objeto pago
-          // Convertimos las fechas a formato legible:
           setStartDate(new Date(pagoEsteMes.startDate).toLocaleDateString());
           setEndDate(new Date(pagoEsteMes.endDate).toLocaleDateString());
         }
@@ -64,24 +63,31 @@ const Suscripcion: React.FC = () => {
 
     captureCalledRef.current = true;
 
-    axiosInstance
-      .post(`/payments/paypal/capture/${token}`)
-      .then((response) => {
+    (async () => {
+      try {
+        const response = await axiosInstance.post(`/payments/paypal/capture/${token}`);
         if (response.status === 201) {
           sessionStorage.setItem("paypal_captured", "true");
           alert("🎉 ¡Pago registrado y orden capturada correctamente!");
+
+          // --- NUEVO: enviar correo confirmando el pago ---
+          await axiosInstance.post('/payments/send-payment-email', {
+            email: user.email,
+            paymentInfo: response.data,
+          });
+
         } else if (response.data?.message === "ORDER_ALREADY_CAPTURED") {
           alert("ℹ️ Este pago ya fue registrado anteriormente.");
         } else {
           alert("⚠️ No se pudo registrar el pago en la base de datos.");
         }
         navigate("/panel", { replace: true });
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("❌ Error:", err);
         alert("❌ Ocurrió un error. Intenta nuevamente.");
         navigate("/panel", { replace: true });
-      });
+      }
+    })();
   }, [location.search, navigate, user]);
 
   if (!user) return <p>Debes iniciar sesión para realizar el pago.</p>;
@@ -130,7 +136,6 @@ const Suscripcion: React.FC = () => {
             : "Crea clases ilimitadas y monetiza tu conocimiento."}
         </p>
 
-        {/* Si ya pagó, mostramos sus fechas de inicio/fin */}
         {alreadyPaid && startDate && endDate ? (
           <div className="text-center mb-8">
             <p className="text-green-600 font-semibold">Suscripción activa:</p>
@@ -145,7 +150,6 @@ const Suscripcion: React.FC = () => {
           </div>
         )}
 
-        {/* Botón de pago sólo si no ha pagado */}
         {!alreadyPaid ? (
           <button
             onClick={handlePago}

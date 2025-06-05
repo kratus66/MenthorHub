@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'; // Removed useCallback
 import { useParams } from 'react-router-dom';
 import axiosInstance from '../../services/axiosInstance';
 import type { clasesType } from '../../types/ClassType';
@@ -22,6 +22,38 @@ interface SubmissionType {
     name: string; // Or whatever student identifier is available
   };
 }
+
+// Define fetchSubmissions outside the component
+async function fetchSubmissions(
+  user: { id: string; role: string; name: string } | null,
+  selectedTask: any,
+  setLoadingSubmissions: React.Dispatch<React.SetStateAction<boolean>>,
+  setSubmissions: React.Dispatch<React.SetStateAction<SubmissionType[]>>,
+  setTeacherSubmissions: React.Dispatch<React.SetStateAction<SubmissionType[]>>
+) {
+  try {
+    setLoadingSubmissions(true);
+    if (user?.role === 'student') {
+      // Fetch student's own submissions
+      const response = await axiosInstance.get(`/submissions/my-submissions`);
+      setSubmissions(response.data as SubmissionType[]);
+    } else if (user?.role === 'teacher' && selectedTask) {
+      // Fetch all submissions for the selected task
+      const response = await axiosInstance.get(`/submissions/task/${selectedTask.id}`);
+      setTeacherSubmissions(response.data as SubmissionType[]);
+    }
+  } catch (error) {
+    console.error('Error al cargar entregas:', error);
+    if (user?.role === 'student') {
+      setSubmissions([]);
+    } else if (user?.role === 'teacher') {
+      setTeacherSubmissions([]);
+    }
+  } finally {
+    setLoadingSubmissions(false);
+  }
+}
+
 
 const CursoDetalle = () => {
    const { id } = useParams<{ id: string }>();
@@ -65,40 +97,21 @@ const CursoDetalle = () => {
       { id: 'reviews', label: 'Reviews' },
    ];
 
+   // Use useCallback for the fetch function if it were inside,
+   // but since it's outside, we just call it directly in useEffect and handler.
+
    // Effect to load submissions when the task detail modal opens
    useEffect(() => {
-      async function fetchSubmissions() {
-        try {
-          setLoadingSubmissions(true); // Iniciar carga
-          if (user?.role === 'student') {
-            // Fetch student's own submissions
-            const response = await axiosInstance.get(`/submissions/my-submissions`);
-            setSubmissions(response.data as SubmissionType[]);
-          } else if (user?.role === 'teacher' && selectedTask) {
-            // Fetch all submissions for the selected task (assuming a new endpoint)
-            const response = await axiosInstance.get(`/submissions/task/${selectedTask.id}`);
-            setTeacherSubmissions(response.data as SubmissionType[]);
-          }
-        } catch (error) {
-          console.error('Error al cargar entregas:', error);
-          if (user?.role === 'student') {
-            setSubmissions([]);
-          } else if (user?.role === 'teacher') {
-            setTeacherSubmissions([]);
-          }
-        } finally {
-          setLoadingSubmissions(false); // Finalizar carga
-        }
-      }
-
       if (user && classId && taskDetailModalOpen && selectedTask) {
-        fetchSubmissions();
+        // Call the external fetchSubmissions function
+        // Removed classId from arguments here to match the function definition
+        fetchSubmissions(user, selectedTask, setLoadingSubmissions, setSubmissions, setTeacherSubmissions);
       } else if (!taskDetailModalOpen) {
         // Clear submissions when modal closes
         setSubmissions([]);
         setTeacherSubmissions([]);
       }
-    }, [classId, user, taskDetailModalOpen, selectedTask]); // Dependencias del efecto
+    }, [classId, user, taskDetailModalOpen, selectedTask]); // Dependencies remain the same
 
 
    const [minDate, setMinDate] = useState('');
@@ -259,10 +272,17 @@ const CursoDetalle = () => {
     };
 
     // Handle grade change for a specific submission (Teacher)
-    const handleGradeChange = (submissionId: string, grade: number | '') => {
+    // Changed parameter type to string to match e.target.value
+    // Handle grade change for a specific submission (Teacher)
+    // Changed parameter type to string to match e.target.value
+    const handleGradeChange = (submissionId: string, value: string) => {
+      // Convert the string value to number or null
+      const grade = value === '' ? null : Number(value);
+
       setTeacherSubmissions(prevSubmissions =>
         prevSubmissions.map(sub =>
-          sub.id === submissionId ? { ...sub, grade: grade === '' ? null : Number(grade) } : sub
+          // Use the converted grade (number | null)
+          sub.id === submissionId ? { ...sub, grade: grade } : sub
         )
       );
     };
@@ -271,8 +291,6 @@ const CursoDetalle = () => {
     const handleSaveGrades = async () => {
       setGradingLoading(true);
       try {
-        // Assuming a new endpoint to update grades for multiple submissions
-        // The backend should handle updating each submission's grade based on the array sent
         await axiosInstance.put(`/submissions/task/${selectedTask.id}/grades`, {
           submissions: teacherSubmissions.map(sub => ({
             id: sub.id,
@@ -280,8 +298,9 @@ const CursoDetalle = () => {
           })),
         });
         alert('Calificaciones guardadas exitosamente');
-        // Optionally refetch submissions to confirm changes
-        // fetchSubmissions(); // This would require adjusting the useEffect or calling it directly
+        // Refetch submissions to confirm changes and update UI
+        // Call the external fetchSubmissions function after saving
+        await fetchSubmissions(user, selectedTask, setLoadingSubmissions, setSubmissions, setTeacherSubmissions);
       } catch (error) {
         console.error('Error al guardar calificaciones:', error);
         alert('Hubo un error al guardar las calificaciones');
@@ -289,8 +308,6 @@ const CursoDetalle = () => {
         setGradingLoading(false);
       }
     };
-
-
    if (!curso || !user) {
       return <div className="p-4">Cargando datos...</div>;
    }
@@ -299,6 +316,12 @@ const CursoDetalle = () => {
    const foundSubmission = submissions.find(sub =>
      String(sub.task?.id) === String(selectedTask?.id)
    );
+
+   // Check if the due date has passed
+   const now = new Date();
+   const dueDate = selectedTask ? new Date(selectedTask.dueDate) : null;
+   const isPastDue = dueDate ? now > dueDate : false;
+
 
    const promedioRating =
       curso.reviews.length > 0
@@ -334,7 +357,7 @@ const CursoDetalle = () => {
                     onClick={handleEnroll}
                     disabled={loadingEnroll}
                  >
-                    {loadingEnroll ? 'Inscribiendo...' : 'Inscribirme'}
+                 {loadingEnroll ? 'Inscribiendo...' : 'Inscribirme'}
                  </button>
                )}
 
@@ -489,16 +512,20 @@ const CursoDetalle = () => {
                       file:bg-blue-50 file:text-blue-700
                       hover:file:bg-blue-100"
                     required
+                    disabled={isPastDue} // Disable file input if past due
                   />
                 </label>
+                {isPastDue && (
+                   <p className="text-red-600 text-sm font-semibold">El plazo de entrega ha finalizado.</p>
+                )}
                 <button
                   type="submit"
-                  disabled={submissionLoading}
+                  disabled={submissionLoading || isPastDue} // Disable button if loading or past due
                   className={`bg-blue-600 text-white px-4 py-2 rounded ${
-                    submissionLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
+                    submissionLoading || isPastDue ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'
                   }`}
                 >
-                  {submissionLoading ? 'Enviando...' : 'Enviar entrega'}
+                  {submissionLoading ? 'Enviando...' : (isPastDue ? 'Plazo finalizado' : 'Enviar entrega')}
                 </button>
               </form>
             )
@@ -525,13 +552,11 @@ const CursoDetalle = () => {
                           <input
                             id={`grade-${submission.id}`}
                             type="number"
-                            min="0"
-                            max="100" // Assuming a grading scale up to 100
+                            min="1" // Cambiado de "0" a "1"
+                            max="10" // Cambiado de "100" a "10"
+                            step="0.1" // Añadido para permitir decimales
                             value={submission.grade ?? ''} // Use ?? '' to handle null/undefined grades
-                            onChange={(e) => {
-                              const value = e.target.value === "" ? "" : Number(e.target.value);
-                              handleGradeChange(submission.id, value);
-                            }}
+                            onChange={(e) => handleGradeChange(submission.id, e.target.value)}
                             className="border border-gray-300 p-1 rounded w-20 text-center"
                           />
                         </div>

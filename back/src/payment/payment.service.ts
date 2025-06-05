@@ -5,6 +5,7 @@ import { Payment, PaymentStatus, PaymentType } from './payment.entity';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { User } from '../users/user.entity';
+import { EmailService } from '../email/email.service';
 import axios from 'axios';
 
 @Injectable()
@@ -14,6 +15,7 @@ export class PaymentsService {
     private readonly paymentRepo: Repository<Payment>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    private readonly emailService: EmailService, // <--- Asegúrate de inyectarlo
   ) {}
 
   async create(userId: string, dto: CreatePaymentDto): Promise<Payment> {
@@ -50,8 +52,38 @@ export class PaymentsService {
 
     user.isPaid = true;
     await this.userRepo.save(user);
-
-    return await this.paymentRepo.save(payment);
+ 
+    
+    const relatedPayment = await this.paymentRepo.save(payment);
+    const result = await this.emailService.sendEmail(
+      user.email,
+      "✅ Confirmación de pago en MentorHub",
+      `
+        <div style="font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f4f9ff; color: #333; padding: 30px; border-radius: 10px; max-width: 600px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
+          <div style="text-align: center;">
+            <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" alt="Pago confirmado" width="80" style="margin-bottom: 20px;" />
+          </div>
+          <h2 style="color: #2a70c9; text-align: center;">¡Hola ${user.name}, tu pago fue exitoso!</h2>
+          <p style="font-size: 16px; line-height: 1.6;">
+            Gracias por completar tu pago mediante <strong>PayPal</strong>. Tu suscripción está ahora activa para el mes de <strong>${payment.month}</strong>.
+          </p>
+          <div style="background-color: #ffffff; padding: 15px 20px; border-radius: 8px; margin: 20px 0; box-shadow: 0 0 5px rgba(0,0,0,0.05);">
+            <p style="margin: 0;"><strong>Monto:</strong> ${amount} ${currency}</p>
+            <p style="margin: 0;"><strong>Usuario:</strong> ${user.email}</p>
+            <p style="margin: 0;"><strong>Rol:</strong> ${user.role === "teacher" ? "Docente" : "Estudiante"}</p>
+            <p style="margin: 0;"><strong>Mes:</strong> ${payment.month}</p>
+          </div>
+          <p style="font-size: 14px; color: #555;">
+            Puedes acceder a todas las funcionalidades premium desde tu panel de usuario. Si tienes dudas, contáctanos.
+          </p>
+          <p style="font-size: 14px; color: #555; margin-top: 30px;">
+            ¡Gracias por ser parte de MentorHub!<br>
+            <strong>El equipo de MentorHub</strong>
+          </p>
+        </div>
+      `
+    );
+    return relatedPayment;
   }
 
   async simulatePaypal(dto: CreatePaymentDto): Promise<string> {
@@ -123,7 +155,7 @@ export class PaymentsService {
       user,
     });
     const savedPayment = await this.paymentRepo.save(payment);
-
+    
     console.log(
       `🎉 Pago guardado en BD: user=${user.email}, ` +
         `monto=${savedPayment.amount} ${savedPayment.currency}, mes=${savedPayment.month}`
@@ -133,6 +165,10 @@ export class PaymentsService {
 
     user.isPaid = true;
     await this.userRepo.save(user);
+
+      // Enviar correo de confirmación
+   
+    
   }
 
   async validateUserPaid(userId: string, month: string): Promise<void> {

@@ -5,8 +5,10 @@ import { PaymentsService } from './payment.service';
 import { Payment } from './payment.entity';
 import { User } from '../users/user.entity';
 
+import { EmailModule } from '../email/email.module';
+
 @Module({
-  imports: [TypeOrmModule.forFeature([Payment, User])],
+  imports: [TypeOrmModule.forFeature([Payment, User]),EmailModule],
   controllers: [PaymentsController],
   providers: [PaymentsService],
   exports: [PaymentsService],
