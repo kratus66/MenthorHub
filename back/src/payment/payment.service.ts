@@ -121,8 +121,8 @@ export class PaymentsService {
           },
         ],
         application_context: {
-          return_url: 'http://localhost:4173/suscripcion',
-          cancel_url: 'http://localhost:4173/suscripcion?cancel=true',
+          return_url: `${process.env.FRONTEND_URL || 'http://localhost:4173'}/suscripcion`,
+          cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:4173'}/suscripcion?cancel=true`,
         },
       },
       {
