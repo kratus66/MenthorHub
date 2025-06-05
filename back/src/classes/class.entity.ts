@@ -14,6 +14,7 @@ import { Task } from '../task/task.entity';
 import { Materias } from '../materias/materias.entity';
 import { Category } from '../categorias/categorias.entity';
 import { Review } from '../review/review.entity';
+
 @Entity()
 export class Class {
   @PrimaryGeneratedColumn('uuid')
@@ -25,24 +26,20 @@ export class Class {
   @Column('text')
   description!: string;
 
-
   @Column('text', { array: true, nullable: true })
   multimedia!: string[];
 
   @ManyToOne(() => User, (user) => user.classesTaught, { nullable: false })
   teacher!: User;
   
-@ManyToMany(() => User, (user) => user.classesEnrolled)
-@JoinTable() 
-students!: User[];
-
-
-
+  @ManyToMany(() => User, (user) => user.classesEnrolled)
+  @JoinTable()
+  students!: User[];
 
   @OneToMany(() => Task, (task) => task.classRef)
   tasks!: Task[];
 
-  @ManyToOne(() => Materias, { eager: true, nullable: true }) // permite temporalmente null
+  @ManyToOne(() => Materias, { eager: true, nullable: true })
   @JoinColumn()
   materia: Materias;
 
@@ -61,9 +58,9 @@ students!: User[];
   @Column({ type: 'timestamp', nullable: true })
   fechaEliminado?: Date | null;
 
-  @OneToMany(() => Review, review => review.course)
-reviews: Review[];
+  @Column({ default: false })
+  isDeleted!: boolean;
 
+  @OneToMany(() => Review, (review) => review.course)
+  reviews!: Review[];
 }
-
-

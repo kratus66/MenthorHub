@@ -219,15 +219,26 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
           >
             Home
           </Link>
+
           {normalizedRole === "teacher" && (
-            <Link
-              to="/clases/crear"
-              onClick={() => setMenuOpen(false)}
-              className="hover:text-gray-200"
-            >
-              Crear una clase
-            </Link>
+            <>
+              <Link
+                to="/clases/crear"
+                onClick={() => setMenuOpen(false)}
+                className="hover:text-gray-200"
+              >
+                Crear una clase
+              </Link>
+              <Link
+                to="/clases/mis"
+                onClick={() => setMenuOpen(false)}
+                className="hover:text-gray-200"
+              >
+                Mis Clases
+              </Link>
+            </>
           )}
+
           {normalizedRole === "student" && (
             <Link
               to="/clases/unirme"
@@ -237,9 +248,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
               Unirme a una clase
             </Link>
           )}
-          {/* <Link to="/panel" onClick={() => setMenuOpen(false)} className="hover:text-gray-200">
-                  Clases
-               </Link> */}
+
           <Link
             to="/suscripcion"
             onClick={() => setMenuOpen(false)}

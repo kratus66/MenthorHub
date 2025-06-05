@@ -25,6 +25,7 @@ import { useUser } from "./context/UserContext";
 import Oauthlogin from "./views/oauthlogin/oauthlogin";
 import Suscripcion from "./views/Suscripcion/suscripcion";
 // import CursoDetalle from './views/CursoDetalles/CursoDetalles';
+import MisClases from "./views/Clases/MisClases";
 
 import ResetPassword from "./views/PasswordRecovery/ResetPassword";
 
@@ -68,7 +69,10 @@ const AppWrapper = () => {
             <Route path="/usuario" element={<Usuario />} />
 
             {user?.role === "teacher" && (
-              <Route path="/clases/crear" element={<CrearClase />} />
+              <>
+                <Route path="/clases/crear" element={<CrearClase />} />
+                <Route path="/clases/mis" element={<MisClases />} /> {/* Aquí se usa */}
+              </>
             )}
             {user?.role === "student" && (
               <Route path="/clases/unirme" element={<UnirmeClase />} />
@@ -82,7 +86,7 @@ const AppWrapper = () => {
             <Route path="/about-us" element={<AboutUs />} />
             <Route path="/conoce-mas" element={<ConoceMas />} />
             <Route path="/suscripcion" element={<Suscripcion />} />
-            
+
             <Route path="/terminos" element={<Terminos />} />
           </Routes>
         </Layout>
