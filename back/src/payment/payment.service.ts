@@ -34,9 +34,12 @@ export class PaymentsService {
         ? PaymentType.TEACHER_SUBSCRIPTION
         : (dto.type as PaymentType);
 
-    const startDate = new Date(dto.month + '-01');
+    // ✅ BLOQUE NUEVO
+    const startDate = new Date();          // hoy mismo
+    startDate.setUTCHours(12, 0, 0, 0);    // evita desfase horario
+
     const endDate = new Date(startDate);
-    endDate.setMonth(endDate.getMonth() + 1);
+    endDate.setUTCMonth(endDate.getUTCMonth() + 1);  // +1 mes exacto
 
     const payment = this.paymentRepo.create({
       amount,

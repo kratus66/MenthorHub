@@ -5,6 +5,8 @@ import {
   useLocation,
 } from "react-router-dom";
 import { useState } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import Home from "./views/Home/home";
 import Login from "./views/Login/Login";
@@ -37,7 +39,7 @@ const AppWrapper = () => {
     "/",
     "/admin",
     "/oauthlogin",
-    "/reset-password",     
+    "/reset-password",
   ].includes(location.pathname);
   const { user } = useUser(); //
 
@@ -58,7 +60,7 @@ const AppWrapper = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           {/* <Route path="/forgot-password" element={<ForgotPassword />} />   {/* Nueva ruta */}
-          <Route path="/reset-password" element={<ResetPassword />} />     {/* Nueva ruta */}
+          <Route path="/reset-password" element={<ResetPassword />} /> {/* Nueva ruta */}
           <Route path="/oauthlogin" element={<Oauthlogin />} />
           <Route path="/admin" element={<AdminPanel />} />
         </Routes>
@@ -98,7 +100,10 @@ const AppWrapper = () => {
 const App = () => {
   return (
     <Router>
-      <AppWrapper />
+      <>
+        <AppWrapper />
+        <ToastContainer position="top-right" autoClose={3000} />
+      </>
     </Router>
   );
 };

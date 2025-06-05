@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useUser } from "../../context/UserContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import axiosInstance from "../../services/axiosInstance";
+import { toast } from "react-toastify";
 
 const Suscripcion: React.FC = () => {
   const { user } = useUser();
@@ -11,53 +12,65 @@ const Suscripcion: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const captureCalledRef = useRef(false);
 
-  // --- NUEVO: estados para controlar si ya pagó y fechas de suscripción ---
   const [alreadyPaid, setAlreadyPaid] = useState(false);
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
-  // ------------------------------------------------------------------------
 
-  // --- NUEVO: obtener el mes actual en formato "YYYY-MM" ---
   const getCurrentMonth = () => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
   };
-  // ------------------------------------------------------------
 
-  // --- NUEVO: al montar, chequear si el usuario ya pagó este mes ---
+  // Chequear si el usuario ya pagó este mes
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      console.log("No hay usuario logueado.");
+      return;
+    }
 
     const month = getCurrentMonth();
+    console.log("Verificando pagos para el mes:", month, "y usuario:", user.id);
+
     axiosInstance
       .get(`/payments/user/${user.id}?page=1&limit=10`)
       .then((res) => {
-        // Suponemos que el backend responde con { data: [...], total, page, limit }
+        console.log("Respuesta de pagos:", res.data);
         const pagos: any[] = Array.isArray(res.data.data) ? res.data.data : [];
         const pagoEsteMes = pagos.find(
           (p) => p.month === month && p.status === "completed"
         );
         if (pagoEsteMes) {
           setAlreadyPaid(true);
-
-          // Asumimos que el backend incluye startDate y endDate en el objeto pago
-          setStartDate(new Date(pagoEsteMes.startDate).toLocaleDateString());
-          setEndDate(new Date(pagoEsteMes.endDate).toLocaleDateString());
+          const fmtUTC = new Intl.DateTimeFormat(undefined, {
+            timeZone: 'UTC',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+          });
+          setStartDate(fmtUTC.format(new Date(pagoEsteMes.startDate)));
+          setEndDate(fmtUTC.format(new Date(pagoEsteMes.endDate)));
+          console.log("Pago encontrado para este mes:", pagoEsteMes);
+        } else {
+          console.log("No se encontró pago para este mes.");
         }
       })
       .catch((err) => {
         console.error("Error al verificar pagos:", err);
       });
   }, [user]);
-  // ---------------------------------------------------------------------
 
   // Captura de PayPal cuando regresa de PayPal
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      console.log("No hay usuario logueado para captura PayPal.");
+      return;
+    }
 
     const params = new URLSearchParams(location.search);
     const token = params.get("token");
     const alreadyCaptured = sessionStorage.getItem("paypal_captured");
+
+    console.log("PayPal token:", token, "alreadyCaptured:", alreadyCaptured, "captureCalledRef:", captureCalledRef.current);
 
     if (!token || alreadyCaptured || captureCalledRef.current) return;
 
@@ -65,32 +78,41 @@ const Suscripcion: React.FC = () => {
 
     (async () => {
       try {
+        console.log("Intentando capturar pago PayPal con token:", token);
         const response = await axiosInstance.post(`/payments/paypal/capture/${token}`);
+        console.log("Respuesta de captura PayPal:", response);
+
         if (response.status === 201) {
           sessionStorage.setItem("paypal_captured", "true");
-          alert("🎉 ¡Pago registrado y orden capturada correctamente!");
+          toast.success("🎉 ¡Pago registrado y orden capturada correctamente!");
 
           // --- NUEVO: enviar correo confirmando el pago ---
           await axiosInstance.post('/payments/send-payment-email', {
             email: user.email,
             paymentInfo: response.data,
           });
-
+          console.log("Correo de confirmación enviado.");
         } else if (response.data?.message === "ORDER_ALREADY_CAPTURED") {
-          alert("ℹ️ Este pago ya fue registrado anteriormente.");
+          toast.info("ℹ️ Este pago ya fue registrado anteriormente.");
+          console.log("Orden ya capturada anteriormente.");
         } else {
-          alert("⚠️ No se pudo registrar el pago en la base de datos.");
+          toast.error("⚠️ No se pudo registrar el pago en la base de datos.");
+          console.log("No se pudo registrar el pago en la base de datos.");
         }
         navigate("/panel", { replace: true });
+        console.log("Redirigiendo a /panel");
       } catch (err) {
-        console.error("❌ Error:", err);
-        alert("❌ Ocurrió un error. Intenta nuevamente.");
+        console.error("❌ Error en captura PayPal:", err);
+        toast.error("❌ Ocurrió un error. Intenta nuevamente.");
         navigate("/panel", { replace: true });
       }
     })();
   }, [location.search, navigate, user]);
 
-  if (!user) return <p>Debes iniciar sesión para realizar el pago.</p>;
+  if (!user) {
+    console.log("No hay usuario logueado, mostrando mensaje.");
+    return <p>Debes iniciar sesión para realizar el pago.</p>;
+  }
 
   const rol = user.role as "student" | "teacher";
 
@@ -99,6 +121,7 @@ const Suscripcion: React.FC = () => {
     try {
       const now = new Date();
       const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+      console.log("Iniciando pago para mes:", month, "rol:", rol);
 
       const response = await axiosInstance.post("/payments/create-paypal-payment", {
         amount: "USD",
@@ -108,16 +131,21 @@ const Suscripcion: React.FC = () => {
         month,
       });
 
+      console.log("Respuesta de creación de pago PayPal:", response);
+
       const approvalUrl = response.data?.url;
       if (!approvalUrl) {
-        alert("No se pudo obtener el enlace de aprobación de PayPal.");
+        toast.error("No se pudo obtener el enlace de aprobación de PayPal.");
+        console.log("No se obtuvo approvalUrl de PayPal.");
         return;
       }
 
-      window.location.href = approvalUrl;
+      console.log("Redirigiendo a PayPal:", approvalUrl);
+      sessionStorage.removeItem("paypal_captured"); // ← limpia la marca previa
+      window.location.href = approvalUrl;           // redirige a PayPal
     } catch (error) {
       console.error("Error al procesar el pago:", error);
-      alert("Hubo un error al procesar el pago.");
+      toast.error("Hubo un error al procesar el pago.");
     } finally {
       setLoading(false);
     }
