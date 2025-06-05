@@ -50,7 +50,7 @@ const Dashboard = ({ filtros, setFiltros }: DashboardProps) => {
          ...(categoriaSeleccionada && { category: categoriaSeleccionada }),
          search: undefined,
       }));
-   }, [categoriaSeleccionada, setFiltros]);
+   }, [categoriaSeleccionada, materiaSeleccionada, setFiltros]);
 
    useEffect(() => {
       if (categoriasIniciales.length > 0 && categoriasIniciales[0].materias) {
