@@ -1,4 +1,3 @@
-
 import {
   Controller,
   Post,
@@ -37,7 +36,7 @@ import { Role } from '../common/constants/roles.enum';
 import { ChartJSNodeCanvas } from 'chartjs-node-canvas';
 import { Response } from 'express';
 import { Header, Res } from '@nestjs/common';
-
+import { EmailService } from '../email/email.service';
 
 
 @ApiTags('Pagos')
@@ -45,7 +44,9 @@ import { Header, Res } from '@nestjs/common';
 @UseGuards(JwtAuthGuard, RoleGuard)
 @Controller('payments')
 export class PaymentsController {
-  constructor(private readonly paymentsService: PaymentsService) {}
+  constructor(private readonly paymentsService: PaymentsService,
+    private readonly emailService: EmailService
+  ) {}
 
   @Get('user/:userId')
   @Roles(Role.Admin, Role.Teacher, Role.Student)
@@ -144,6 +145,26 @@ async createPaypalPayment(@Body() dto: CreatePaymentDto) {
   }
 }
 
+@Post('send-payment-email')
+@Roles(Role.Teacher, Role.Student)
+@ApiOperation({ summary: 'Enviar correo de notificación de pago' })
+@ApiResponse({ status: 200, description: 'Correo enviado correctamente' })
+async sendPaymentEmail(
+  @Body() dto: { email: string; paymentInfo: any }
+) {
+  console.log('✅ [POST] /send-payment-email');
+  console.log('📦 Datos recibidos:', dto);
+
+  try {
+    await this.emailService.sendPaymentConfirmationEmail(dto.email, dto.paymentInfo);
+    console.log('📧 Correo de pago enviado a:', dto.email);
+    return { message: 'Correo enviado correctamente' };
+  } catch (error) {
+    console.error('❌ Error al enviar correo de pago:', error);
+    throw new InternalServerErrorException('Error al enviar correo');
+  }
+}
+
   @Post('paypal/capture/:orderId')
   @Roles(Role.Teacher, Role.Student)
   @ApiOperation({ summary: 'Capturar orden de PayPal (manual desde backend)' })
@@ -176,11 +197,13 @@ async createPaypalPayment(@Body() dto: CreatePaymentDto) {
 
       const amount = parseFloat((captureRes as any).purchase_units[0].payments.captures[0].amount.value);
       const currency = (captureRes as any).purchase_units[0].payments.captures[0].amount.currency_code;
-      const month = new Date().toISOString().slice(0, 7); // 'YYYY-MM'
+      // const month = new Date().toISOString().slice(0, 7); // 'YYYY-MM'
 
       // Define startDate and endDate (example: subscription for 1 month)
-     const startDate = new Date(month + '-01');
-     const endDate = new Date(startDate);
+     const now       = new Date();                                 // hoy
+     const month     = `${now.getUTCFullYear()}-${String(now.getUTCMonth()+1).padStart(2,'0')}`;
+     const startDate = now;                                        // fecha real
+     const endDate   = new Date(now);
      endDate.setMonth(endDate.getMonth() + 1);
 
       console.log('🎯 Usuario logueado para asociar pago:', user.email);
@@ -208,6 +231,7 @@ async createPaypalPayment(@Body() dto: CreatePaymentDto) {
         currency,
         captureRes
       };
+      
     } catch (error) {
       console.log('❌ Error en capturePaypalOrder:', error);
       if (typeof error === 'object' && error !== null) {
@@ -220,4 +244,3 @@ async createPaypalPayment(@Body() dto: CreatePaymentDto) {
     }
   }
 }
- 

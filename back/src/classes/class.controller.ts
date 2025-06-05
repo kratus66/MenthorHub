@@ -8,6 +8,7 @@ import {
   Delete,
   ParseUUIDPipe,
   InternalServerErrorException,
+  NotFoundException,
   UseInterceptors,
   UploadedFiles,
   Query,
@@ -41,6 +42,7 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { RoleGuard } from '../common/guards/role.guard';
 import { Role } from '../common/constants/roles.enum';
 import { Roles } from '../common/decorators/role';
+import { CurrentUser } from '../common/decorators/current-user.decorator'; // Asegúrate de importar esto
 
 @ApiTags('Clases')
 @ApiBearerAuth('JWT-auth')
@@ -75,12 +77,13 @@ export class ClassesController {
     return this.classesService.findAll();
   }
 
+  // Reemplaza el método findDeleted anterior por este:
   @Roles(Role.Admin, Role.Teacher)
   @Get('deleted')
-  @ApiOperation({ summary: 'Obtener todas las clases eliminadas (estado: false)' })
+  @ApiOperation({ summary: 'Obtener todas las clases eliminadas del profesor logueado' })
   @ApiResponse({ status: 200, description: 'Lista de clases eliminadas', type: [Class] })
-  async findDeleted() {
-    return this.classesService.findDeleted();
+  async findDeleted(@CurrentUser() user: any) {
+    return this.classesService.findDeleted(user.id);
   }
 
   @Get(':id')
@@ -91,14 +94,15 @@ export class ClassesController {
     return this.classesService.findOne(id);
   }
 
+  // Reemplaza el método restore anterior por este:
   @Put(':id/restore')
-  @Roles(Role.Admin)
+  @Roles(Role.Teacher, Role.Admin)
   @ApiOperation({ summary: 'Restaurar una clase eliminada' })
   @ApiParam({ name: 'id', description: 'UUID de la clase' })
   @ApiResponse({ status: 200, description: 'Clase restaurada exitosamente', type: Class })
-  async restore(@Param('id', ParseUUIDPipe) id: string) {
+  async restore(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() user: any) {
     try {
-      return await this.classesService.restore(id);
+      return await this.classesService.restore(id, user.id);
     } catch (error) {
       console.error('❌ Error al restaurar clase:', error);
       throw new InternalServerErrorException('Error al restaurar la clase');
@@ -182,6 +186,27 @@ export class ClassesController {
       return result;
     } catch (error) {
       throw new InternalServerErrorException('Error al obtener clases por profesor');
+    }
+  }
+
+  // Agregar ESTE método debajo de los existentes, sin modificar nada más:
+
+  @Delete(':id/soft')
+  @Roles(Role.Admin, Role.Teacher)
+  @ApiOperation({ summary: 'Eliminar lógicamente (soft) una clase' })
+  @ApiParam({ name: 'id', description: 'UUID de la clase' })
+  @ApiResponse({ status: 200, description: 'Clase eliminada lógicamente' })
+  async softDelete(@Param('id', ParseUUIDPipe) id: string) {
+    try {
+      const result = await this.classesService.softDelete(id);
+      if (result.affected === 0) {
+        throw new NotFoundException('Clase no encontrada o ya eliminada');
+      }
+      return { message: 'Clase eliminada lógicamente correctamente' };
+    } catch (error) {
+      console.error('❌ Error al realizar borrado lógico:', error);
+      if (error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException('Error al eliminar la clase lógicamente');
     }
   }
 }

@@ -177,7 +177,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
             type="button"
             className={`pb-2 ${
               activeTab === "personal"
-                ? "border-b-4 border-blue-600 text-blue-600"
+                ? "border-b-4 border-[#007AFF] text-[#007AFF]"
                 : "text-gray-400"
             }`}
             onClick={() => setActiveTab("personal")}
@@ -188,7 +188,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
             type="button"
             className={`pb-2 ${
               activeTab === "academics"
-                ? "border-b-4 border-blue-600 text-blue-600"
+                ? "border-b-4 border-[#007AFF] text-[#007AFF]"
                 : "text-gray-400"
             }`}
             onClick={() => setActiveTab("academics")}
@@ -362,7 +362,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
 
           <label
             htmlFor="profileImage"
-            className="bg-blue-600 text-white text-sm px-4 py-1 rounded cursor-pointer hover:bg-blue-700 transition"
+            className="bg-[#007AFF] text-white text-sm px-4 py-1 rounded cursor-pointer hover:bg-[#007AFF] transition"
           >
             Subir imagen
           </label>
@@ -386,7 +386,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
                 onClick={() => handleAvatarSelect(avatar.id)}
                 className={`text-3xl p-2 rounded-full ${
                   formData.avatarId === avatar.id
-                    ? "ring-2 ring-blue-600"
+                    ? "ring-2 ring-[#007AFF]"
                     : "hover:bg-gray-200"
                 }`}
               >
@@ -397,7 +397,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit }) => {
         </div>
         <button
           type="button"
-          className="mt-6 bg-blue-600 w-full py-2 rounded-full text-white font-semibold hover:bg-blue-700 transition"
+          className="mt-6 bg-[#007AFF] w-full py-2 rounded-full text-white font-semibold hover:bg-[#007AFF] transition"
           onClick={() => {
             if (activeTab === "personal") {
               if (validatePersonalFields()) {

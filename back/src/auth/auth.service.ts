@@ -17,7 +17,7 @@ import { OAuthCompleteDto } from './dto/OauthRegister.dto';
 import passport from 'passport';
 import { Role } from '../common/constants/roles.enum';
 
- import { EmailService } from '../email/email.service';  
+ import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class AuthService {
@@ -33,16 +33,16 @@ export class AuthService {
     const existingUser = await this.usersRepository.findOne({
       where: { email: dto.email },
     });
-  
+
     if (existingUser) {
       throw new BadRequestException(
         `Ya existe una cuenta registrada con el correo ${dto.email}.`
       );
     }
-    
+
       // Normaliza el rol para asegurarte que siempre sea del enum con valor inglés
      dto.role = this.normalizeRole(dto.role as unknown as string);
-  
+
 
     if (dto.isOauth) {
       if (!dto.oauthProvider) {
@@ -53,7 +53,7 @@ export class AuthService {
       return this.registerTraditional(dto, profileImagePathOrURL);
     }
   }
-  
+
   private async registerOAuth(dto: RegisterDto, profileImagePathOrURL?: string): Promise<any> {
     const hashedPassword = await bcrypt.hash(dto.password, 10);
     const newUser = this.usersRepository.create({
@@ -72,9 +72,9 @@ export class AuthService {
       isOauth: true,
       oauthProvider: dto.oauthProvider,
     });
-  
+
     await this.usersRepository.save(newUser);
-  
+
     const accessToken = this.generateToken(newUser);
 
     await this.emailService.sendEmail(
@@ -89,7 +89,7 @@ export class AuthService {
           <p style="font-size: 16px; line-height: 1.6;">
             Nos alegra mucho que hayas decidido unirte utilizando tu cuenta de ${newUser.oauthProvider}. Ya estás listo para comenzar a explorar la plataforma y aprovechar todos nuestros recursos.
           </p>
-         
+
           <p style="font-size: 14px; color: #555;">
             Si tú no iniciaste sesión con esta cuenta, por favor ignora este mensaje o contáctanos para ayudarte.
           </p>
@@ -102,9 +102,9 @@ export class AuthService {
     );
     console.log('EMAIL ENVIADO')
     console.log(newUser)
-  
+
     return {
-      
+
       message: `Bienvenido ${newUser.name}, tu cuenta OAuth fue creada correctamente.`,
       token: accessToken,
       user: {
@@ -117,15 +117,16 @@ export class AuthService {
       },
     };
   }
-  
+
   private async registerTraditional(dto: RegisterDto, profileImagePathOrURL?: string): Promise<any> {
+    const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:4173';
     if (dto.password !== dto.confirmPassword) {
       throw new BadRequestException('Las contraseñas no coinciden');
     }
-  
+
     const hashedPassword = await bcrypt.hash(dto.password, 10);
 
-  
+
     const newUser = this.usersRepository.create({
       name: dto.name,
       email: dto.email,
@@ -142,13 +143,13 @@ export class AuthService {
       isOauth: false,
       oauthProvider: 'no-provider',
     });
-  
+
     await this.usersRepository.save(newUser);
 
-  
+
     const emailToken = this.generateEmailVerificationToken(newUser);
-    const confirmUrl = `http://localhost:3001/api/auth/confirm-email?token=${emailToken}`;
-  
+    const confirmUrl = `${process.env.FRONTEND_URL || FRONTEND_URL || "http://localhost:4173"}/confirm-email?token=${emailToken}`;
+
       await this.emailService.sendEmail(
         newUser.email,
         'Confirma tu correo',
@@ -176,9 +177,9 @@ export class AuthService {
           </div>
         `
       );
-    
+
     const accessToken = this.generateToken(newUser);
-  
+
     return {
       message: `Querido ${newUser.name}, te has registrado correctamente.`,
       token: accessToken,
@@ -194,34 +195,53 @@ export class AuthService {
 
   async confirmEmail(token: string): Promise<{ success: boolean }> {
     try {
-      // Verificamos el token y obtenemos el payload (debe haber sido generado por nosotros)
-      const payload = this.jwtService.verify(token); // lanza error si es inválido o expiró
-  
+      // Verificamos el token usando el secreto específico para confirmación de email
+      const payload = this.jwtService.verify(token, {
+        secret: process.env.JWT_EMAIL_SECRET, // <-- Especificamos el secreto aquí
+      });
+
       const userId = payload.sub; // asegurate de usar 'sub' al crear el token
       const user = await this.usersRepository.findOne({ where: { id: userId } });
-  
+
       if (!user) {
+        // Si el usuario no existe, aún devolvemos success: false
+        // El endpoint lo manejará lanzando BadRequestException
         return { success: false };
       }
-  
+
       // Si ya está confirmado, no hacemos nada
       if (user.isEmailConfirmed) {
-        return { success: true };
+        return { success: true }; // Retorna true si ya estaba confirmado
       }
-  
+
       // Confirmamos el correo
       user.isEmailConfirmed = true;
       await this.usersRepository.save(user);
-  
-      return { success: true };
+
+      return { success: true }; // Retorna true si se confirmó exitosamente
     } catch (error) {
       console.error('❌ Error al confirmar email:', error);
-      return { success: false };
+      // Si hay un error en la verificación (ej: invalid signature, expired),
+      // la excepción se propagará y será capturada por el endpoint,
+      // que lanzará BadRequestException.
+      // Si el error no es de verificación pero queremos que falle,
+      // podríamos lanzar una excepción aquí, pero para este caso,
+      // dejar que la excepción de verify se propague es lo correcto.
+      // Si quieres manejar otros tipos de errores aquí y devolver { success: false },
+      // puedes añadir lógica adicional, pero para el error de token,
+      // es mejor dejar que verify lance la excepción.
+      // Para ser explícitos con errores no relacionados con el token:
+       if (!(error instanceof Error && 'name' in error && error.name === 'JsonWebTokenError')) {
+           console.error('Otro tipo de error en confirmEmail:', error);
+           // Podrías lanzar un error diferente o devolver { success: false }
+           // throw new InternalServerErrorException('Error interno al confirmar email');
+       }
+       // Para errores de token, simplemente dejamos que se propaguen o relanzamos si es necesario
+       throw error; // Relanzamos el error para que el controlador lo capture
     }
   }
-  
-  
-  
+
+
   async login(loginDto: LoginDto): Promise<any> {
     const { email, password } = loginDto;
     const user = await this.usersRepository.findOne({ where: { email } });
@@ -247,13 +267,17 @@ export class AuthService {
         email: user.email,
         role: user.role,
         profileImage: user.profileImage,
+        isOauth: user.isOauth,
+        OauthProvider: user.oauthProvider,
+
+
       },
     };
   }
 // auth.service.ts
 
 async handleOAuthProcess(profile: any, provider: 'google' | 'github') {
-  
+
 
   // Buscar usuario con este email Y este proveedor
   const user = await this.usersRepository.findOne({
@@ -293,6 +317,7 @@ async handleOAuthProcess(profile: any, provider: 'google' | 'github') {
             isOauth: true,
             oauthProvider: user.oauthProvider,
             isEmailConfirmed: true,
+            isPaid: user.isPaid,
           },
         },
       };
@@ -368,11 +393,11 @@ async updatePassword(userId: string, newPassword: string): Promise<void> {
     };
     return this.jwtService.sign(payload);
   }
-  
-  
+
+
  generateEmailVerificationToken(user: User): string {
     return this.jwtService.sign(
-      { email: user.email },
+      { email: user.email, sub: user.id }, // Añadido 'sub' al payload para confirmEmail
       {
         secret: process.env.JWT_EMAIL_SECRET,
         expiresIn: '1d',
@@ -384,9 +409,9 @@ async updatePassword(userId: string, newPassword: string): Promise<void> {
     if (!role) {
       throw new BadRequestException('El rol es requerido');
     }
-  
+
     const normalized = role.toLowerCase();
-  
+
     switch (normalized) {
       case 'alumno':
       case 'student':
@@ -400,7 +425,6 @@ async updatePassword(userId: string, newPassword: string): Promise<void> {
         throw new BadRequestException(`Rol inválido: ${role}`);
     }
   }
-  
-    
-    
+
+
 }

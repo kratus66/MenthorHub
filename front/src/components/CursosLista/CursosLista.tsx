@@ -75,28 +75,32 @@ const CursosLista = ({
          <h2 className="text-4xl mb-1">Cursos:</h2>
          <div className="p-3 bg-[#f3f4f6] flex flex-col gap-4">
             <div className="flex justify-center items-center relative">
-               <div className="flex gap-2 items-center">
-                  <button
-                     onClick={handlePaginaAnterior}
-                     disabled={paginaActual === 1}
-                     className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-                  >
-                     ◀
-                  </button>
-                  <span>
-                     Página {paginaActual} de {ultimaPagina}
-                  </span>
-                  <button
-                     onClick={handlePaginaSiguiente}
-                     disabled={paginaActual === ultimaPagina}
-                     className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-                  >
-                     ▶
-                  </button>
-               </div>
+               {ultimaPagina > 0 ? (
+                  <div className="flex gap-2 items-center">
+                     <button
+                        onClick={handlePaginaAnterior}
+                        disabled={paginaActual === 1}
+                        className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+                     >
+                        ◀
+                     </button>
+                     <span>
+                        Página {paginaActual} de {ultimaPagina}
+                     </span>
+                     <button
+                        onClick={handlePaginaSiguiente}
+                        disabled={paginaActual === ultimaPagina}
+                        className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+                     >
+                        ▶
+                     </button>
+                  </div>
+               ) : (
+                  ''
+               )}
                <button
                   onClick={handleLimpiarFiltros}
-                  className="bg-blue-400 text-white px-4 py-2 rounded absolute right-0"
+                  className="bg-blue-500 text-white px-4 py-2 rounded absolute right-0"
                >
                   Limpiar Filtros
                </button>
@@ -127,25 +131,29 @@ const CursosLista = ({
                </Link>
             ))}
             <div className="flex justify-center items-center relative">
-               <div className="flex gap-2 items-center">
-                  <button
-                     onClick={handlePaginaAnterior}
-                     disabled={paginaActual === 1}
-                     className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-                  >
-                     ◀
-                  </button>
-                  <span>
-                     Página {paginaActual} de {ultimaPagina}
-                  </span>
-                  <button
-                     onClick={handlePaginaSiguiente}
-                     disabled={paginaActual === ultimaPagina}
-                     className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-                  >
-                     ▶
-                  </button>
-               </div>
+               {ultimaPagina > 0 ? (
+                  <div className="flex gap-2 items-center">
+                     <button
+                        onClick={handlePaginaAnterior}
+                        disabled={paginaActual === 1}
+                        className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+                     >
+                        ◀
+                     </button>
+                     <span>
+                        Página {paginaActual} de {ultimaPagina}
+                     </span>
+                     <button
+                        onClick={handlePaginaSiguiente}
+                        disabled={paginaActual === ultimaPagina}
+                        className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+                     >
+                        ▶
+                     </button>
+                  </div>
+               ) : (
+                  ''
+               )}
             </div>
          </div>
       </div>

@@ -18,9 +18,9 @@ const MateriasScroll = ({
 
   return (
     <>
-      <div className="min-h-[13rem] w-full flex flex-col gap-2">
+      <div className="w-full flex flex-col gap-2">
         <h2 className="text-4xl">Materias:</h2>
-        <div className="h-[10rem] flex flex-nowrap overflow-x-scroll overflow-y-visible gap-2">
+        <div className="flex flex-nowrap gap-2">
           {materias.map((materia, index) => (
             <button
               key={index}

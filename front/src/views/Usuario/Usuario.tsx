@@ -194,7 +194,7 @@ const UserProfile: React.FC = () => {
                   disabled={!isModified}
                   className={`px-8 py-3 rounded-md font-semibold transition duration-300 ${
                      isModified
-                        ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                        ? 'bg-blue-500 hover:bg-[#007AFF] text-white'
                         : 'bg-gray-400 text-white cursor-not-allowed'
                   }`}
                >

@@ -25,8 +25,8 @@ id!: string;
   @ManyToOne(() => Task, (task) => task.submissions, { eager: true })
   task: Task;
 
-  @Column({ nullable: true })
-  grade?: number;
+  @Column({ type: 'int', nullable: true }) // <--- MODIFICADO: Especifica el tipo de base de datos
+  grade: number | null; // Mantiene el tipo de TypeScript para aceptar null
 
   @Column({ nullable: true })
   feedback?: string;

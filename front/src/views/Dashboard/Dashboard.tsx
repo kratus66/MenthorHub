@@ -61,7 +61,7 @@ const Dashboard = ({ filtros, setFiltros }: DashboardProps) => {
    return (
       <>
          <div className="w-full h-[calc(100vh-68px)] flex bg-[#f9fafb] relative">
-            <div className="h-[calc(100% - 68px)] w-3/4 m-4 flex flex-col gap-6 overflow-y-scroll ps-5">
+            <div className="h-[calc(100% - 68px)] w-full m-4 flex flex-col gap-6 overflow-y-scroll ps-5">
                <CategoriaScroll
                   onCategoriaSeleccionada={setCategoriaSeleccionada}
                   onMateriaSeleccionada={setMateriaSeleccionada}
@@ -83,9 +83,9 @@ const Dashboard = ({ filtros, setFiltros }: DashboardProps) => {
                   setFiltros={setFiltros}
                />
             </div>
-            <div className="h-[calc(100% - 68px)] w-1/4 m-4 bg-[#f3f4f6] rounded-xl">
+            {/* <div className="h-[calc(100% - 68px)] w-1/4 m-4 bg-[#f3f4f6] rounded-xl">
                <h2></h2>
-            </div>
+            </div> */}
             <Chatbot />
          </div>
       </>

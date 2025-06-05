@@ -5,6 +5,8 @@ import {
   useLocation,
 } from "react-router-dom";
 import { useState } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import Home from "./views/Home/home";
 import Login from "./views/Login/Login";
@@ -25,6 +27,8 @@ import { useUser } from "./context/UserContext";
 import Oauthlogin from "./views/oauthlogin/oauthlogin";
 import Suscripcion from "./views/Suscripcion/suscripcion";
 // import CursoDetalle from './views/CursoDetalles/CursoDetalles';
+import EmailValidationPage from "./views/ConfirmEmail/ConfirmarEmail"; // Import the new component
+import MisClases from "./views/Clases/MisClases";
 
 import ResetPassword from "./views/PasswordRecovery/ResetPassword";
 
@@ -36,7 +40,9 @@ const AppWrapper = () => {
     "/",
     "/admin",
     "/oauthlogin",
-    "/reset-password",     
+    "/reset-password",
+    "/confirm-email", // Add the new route to noNavFooter paths
+    "/reset-password",
   ].includes(location.pathname);
   const { user } = useUser(); //
 
@@ -57,9 +63,10 @@ const AppWrapper = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           {/* <Route path="/forgot-password" element={<ForgotPassword />} />   {/* Nueva ruta */}
-          <Route path="/reset-password" element={<ResetPassword />} />     {/* Nueva ruta */}
+          <Route path="/reset-password" element={<ResetPassword />} /> {/* Nueva ruta */}
           <Route path="/oauthlogin" element={<Oauthlogin />} />
           <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/confirm-email" element={<EmailValidationPage />} /> {/* Add the new route here */}
         </Routes>
       ) : (
         <Layout>
@@ -68,7 +75,10 @@ const AppWrapper = () => {
             <Route path="/usuario" element={<Usuario />} />
 
             {user?.role === "teacher" && (
-              <Route path="/clases/crear" element={<CrearClase />} />
+              <>
+                <Route path="/clases/crear" element={<CrearClase />} />
+                <Route path="/clases/mis" element={<MisClases />} /> {/* Aquí se usa */}
+              </>
             )}
             {user?.role === "student" && (
               <Route path="/clases/unirme" element={<UnirmeClase />} />
@@ -82,7 +92,7 @@ const AppWrapper = () => {
             <Route path="/about-us" element={<AboutUs />} />
             <Route path="/conoce-mas" element={<ConoceMas />} />
             <Route path="/suscripcion" element={<Suscripcion />} />
-            
+
             <Route path="/terminos" element={<Terminos />} />
           </Routes>
         </Layout>
@@ -94,7 +104,10 @@ const AppWrapper = () => {
 const App = () => {
   return (
     <Router>
-      <AppWrapper />
+      <>
+        <AppWrapper />
+        <ToastContainer position="top-right" autoClose={3000} />
+      </>
     </Router>
   );
 };

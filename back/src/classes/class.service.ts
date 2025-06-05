@@ -5,7 +5,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Not, IsNull } from 'typeorm';
 import { Class } from './class.entity';
 import { User } from '../users/user.entity';
 import { Category } from '../categorias/categorias.entity';
@@ -59,7 +59,7 @@ export class ClassesService {
 
      // 🚫 Si no ha pagado y ya tiene 1 clase, no puede crear más
      const teacherClassesCount = await this.classRepository.count({
-        where: { teacher: { id: teacherId }, estado: true },
+        where: { teacher: { id: teacherId }, estado: true, isDeleted: false }, // Added isDeleted filter
      });
      if (!teacher.isPaid && teacherClassesCount >= 1) {
         throw new ForbiddenException(
@@ -93,6 +93,7 @@ export class ClassesService {
         multimedia: [], // Start with an empty multimedia array
         teacher,
         category,
+        isDeleted: false, // Ensure new record is not deleted
      });
 
      const savedClass = await this.classRepository.save(newClass);
@@ -143,7 +144,7 @@ export class ClassesService {
   async update(id: string, updateDto: UpdateClassDto): Promise<Class> {
      console.log('🛠️ Actualizando clase:', id);
      const classToUpdate = await this.classRepository.findOne({
-        where: { id },
+        where: { id, isDeleted: false }, // Added isDeleted filter
      });
      if (!classToUpdate) throw new NotFoundException('Clase no encontrada');
 
@@ -154,7 +155,7 @@ export class ClassesService {
   async findAll(): Promise<Class[]> {
      console.log('📚 Buscando todas las clases activas');
      return this.classRepository.find({
-        where: { estado: true },
+        where: { estado: true, isDeleted: false }, // Added isDeleted filter
         relations: ['teacher', 'students', 'tasks', 'category', 'reviews'],
      });
   }
@@ -162,12 +163,28 @@ export class ClassesService {
   async findOne(id: string): Promise<Class> {
      console.log('🔍 Buscando clase por ID:', id);
      const found = await this.classRepository.findOne({
-        where: { id, estado: true },
+        where: { id, estado: true, isDeleted: false }, // Added isDeleted filter
         relations: ['teacher', 'students', 'tasks', 'category', 'reviews'],
      });
      if (!found)
         throw new NotFoundException(`Clase con ID ${id} no encontrada`);
      return found;
+  }
+
+  // Nuevo método para soft delete (borrado lógico)
+  async softDelete(id: string): Promise<{ affected: number }> {
+     console.log('🗑️ Borrado lógico (soft) de clase ID:', id);
+     const classToDelete = await this.classRepository.findOne({
+       where: { id, isDeleted: false },
+     });
+     if (!classToDelete) throw new NotFoundException('Clase no encontrada o ya eliminada');
+     const result = await this.classRepository.update(id, {
+       isDeleted: true,
+       estado: false,
+       fechaEliminado: new Date(),
+     });
+     console.log('Resultado softDelete:', result);
+     return { affected: result.affected || 0 };
   }
 
   async remove(id: string): Promise<void> {
@@ -181,23 +198,31 @@ export class ClassesService {
      await this.classRepository.save(classToRemove);
   }
 
-  async restore(id: string): Promise<Class> {
-     console.log('♻️ Restaurando clase ID:', id);
-     const classToRestore = await this.classRepository.findOne({
-        where: { id },
-     });
-     if (!classToRestore) throw new NotFoundException('Clase no encontrada');
-     classToRestore.estado = true;
-     classToRestore.fechaEliminado = undefined;
-     return this.classRepository.save(classToRestore);
+  async restore(id: string, userId: string) {
+    const clase = await this.classRepository.findOne({
+      where: { id },
+      withDeleted: true,
+      relations: ['teacher'],
+    });
+
+    if (!clase || clase.teacher.id !== userId) {
+      throw new ForbiddenException('No tienes permiso para restaurar esta clase');
+    }
+
+    await this.classRepository.restore(id);
+    // Opcional: puedes devolver la clase restaurada si lo necesitas
+    return this.classRepository.findOne({ where: { id }, relations: ['teacher'] });
   }
 
-  async findDeleted(): Promise<Class[]> {
-     console.log('🧾 Buscando clases eliminadas');
-     return this.classRepository.find({
-        where: { estado: false },
-        relations: ['teacher', 'students', 'tasks', 'category'],
-     });
+  async findDeleted(userId: string) {
+    return this.classRepository.find({
+      withDeleted: true,
+      where: {
+        teacher: { id: userId },
+        isDeleted: true,
+      },
+      relations: ['category', 'teacher'],
+    });
   }
 
   async findByTeacher(
@@ -221,7 +246,7 @@ export class ClassesService {
         );
 
      const [data, total] = await this.classRepository.findAndCount({
-        where: { teacher: { id: teacherId }, estado: true },
+        where: { teacher: { id: teacherId }, estado: true, isDeleted: false }, // Added isDeleted filter
         relations: ['category', 'students', 'tasks', 'reviews'],
         skip: (page - 1) * limit,
         take: limit,
@@ -248,6 +273,7 @@ export class ClassesService {
         .leftJoinAndSelect('class.category', 'category')
         .leftJoinAndSelect('class.reviews', 'reviews')
         .where('class.estado = :estado', { estado: true })
+        .andWhere('class.isDeleted = :isDeleted', { isDeleted: false }) // Added isDeleted filter
         .andWhere('students.id = :studentId', { studentId })
         .getMany();
   }
@@ -261,7 +287,7 @@ export class ClassesService {
      );
 
      const clase = await this.classRepository.findOne({
-        where: { id: classId, estado: true },
+        where: { id: classId, estado: true, isDeleted: false }, // Added isDeleted filter
         relations: ['students', 'teacher'],
      });
      if (!clase) throw new NotFoundException('Clase no encontrada o inactiva');
@@ -287,6 +313,7 @@ export class ClassesService {
         .createQueryBuilder('class')
         .leftJoin('class.students', 'student')
         .where('student.id = :studentId', { studentId })
+        .andWhere('class.isDeleted = :isDeleted', { isDeleted: false }) // Added isDeleted filter
         .getCount();
 
      if (enrolledCount >= 2) {
@@ -313,7 +340,7 @@ export class ClassesService {
      );
 
      const clase = await this.classRepository.findOne({
-        where: { id: classId, estado: true },
+        where: { id: classId, estado: true, isDeleted: false }, // Added isDeleted filter
         relations: ['students'],
      });
      if (!clase) throw new NotFoundException('Clase no encontrada o inactiva');

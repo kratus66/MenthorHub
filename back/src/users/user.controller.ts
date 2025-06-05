@@ -144,7 +144,7 @@ export class UsersController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @Roles(Role.Admin)
+  @Roles(Role.Admin, Role.Student, Role.Teacher)
   @ApiOperation({ summary: 'Obtener un usuario por ID' })
   @ApiParam({ name: 'id', description: 'UUID del usuario' })
   @ApiResponse({ status: 200, description: 'Usuario encontrado', type: User })
@@ -152,6 +152,7 @@ export class UsersController {
     try {
       return await this.usersService.findById(id);
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException('Error al buscar el usuario');
     }
   }
