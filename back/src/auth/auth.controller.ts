@@ -78,33 +78,38 @@ export class AuthController {
   
     
   @Get('confirm-email')
-@ApiOperation({ summary: 'Confirmar correo electrónico con token' })
-@ApiResponse({ status: 200, description: 'Correo confirmado correctamente' })
-@ApiResponse({ status: 400, description: 'Token inválido o expirado' })
-async confirmEmail(
-  @Query('token') token: string,
-  @Res() res: Response,
-) {
-  if (!token || typeof token !== 'string') {
-    throw new BadRequestException('Falta o es inválido el token de confirmación');
-  }
-
-  try {
-    const result = await this.authService.confirmEmail(token);
-
-    const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:4173';
-
-    if (result.success) {
-      return res.redirect(`${FRONTEND_URL}/email-confirmed`);
-    } else {
-      return res.redirect(`${FRONTEND_URL}/email-confirmation-error`);
+  @ApiOperation({ summary: 'Confirmar correo electrónico con token' })
+  @ApiResponse({ status: 200, description: 'Correo confirmado correctamente' })
+  @ApiResponse({ status: 400, description: 'Token inválido o expirado' })
+  async confirmEmail(
+    @Query('token') token: string,
+    // Eliminamos @Res() res: Response ya que no haremos redirección manual
+    
+  ) {
+    
+    if (!token || typeof token !== 'string') {
+      throw new BadRequestException('Falta o es inválido el token de confirmación');
     }
-  } catch (error) {
-    console.error('Error al confirmar email:', error);
-    throw new BadRequestException('Token inválido o expirado');
+  
+    try {
+      const result = await this.authService.confirmEmail(token);
+  
+      if (result.success) {
+        // Si es exitoso, devolvemos una respuesta JSON con status 200
+        return { message: 'Correo confirmado correctamente' };
+      } else {
+        // Si no es exitoso (pero no lanzó una excepción), lanzamos una BadRequestException
+        // Esto asegura que se devuelva un status 400 con el mensaje de error
+        throw new BadRequestException('Token inválido o expirado');
+      }
+    } catch (error) {
+      console.error('Error al confirmar email:', error);
+      // Si authService.confirmEmail lanzó una excepción, la capturamos y lanzamos BadRequestException
+      // Esto también asegura un status 400
+      throw new BadRequestException('Token inválido o expirado');
+    }
   }
-}
-
+  
 @Post('forgot-password')
 @ApiOperation({ summary: 'Solicitar restablecimiento de contraseña' })
 @ApiResponse({ status: 200, description: 'Email enviado con instrucciones para restablecer contraseña' })

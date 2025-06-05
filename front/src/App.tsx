@@ -25,6 +25,7 @@ import { useUser } from "./context/UserContext";
 import Oauthlogin from "./views/oauthlogin/oauthlogin";
 import Suscripcion from "./views/Suscripcion/suscripcion";
 // import CursoDetalle from './views/CursoDetalles/CursoDetalles';
+import EmailValidationPage from "./views/ConfirmEmail/ConfirmarEmail"; // Import the new component
 
 import ResetPassword from "./views/PasswordRecovery/ResetPassword";
 
@@ -36,7 +37,8 @@ const AppWrapper = () => {
     "/",
     "/admin",
     "/oauthlogin",
-    "/reset-password",     
+    "/reset-password",
+    "/confirm-email", // Add the new route to noNavFooter paths
   ].includes(location.pathname);
   const { user } = useUser(); //
 
@@ -60,6 +62,7 @@ const AppWrapper = () => {
           <Route path="/reset-password" element={<ResetPassword />} />     {/* Nueva ruta */}
           <Route path="/oauthlogin" element={<Oauthlogin />} />
           <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/confirm-email" element={<EmailValidationPage />} /> {/* Add the new route here */}
         </Routes>
       ) : (
         <Layout>
