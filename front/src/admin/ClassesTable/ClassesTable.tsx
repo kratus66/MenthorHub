@@ -81,7 +81,7 @@ const ClassesTable = () => {
 
    useEffect(() => {
       axiosInstance
-         .post(`/filters`, filters)
+         .post(`/filters?page=${currentPage}`, filters)
          .then((res) => {
             console.log(res.data);
             setClases(res.data);
@@ -89,7 +89,7 @@ const ClassesTable = () => {
          .catch((err) => {
             console.log('Error al cargar las clases', err);
          });
-   }, [editionConfirmed, classIsDeleted, newClassConfirmed]);
+   }, [editionConfirmed, classIsDeleted, newClassConfirmed, currentPage]);
 
    const handleDeleteClassData = (clase: clasesType) => {
       setShowDeleteClassModal(true);

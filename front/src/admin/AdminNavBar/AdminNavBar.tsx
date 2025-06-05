@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import imagenUsuario from '../../images/imagenUsuario.png';
+import { BiLogOut } from 'react-icons/bi';
 // import { useNavigate, useLocation } from 'react-router-dom';
 
 import { useUser } from '../../context/UserContext';
 
 const AdminNavBar: React.FC = () => {
-   const { user } = useUser();
+   const { user, logout } = useUser();
    const [menuOpen, setMenuOpen] = useState(false);
    // const [searchInput, setSearchInput] = useState('');
 
-   // const navigate = useNavigate();
+   const navigate = useNavigate();
    // const location = useLocation();
 
    return (
@@ -44,6 +45,16 @@ const AdminNavBar: React.FC = () => {
                      {user ? user.name : 'Nombre Apellido'}
                   </p>
                </div>
+               <button
+                  onClick={() => {
+                     logout();
+                     navigate('/login');
+                  }}
+                  className="text-white text-sm md:text-base hover:underline"
+                  aria-label="Cerrar sesión"
+               >
+                  <BiLogOut className="w-6 h-6" />
+               </button>
             </div>
          </nav>
 

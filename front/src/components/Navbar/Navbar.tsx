@@ -73,6 +73,12 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
     }
   }, [user?.id, fetchNotificationsCallback]);
 
+  useEffect(() => {
+    if (user && user.role === "admin") {
+      navigate("/admin");
+    }
+  }, [user, navigate]);
+
   const handleToggleNotifications = async () => {
     const newShowState = !showNotifications;
     setShowNotifications(newShowState);
@@ -101,6 +107,10 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
             <h1 className="text-white text-xl md:text-3xl ms-4 font-bold inline">
               MentorHub
             </h1>
+            <h2 className="text-white text-xl md:text-3xl ms-4 font-bold inline">
+              {user &&
+                (user.role === "student" ? "- Estudiante" : "- Profesor")}
+            </h2>
           </Link>
         </div>
 
@@ -219,7 +229,6 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
           >
             Home
           </Link>
-
           {normalizedRole === "teacher" && (
             <>
               <Link
@@ -238,7 +247,6 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
               </Link>
             </>
           )}
-
           {normalizedRole === "student" && (
             <Link
               to="/clases/unirme"
@@ -248,7 +256,9 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
               Unirme a una clase
             </Link>
           )}
-
+          {/* <Link to="/panel" onClick={() => setMenuOpen(false)} className="hover:text-gray-200">
+                  Clases
+               </Link> */}
           <Link
             to="/suscripcion"
             onClick={() => setMenuOpen(false)}
