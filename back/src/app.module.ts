@@ -31,10 +31,12 @@ import { EmailModule } from './email/email.module';
 import { Review } from './review/review.entity';
 import { ReviewsModule } from './review/reviews.module';
 
+// Controlador para Text-to-Speech
+import { TextToSpeechController } from './text-to-speech/text-to-speech.controller';
+
 @Module({
    imports: [
       ConfigModule.forRoot({ isGlobal: true }),
-
       FilterModule,
       ChatbotModule,
       ChatModule,
@@ -50,7 +52,6 @@ import { ReviewsModule } from './review/reviews.module';
       ReviewsModule,
       MateriasModule,
       UsersModule,
-
       TypeOrmModule.forRoot({
          type: 'postgres',
          host: process.env.DB_HOST,
@@ -74,5 +75,6 @@ import { ReviewsModule } from './review/reviews.module';
          dropSchema: false, 
       }),
    ],
+   controllers: [TextToSpeechController], // Controlador de text-to-speech
 })
 export class AppModule {}
