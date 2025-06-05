@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 const ConoceMas: React.FC = () => {
   return (
     <div className="p-8 max-w-6xl mx-auto">
-      <h1 className="text-4xl font-extrabold text-blue-700 text-center mb-10">Conocé Más Sobre MentorHub</h1>
+      <h1 className="text-4xl font-extrabold text-[#007AFF] text-center mb-10">Conocé Más Sobre MentorHub</h1>
 
    
       <section className="mb-16">
@@ -20,13 +20,13 @@ const ConoceMas: React.FC = () => {
     
       <section className="grid md:grid-cols-2 gap-8 mb-16">
         <div className="bg-white border border-gray-200 rounded-xl shadow p-6">
-          <h3 className="text-xl font-semibold text-blue-600 mb-2">👨‍🏫 Mentores</h3>
+          <h3 className="text-xl font-semibold text-[#007AFF] mb-2">👨‍🏫 Mentores</h3>
           <p className="text-gray-700 text-base">
             Compartí tus conocimientos, ayudá a otros a crecer y generá impacto en personas que buscan avanzar en sus carreras o estudios. Organizá tus horarios y recibí valoraciones por tu aporte.
           </p>
         </div>
         <div className="bg-white border border-gray-200 rounded-xl shadow p-6">
-          <h3 className="text-xl font-semibold text-blue-600 mb-2">🎓 Estudiantes</h3>
+          <h3 className="text-xl font-semibold text-[#007AFF] mb-2">🎓 Estudiantes</h3>
           <p className="text-gray-700 text-base">
             Encontrá mentores en las áreas que te interesan, accedé a recursos exclusivos y aprendé con acompañamiento personalizado en tu camino educativo o profesional.
           </p>
@@ -50,15 +50,15 @@ const ConoceMas: React.FC = () => {
       <section className="mb-16">
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">🗣️ Testimonios</h2>
         <div className="space-y-6">
-          <blockquote className="italic text-gray-600 border-l-4 border-blue-600 pl-4">
+          <blockquote className="italic text-gray-600 border-l-4 border-[#007AFF] pl-4">
             "Gracias a MentorHub conseguí mi primer trabajo como desarrollador. Los mentores me guiaron paso a paso."
             <br />
-            <span className="text-sm font-medium text-blue-700">— Javier R., ex-estudiante</span>
+            <span className="text-sm font-medium text-[#007AFF]">— Javier R., ex-estudiante</span>
           </blockquote>
-          <blockquote className="italic text-gray-600 border-l-4 border-blue-600 pl-4">
+          <blockquote className="italic text-gray-600 border-l-4 border-[#007AFF] pl-4">
             "Compartir mi experiencia ayudó a otros y me motivó a seguir aprendiendo también."
             <br />
-            <span className="text-sm font-medium text-blue-700">— Ana M., mentora</span>
+            <span className="text-sm font-medium text-[#007AFF]">— Ana M., mentora</span>
           </blockquote>
         </div>
       </section>
@@ -68,7 +68,7 @@ const ConoceMas: React.FC = () => {
         <h2 className="text-2xl font-bold text-gray-800 mb-4">¿Estás listo para empezar?</h2>
         <p className="text-gray-700 mb-6">Suscribete y sumate a nuestra comunidad de aprendizaje colaborativo.</p>
         <Link to="/suscripcion">
-        <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-full transition duration-300">
+        <button className="bg-[#007AFF] hover:bg-[#007AFF] text-white font-semibold py-2 px-6 rounded-full transition duration-300">
 
           Suscribirme ahora
         </button>

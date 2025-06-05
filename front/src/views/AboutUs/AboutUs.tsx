@@ -4,14 +4,14 @@ import Chatbot from '../../components/Chatbot/Chatbot';
 const AboutUs: React.FC = () => {
    return (
       <div className="p-8 max-w-5xl mx-auto">
-         <h1 className="text-4xl font-extrabold text-blue-700 mb-8 text-center">
+         <h1 className="text-4xl font-extrabold text-[#007AFF] mb-8 text-center">
             Sobre Nosotros
          </h1>
 
          <section className="mb-10">
             <p className="text-lg text-gray-800 leading-relaxed">
                Bienvenido a{' '}
-               <span className="font-semibold text-blue-600">MentorHub</span>,
+               <span className="font-semibold text-[#007AFF]">MentorHub</span>,
                tu plataforma educativa virtual diseñada para unir mentores
                apasionados con estudiantes motivados. Nuestra visión es
                construir una comunidad donde el conocimiento fluya libremente y
@@ -21,7 +21,7 @@ const AboutUs: React.FC = () => {
 
          <section className="grid md:grid-cols-3 gap-6 mb-12">
             <div className="bg-white shadow-md p-6 rounded-2xl border border-gray-100">
-               <h2 className="text-xl font-semibold text-blue-600 mb-2">
+               <h2 className="text-xl font-semibold text-[#007AFF] mb-2">
                   🎯 Misión
                </h2>
                <p className="text-gray-700 text-sm">
@@ -32,7 +32,7 @@ const AboutUs: React.FC = () => {
             </div>
 
             <div className="bg-white shadow-md p-6 rounded-2xl border border-gray-100">
-               <h2 className="text-xl font-semibold text-blue-600 mb-2">
+               <h2 className="text-xl font-semibold text-[#007AFF] mb-2">
                   🔭 Visión
                </h2>
                <p className="text-gray-700 text-sm">
@@ -43,7 +43,7 @@ const AboutUs: React.FC = () => {
             </div>
 
             <div className="bg-white shadow-md p-6 rounded-2xl border border-gray-100">
-               <h2 className="text-xl font-semibold text-blue-600 mb-2">
+               <h2 className="text-xl font-semibold text-[#007AFF] mb-2">
                   💡 Valores
                </h2>
                <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
@@ -65,7 +65,7 @@ const AboutUs: React.FC = () => {
                camino educativo hoy mismo.
             </p>
             <Link to="/conoce-mas">
-               <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-full shadow transition duration-300">
+               <button className="bg-[#007AFF] hover:bg-[#007AFF] text-white font-semibold py-2 px-6 rounded-full shadow transition duration-300">
                   Conocé más
                </button>
             </Link>

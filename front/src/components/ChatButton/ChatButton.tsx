@@ -13,7 +13,7 @@ const ChatButton = ({
 
    let buttonColor;
    isWindowVisible
-      ? (buttonColor = 'bg-blue-600')
+      ? (buttonColor = 'bg-[#007AFF]')
       : (buttonColor = 'bg-gray-100');
 
    let imageColor;

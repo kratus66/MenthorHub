@@ -77,14 +77,14 @@ export default function CrearClase() {
   };
 
   return (
-    <div className="min-h-screen bg-blue-600 flex gap-4 px-6 py-8">
+    <div className="min-h-screen bg-[#007AFF] flex gap-4 px-6 py-8">
       <form
         onSubmit={handleSubmit}
         encType="multipart/form-data"
         className="bg-white border-4 border-blue-400 rounded-xl p-6 flex-1 shadow-lg"
       >
         <div className="flex items-center gap-2 mb-4">
-          <h2 className="text-2xl font-bold text-blue-600">Crear Clase</h2>
+          <h2 className="text-2xl font-bold text-[#007AFF]">Crear Clase</h2>
           <select
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
@@ -134,7 +134,7 @@ export default function CrearClase() {
           <button
             type="button"
             onClick={() => imageInputRef.current?.click()}
-            className="bg-gray-100 p-2 rounded-full text-blue-600 hover:bg-gray-200"
+            className="bg-gray-100 p-2 rounded-full text-[#007AFF] hover:bg-gray-200"
           >
             <ImageIcon />
           </button>
@@ -143,7 +143,7 @@ export default function CrearClase() {
           <button
             type="button"
             onClick={() => videoInputRef.current?.click()}
-            className="bg-gray-100 p-2 rounded-full text-blue-600 hover:bg-gray-200"
+            className="bg-gray-100 p-2 rounded-full text-[#007AFF] hover:bg-gray-200"
           >
             <Video />
           </button>
@@ -152,7 +152,7 @@ export default function CrearClase() {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="bg-gray-100 p-2 rounded-full text-blue-600 hover:bg-gray-200"
+            className="bg-gray-100 p-2 rounded-full text-[#007AFF] hover:bg-gray-200"
           >
             <Paperclip />
           </button>
@@ -191,7 +191,7 @@ export default function CrearClase() {
         </div>
       </form>
       <aside className="w-72 bg-white p-5 rounded-xl shadow-lg border border-gray-200">
-        <h3 className="font-semibold mb-3 text-blue-600 text-lg">Sugerencias</h3>
+        <h3 className="font-semibold mb-3 text-[#007AFF] text-lg">Sugerencias</h3>
         <ul className="space-y-3 text-sm text-blue-900">
           <li className="cursor-pointer hover:underline">Why having a blog on your website is more important than ever</li>
           <li className="cursor-pointer hover:underline">Top tips for rolling out a new brand voice across your business</li>

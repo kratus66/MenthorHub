@@ -558,7 +558,7 @@ const CursoDetalle = () => {
               </p>
 
               {loadingSubmissions ? (
-                <div className="mt-4 p-4 bg-blue-50 rounded border border-blue-200 text-blue-600 font-semibold">
+                <div className="mt-4 p-4 bg-blue-50 rounded border border-blue-200 text-[#007AFF] font-semibold">
                   Cargando entregas...
                 </div>
               ) : (
@@ -575,7 +575,7 @@ const CursoDetalle = () => {
                             href={foundSubmission.content}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
+                            className="text-[#007AFF] hover:underline"
                           >
                             {foundSubmission.content}
                           </a>
@@ -610,7 +610,7 @@ const CursoDetalle = () => {
                                   file:mr-4 file:py-2 file:px-4
                                   file:rounded-md file:border-0
                                   file:text-sm file:font-semibold
-                                  file:bg-blue-50 file:text-blue-700
+                                  file:bg-blue-50 file:text-[#007AFF]
                                   hover:file:bg-blue-100"
                             required
                             disabled={isPastDue}
@@ -624,10 +624,10 @@ const CursoDetalle = () => {
                         <button
                           type="submit"
                           disabled={submissionLoading || isPastDue}
-                          className={`bg-blue-600 text-white px-4 py-2 rounded ${
+                          className={`bg-[#007AFF] text-white px-4 py-2 rounded ${
                             submissionLoading || isPastDue
                               ? "opacity-50 cursor-not-allowed"
-                              : "hover:bg-blue-700"
+                              : "hover:bg-[#007AFF]"
                           }`}
                         >
                           {submissionLoading
@@ -664,7 +664,7 @@ const CursoDetalle = () => {
                                     href={submission.content}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-blue-600 hover:underline"
+                                    className="text-[#007AFF] hover:underline"
                                   >
                                     {submission.content}
                                   </a>
@@ -733,7 +733,7 @@ const CursoDetalle = () => {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`border-b-4 border-transparent hover:border-blue-500 font-semibold text-gray-700 ${
-                  activeTab === tab.id ? "border-blue-700 text-blue-700" : ""
+                  activeTab === tab.id ? "border-[#007AFF] text-[#007AFF]" : ""
                 }`}
               >
                 {tab.label}
@@ -747,7 +747,7 @@ const CursoDetalle = () => {
               <p className="text-gray-800 mb-4">{curso.description}</p>
               <button
                 onClick={handleSpeech}
-                className="absolute top-0 right-0 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 mr-4"
+                className="absolute top-0 right-0 px-4 py-2 bg-[#007AFF] text-white rounded hover:bg-[#007AFF] mr-4"
               >
                 Escuchar Clase
               </button>

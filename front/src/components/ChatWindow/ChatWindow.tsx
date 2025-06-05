@@ -76,7 +76,7 @@ const ChatWindow = ({
                      }`}
                   >
                      <div
-                        className={`rounded-full overflow-hidden w-[3rem] aspect-square h-fit bg-blue-600 ${
+                        className={`rounded-full overflow-hidden w-[3rem] aspect-square h-fit bg-[#007AFF] ${
                            msg.sender === 'user' && 'order-last'
                         }`}
                      >
@@ -84,7 +84,7 @@ const ChatWindow = ({
                            src={`${
                               msg.sender === 'user'
                                  ? userData.profileImage
-                                 : '/chatbot.jpg'
+                                 : '/chat-bot.svg'
                            }`}
                            alt="Foto"
                            className={`w-[3rem] object-cover`}
@@ -92,7 +92,7 @@ const ChatWindow = ({
                      </div>
                      <div className="flex flex-col w-3/4">
                         <p
-                           className={`text-blue-600 text-lg ${
+                           className={`text-[#007AFF] text-lg ${
                               msg.sender === 'user' &&
                               'text-end text-orange-500'
                            }`}

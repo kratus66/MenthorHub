@@ -87,7 +87,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
 
   return (
     <>
-      <nav className="bg-blue-700 p-3 h-[3.5rem] flex items-center justify-between relative z-50">
+      <nav className="bg-[#007AFF] p-3 h-[3.5rem] flex items-center justify-between relative z-50">
         <div>
           <button
             aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
@@ -207,7 +207,7 @@ const NavBar: React.FC<NavBarProps> = ({ onSetFiltros }) => {
       </nav>
 
       <div
-        className={`fixed top-0 left-0 h-full w-64 md:w-96 bg-blue-700 text-white transform transition-transform duration-300 ease-in-out z-40 ${
+        className={`fixed top-0 left-0 h-full w-64 md:w-96 bg-[#007AFF] text-white transform transition-transform duration-300 ease-in-out z-40 ${
           menuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >

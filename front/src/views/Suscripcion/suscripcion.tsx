@@ -145,7 +145,7 @@ const Suscripcion: React.FC = () => {
           </div>
         ) : (
           <div className="flex justify-center mb-8">
-            <span className="text-4xl font-semibold text-blue-600">$5.99</span>
+            <span className="text-4xl font-semibold text-[#007AFF]">$5.99</span>
             <span className="text-gray-500 self-end ml-1">/mes</span>
           </div>
         )}
