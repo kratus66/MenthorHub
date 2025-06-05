@@ -5,7 +5,7 @@ const ReviewCard = ({ review }: { review: Review }) => {
    const { rating, comment, author, targetStudent, createdAt } = review;
 
    return (
-      <div className="w-[25rem] p-5 border border-gray-300 rounded-md mx-auto">
+      <div className="w-[25rem] p-5 border bg-white rounded-md mx-auto shadow-lg">
          <div className="flex">
             <img
                src={targetStudent?.profileImage}

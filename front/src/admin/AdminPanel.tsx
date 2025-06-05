@@ -33,10 +33,10 @@ const AdminPanel = () => {
                      <button
                         key={index}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`py-3 px-4 w-full text-left text-xl hover:bg-gray-200 inline transition ${
+                        className={`py-3 px-4 w-full text-left text-xl  inline transition ${
                            activeTab === tab.id
                               ? 'bg-blue-400 hover:bg-blue-400 font-semibold text-white'
-                              : 'text-gray-700'
+                              : 'text-gray-700 hover:bg-gray-300'
                         }`}
                      >
                         <img

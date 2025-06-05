@@ -53,7 +53,7 @@ const ClassesTable = () => {
             setCategorias(res.data.data);
          })
          .catch((err) => {
-            alert(`Error al traer las categorias: ${err}`);
+            console.log(`Error al traer las categorias: ${err}`);
          });
    }, []);
 
