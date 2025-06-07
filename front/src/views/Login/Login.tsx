@@ -1,57 +1,82 @@
-import LoginForm from '../../components/LoginForm/LoginForm';
+import { useUser } from "../../context/UserContext";
+import { useNavigate } from "react-router-dom";
+import Background from "../../components/Background/Background";
+import LoginForm from "../../components/LoginForm/LoginForm";
+import MenVir from "../../components/MenVir/MenVir";
+import Chatbot from "../../components/Chatbot/Chatbot";
 
 export default function Login() {
-   return (
-      <div className="h-screen w-screen flex items-center justify-center">
-         <div className="w-3/5 flex flex-col gap-4 justify-between ps-[8rem] pe-[14rem]">
-            <h1 className="text-8xl">MentorHub</h1>
-            <h2 className="text-5xl">Login</h2>
+  const { user } = useUser();
+  const navigate = useNavigate();
+  const apiUrl = import.meta.env.VITE_API_URL || "localhost:3001";
+  const baseURL = `${window.location.protocol}//${apiUrl}/api`;
+
+  if (user) {
+    navigate("/panel");
+    return null;
+  }
+
+  return (
+    <div className="w-screen h-screen flex flex-col md:flex-row items-center md:justify-end relative overflow-hidden">
+   
+      <div className="w-full md:w-[60%] h-full flex flex-col justify-start px-4 md:px-10">
+        <h1 className="title leading-none pt-[9vh] text-center md:text-left">MentorHub</h1>
+        <h2 className="subtitle z-10 text-center md:text-left">Ingreso</h2>
+
+        <div className="flex w-full h-full overflow-hidden panel-text">
+          <div className="flex flex-col justify-center items-center gap-6 w-full overflow-auto py-6">
             <LoginForm />
-            <div className="flex flex-col gap-4 mt-8">
-               <p className="w-fit self-center">o continúa con</p>
-               <div className="flex justify-center gap-4">
-                  <a href="" className="px-14 py-2 rounded-full border">
-                     <img
-                        width={30}
-                        height={30}
-                        src="/google-icon.svg"
-                        alt="Google Sign In"
-                     />
-                  </a>
-                  <a href="" className="px-14 py-2 rounded-full border">
-                     <img
-                        width={30}
-                        height={30}
-                        src="/github-icon.svg"
-                        alt="Github Sign In"
-                     />
-                  </a>
-                  <a href="" className="px-14 py-2 rounded-full border">
-                     <img
-                        width={30}
-                        height={30}
-                        src="/facebook-icon.svg"
-                        alt="Facebook Sign In"
-                     />
-                  </a>
-               </div>
-               <p className="w-fit self-center">
-                  ¿Aun no tienes cuenta? <a href="#">Registrate gratis.</a>
-               </p>
+
+            <div className="flex flex-col gap-4 mt-4 w-full max-w-md">
+              <p className="text-center">o continúa con</p>
+              <div className="flex justify-center gap-4 flex-wrap">
+                <a
+                  href={`${baseURL}/auth/google`}
+                  className="flex justify-center items-center px-10 py-2 rounded-full border-2 hover:border-[#007AFF]"
+                >
+                  <img
+                    className="h-8 aspect-square"
+                    src="/google-icon.svg"
+                    alt="Google Sign In"
+                  />
+                </a>
+                <a
+                  href={`${baseURL}/auth/github`}
+                  className="flex justify-center items-center px-10 py-2 rounded-full border-2 hover:border-[#007AFF]"
+                >
+                  <img
+                    className="h-8 aspect-square"
+                    src="/github-icon.svg"
+                    alt="Github Sign In"
+                  />
+                </a>
+              </div>
+              <p className="text-center text-sm">
+                ¿Aún no tienes cuenta?{" "}
+                <a
+                  className="text-[#007AFF] hover:underline underline-offset-2"
+                  href="/register"
+                >
+                  Regístrate gratis.
+                </a>
+              </p>
             </div>
-         </div>
-         <div className="h-screen w-2/5 bg-[#409BFF] relative">
-            <svg
-               viewBox="0 0 100 100"
-               preserveAspectRatio="none"
-               className="absolute top-0 left-0 w-full h-full"
-            >
-               <path d="M100,0 Q90,90 0,100 L0,0 Z" fill="#2463EB" />
-            </svg>
-            <video autoPlay loop muted playsInline className="menvirLogin">
-               <source src="/MenVir_Saludando.webm" type="video/webm" />
-            </video>
-         </div>
+          </div>
+        </div>
       </div>
-   );
+
+      
+      <div className="hidden md:block md:w-[40%] h-full">
+        <Background>
+          <MenVir src="/MenVir_Saludando.webm" />
+        </Background>
+      </div>
+
+     
+      <div className="absolute inset-0 flex flex-col items-center justify-center panel pointer-events-none" />
+
+   
+      <Chatbot />
+    </div>
+  );
 }

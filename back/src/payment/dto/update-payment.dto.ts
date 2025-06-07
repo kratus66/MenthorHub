@@ -1,3 +1,4 @@
+// update-payment.dto.ts
 import { IsEnum, IsOptional, IsNumber, IsString } from 'class-validator';
 import { PaymentStatus, PaymentType } from '../payment.entity';
 import { ApiPropertyOptional } from '@nestjs/swagger';
@@ -22,4 +23,21 @@ export class UpdatePaymentDto {
   @IsOptional()
   @IsEnum(PaymentStatus)
   status?: PaymentStatus;
+
+  @ApiPropertyOptional({
+    example: 'paypal',
+    description: 'Método de pago (solo paypal permitido)',
+    enum: ['paypal'],
+  })
+  @IsOptional()
+  @IsEnum(['paypal'])
+  paymentMethod?: 'paypal';
+
+  @ApiPropertyOptional({
+    example: '2025-05',
+    description: 'Mes del pago en formato YYYY-MM',
+  })
+  @IsOptional()
+  @IsString()
+  month?: string;
 }

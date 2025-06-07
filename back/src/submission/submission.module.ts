@@ -1,13 +1,22 @@
-// src/submission/submissions.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { SubmissionsService } from './submission.service';
-import { submissionsControllers } from './submission.controller';
 import { Submission } from './submission.entity';
-
+import { Task } from '../task/task.entity';
+import { User } from '../users/user.entity';
+import { SubmissionsService } from './submission.service';
+import { SubmissionsController } from './submission.controller';
+import { UsersModule } from '../users/user.module';
+import { Class } from '../classes/class.entity';
+import { PaymentsModule } from '../payment/payments.module';
+import { CloudinaryModule } from '../common/cloudinary/cloudinary.module';
 @Module({
-  imports: [TypeOrmModule.forFeature([Submission])],
-  controllers: [submissionsControllers],
+  imports: [
+    TypeOrmModule.forFeature([Submission, Task, User, Class]),
+    UsersModule,
+    PaymentsModule, // ✅ necesario para validar pagos
+    CloudinaryModule,
+  ],
   providers: [SubmissionsService],
+  controllers: [SubmissionsController],
 })
-export class SubmissionsModule {}
+export class SubmissionModule {}
